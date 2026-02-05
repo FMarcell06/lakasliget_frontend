@@ -1,9 +1,20 @@
-import './App.css'
+import { useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import { Home } from './pages/Home'
+import { Header } from './components/Header'
 
-export function App() {
+
+function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <div className='app'>
-      App...
+    <div>
+      <Header />
+      <Routes>
+        <Route path='/' element={<Home/>}></Route>
+      </Routes>
     </div>
   )
 }
+
+export default App
