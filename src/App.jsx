@@ -1,20 +1,19 @@
-import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
-import  Home from './pages/Home'
-import { Header } from './components/Header'
+import { useState } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Home } from './pages/Home.jsx';
+import { SignUp } from './pages/SignUp.jsx'
+
+export default function App() {
+  const router = createBrowserRouter([
+    { path: "/", element: <Home /> },
+    { path: "/signup", element: <SignUp /> },
+  ]);
 
   return (
     <div>
-      <Header />
-      <Routes>
-        <Route path='/' element={<Home/>}></Route>
-      </Routes>
+      <RouterProvider router={router} />
     </div>
   )
 }
-
-export default App
