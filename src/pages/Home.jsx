@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Header } from '../components/Header';
 
-
-const Page = () => {
+export const Home = () => {
   return (
+    <div>
+    <Header />
     <div className="hero">
       <div className="hero-content">
         <h1>Lakás <br /> Liget</h1>
@@ -13,15 +15,6 @@ const Page = () => {
         <button className="gomb">Learn More</button>
       </div>
     </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <Page />
     </div>
   );
-}
-
-export default App;
+};
