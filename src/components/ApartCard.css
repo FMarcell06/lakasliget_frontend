@@ -1,0 +1,191 @@
+.ingatlan-card {
+  display: flex; /* Vízszintes elrendezés */
+  background: white;
+  border: 1px solid #e0e4e8;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  height: 230px; /* Fix magasság a rendezett listához */
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.ingatlan-card:hover {
+  border-color: #e68900;
+  box-shadow: 0 8px 20px rgba(230, 137, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Bal oldali kép */
+.card-image-wrapper {
+  position: relative;
+  width: 340px;
+  min-width: 340px;
+  height: 100%;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-new {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #e68900;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.image-count-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cam-icon {
+  font-size: 16px !important;
+}
+
+/* Jobb oldali tartalom */
+.card-info {
+  flex-grow: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.price-tag {
+  font-size: 24px;
+  font-weight: 800;
+  color: #e68900; /* A kért meleg narancssárga */
+}
+
+.fav-button {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+
+.fav-button:hover {
+  color: #e68900;
+  border-color: #e68900;
+  background-color: #fff5eb;
+}
+
+.address-section {
+  margin-bottom: 20px;
+}
+
+.address-text {
+  margin: 0;
+  font-size: 15px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loc-icon {
+  font-size: 18px !important;
+  color: #e68900;
+}
+
+/* Paraméterek rácsa */
+.specs-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: auto; /* Ez tolja le a láblécet */
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+}
+
+.spec-value {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Lábléc logóval */
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 15px;
+}
+
+.agency-initial {
+  width: 28px;
+  height: 28px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #555;
+}
+
+.agency-name {
+  font-size: 13px;
+  color: #888;
+}
+
+/* Mobil optimalizálás */
+@media (max-width: 768px) {
+  .ingatlan-card {
+    flex-direction: column;
+    height: auto;
+  }
+  .card-image-wrapper {
+    width: 100%;
+    height: 200px;
+  }
+  .specs-row {
+    gap: 20px;
+  }
+}

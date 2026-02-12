@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { 
-  Box, Grid, Typography, Container, CircularProgress, 
-  TextField, FormControl, Select, MenuItem, Paper, Button, Divider, InputAdornment, 
-  Slider
-} from '@mui/material';
-import { Search, HomeWork, Straighten, MeetingRoom, Payments, Tune } from '@mui/icons-material';
+import { Tune, Search, SwapVert } from '@mui/icons-material';
 
 import { Header } from '../components/Header';
 import { MyUserContext } from '../context/MyUserProvider';
 import { ApartCard } from '../components/ApartCard';
 import { readHomes } from '../myBackend';
+import './Apartments.css';
 
 export const Apartments = () => {
   const { user } = useContext(MyUserContext);
@@ -53,154 +49,117 @@ export const Apartments = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#F7F8F9', minHeight: '100vh', pb: 10 }}>
-      <Header />
+    <div className="apartments-page">
       
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Grid container spacing={3} alignItems="flex-start">
-          
-          {/* LEFT SIDE - FILTER */}
-          <Grid item xs={12} md={3.5} sx={{ display: 'flex' }}>
-            <Box sx={{ position: 'sticky', top: 100 }}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 3, 
-                  borderRadius: '12px', 
-                  border: '1px solid #E0E4E8',
-                  bgcolor: 'white'
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Tune sx={{ mr: 1, color: '#2D333A' }} />
-                  <Typography variant="h6" fontWeight="700" color="#2D333A">Szűrés</Typography>
-                </Box>
+      <main className="apartments-main">
+        {/* Kék infó sáv (mint a screenshoton) */}
+        <div className="info-banner">
+          <div className="info-banner-content">
+            <span className="fix-icon">fix 3%</span>
+            <p>Keresd a <strong>FIX 3%</strong> emblémás hirdetéseket. Ezek megfelelhetnek a FIX 3%-os hitel feltételeinek. <span className="info-i">i</span></p>
+          </div>
+        </div>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Helyszín vagy név</Typography>
-                    <TextField
-                      fullWidth
-                      name="title"
-                      placeholder="Város, kerület..."
-                      size="small"
-                      value={filters.title}
-                      onChange={handleChange}
-                      sx={{ '& .MuiOutlinedInput-root': { bgcolor: '#F9FAFB' } }}
+        <div className="apartments-layout">
+          {/* BAL OLDAL - SZŰRŐ (igazítva a modernebb stílushoz) */}
+          <aside className="filter-column">
+            <div className="filter-container">
+              <div className="filter-title">
+                <Tune className="icon" />
+                <span>Szűrés</span>
+              </div>
+
+              <div className="filter-inputs">
+                <div className="input-field">
+                  <label>Helyszín vagy név</label>
+                  <div className="search-wrapper">
+                    <Search className="search-icon" />
+                    <input 
+                      type="text" 
+                      name="title" 
+                      placeholder="Város, kerület..." 
+                      value={filters.title} 
+                      onChange={handleChange} 
                     />
-                  </Box>
+                  </div>
+                </div>
 
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>
-                      Havi bérleti díj: {filters.maxPrice.toLocaleString()} Ft
-                    </Typography>
-                    <Slider
-                      name="maxPrice"
-                      value={filters.maxPrice}
-                      onChange={(e, val) => setFilters(prev => ({...prev, maxPrice: val}))}
-                      min={50000}
-                      max={1500000}
-                      step={10000}
-                      sx={{ color: '#d58224ff' }}
+                <div className="input-field">
+                  <label>Max bérleti díj: {filters.maxPrice.toLocaleString()} Ft</label>
+                  <input 
+                    type="range" 
+                    name="maxPrice" 
+                    className="price-slider"
+                    min="50000" 
+                    max="1500000" 
+                    step="10000"
+                    value={filters.maxPrice} 
+                    onChange={handleChange} 
+                  />
+                </div>
+
+                <div className="input-row">
+                  <div className="input-field">
+                    <label>Szobák</label>
+                    <select name="rooms" value={filters.rooms} onChange={handleChange}>
+                      <option value="">Mind</option>
+                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}+</option>)}
+                    </select>
+                  </div>
+                  <div className="input-field">
+                    <label>Min. m²</label>
+                    <input 
+                      type="number" 
+                      name="minSize" 
+                      placeholder="m²" 
+                      value={filters.minSize} 
+                      onChange={handleChange} 
                     />
-                  </Box>
+                  </div>
+                </div>
 
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Szobák</Typography>
-                      <Select
-                        fullWidth
-                        name="rooms"
-                        size="small"
-                        value={filters.rooms}
-                        onChange={handleChange}
-                        displayEmpty
-                      >
-                        <MenuItem value="">Mind</MenuItem>
-                        {[1, 2, 3, 4, 5].map(n => <MenuItem key={n} value={n}>{n}+</MenuItem>)}
-                      </Select>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Méret (m²)</Typography>
-                      <TextField
-                        fullWidth
-                        name="minSize"
-                        type="number"
-                        size="small"
-                        placeholder="Min."
-                        value={filters.minSize}
-                        onChange={handleChange}
-                      />
-                    </Grid>
-                  </Grid>
+                <button className="apply-btn" onClick={handleSearch}>
+                  Találatok mutatása
+                </button>
+              </div>
+            </div>
+          </aside>
 
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Ingatlan típusa</Typography>
-                    <Select
-                      fullWidth
-                      name="type"
-                      size="small"
-                      value={filters.type}
-                      onChange={handleChange}
-                      displayEmpty
-                    >
-                      <MenuItem value="">Összes típus</MenuItem>
-                      <MenuItem value="Panel">Panel</MenuItem>
-                      <MenuItem value="Tégla">Tégla</MenuItem>
-                      <MenuItem value="Ház">Ház</MenuItem>
-                    </Select>
-                  </Box>
-
-                  <Button 
-                    fullWidth 
-                    variant="contained" 
-                    onClick={handleSearch}
-                    sx={{ 
-                      bgcolor: '#d58224ff', 
-                      py: 1.5, 
-                      borderRadius: '8px', 
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      boxShadow: 'none',
-                      '&:hover': { bgcolor: '#b86d1c', boxShadow: 'none' }
-                    }}
-                  >
-                    Találatok mutatása
-                  </Button>
-                </Box>
-              </Paper>
-            </Box>
-          </Grid>
-
-          {/* RIGHT SIDE - APARTMENT CARDS */}
-          <Grid item xs={12} md={8.5} sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" fontWeight="800" color="#2D333A">
-                Kiadó lakások Budapesten
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Találtunk {filteredHomes.length} kiadó ingatlant az Ön részére
-              </Typography>
-            </Box>
+          {/* JOBB OLDAL - EREDMÉNYEK */}
+          <section className="results-column">
+            <div className="results-meta">
+              <div className="meta-left">
+                <h1>Kiadó budapesti lakások, albérletek</h1>
+                <p>{filteredHomes.length} találat</p>
+                <span className="sponsored-label">A lista fizetett rangsorolást is tartalmaz. <a href="#">Bővebben</a></span>
+              </div>
+              <div className="meta-right">
+                <button className="sort-btn">
+                  <SwapVert />
+                  Rendezés: Alap rendezés
+                </button>
+              </div>
+            </div>
 
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-                <CircularProgress sx={{ color: '#d58224ff' }} />
-              </Box>
+              <div className="loader-wrapper">
+                <div className="custom-spinner"></div>
+                <p>Ingatlanok betöltése...</p>
+              </div>
             ) : (
-              <Grid container spacing={3}>
-                {filteredHomes.map((obj) => (
-                  <Grid item key={obj.id} xs={12} sm={12} lg={6}>
-                    <ApartCard apartment={obj} />
-                  </Grid>
-                ))}
-              </Grid>
+              <div className="apartments-list">
+                {filteredHomes.length > 0 ? (
+                  filteredHomes.map((home) => (
+                    <ApartCard key={home.id} apartment={home} />
+                  ))
+                ) : (
+                  <div className="no-results">Nincs a szűrésnek megfelelő ingatlan.</div>
+                )}
+              </div>
             )}
-          </Grid>
-
-        </Grid>
-      </Container>
-    </Box>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 };
