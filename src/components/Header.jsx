@@ -22,15 +22,10 @@ export const Header = () => {
             <button className='about' onClick={()=>navigate("/about")}>About</button>
             <button className='about' onClick={()=>navigate("/listings")}>Hirdetések</button>
             <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Add</button>
-            <div className="search-container">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-              />
-            </div>
+          </div>
 
         {user?
-            <div className='headerBtn-container' style={{position:"absolute",top:"5px",right:"5px"}}>
+            <div className='headerBtn-container'>
                 <span onClick={()=>navigate("/profile")}>
                     {user?.photoURL ? 
                     <img src={user.photoURL} className="profileIcon" style={{width:"50px",height:"50px",borderRadius:"50%",objectFit:"cover"}} alt="előnézet"  />
@@ -47,7 +42,6 @@ export const Header = () => {
               <button className="btn-signup" onClick={()=>navigate("/signup")}>Sign Up</button>
             </div>
         }
-          </div>
         </nav>
     </div>
   )

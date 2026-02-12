@@ -27,6 +27,8 @@
   display: flex;
   align-items: center;
   gap: 30px;
+  position: absolute;
+  height: 100%;
 }
 
 .search-container input {
@@ -72,4 +74,22 @@
   opacity: 0.85;
 }
 
+.header .home, .form, .about, .profile {
+    background-color: cornflowerblue;
+    padding: 10px 22px;
+    border-radius: 25px;
+    border: none;
+    color:white;
+}
 
+.headerBtn-container {
+    display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  top: 0;
+  right: 0;
+
+}

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { addHome, uploadToImgBB, updateRecipe } from '../myBackend'; // A függvénynevek maradhatnak, de a tartalom lakás lesz
 import { useContext } from 'react';
 import { MyUserProvider } from '../context/MyUserProvider';
+import { Header } from '../components/Header';
 
 export const ApForm = () => {
   const [title, setTitle] = useState("");
@@ -83,6 +84,7 @@ export const ApForm = () => {
 
   return (
     <div className="property-form-container">
+        <Header />
       <div className="form-header">
         <h1><FaCloudUploadAlt /> Ingatlan hirdetés feladása</h1>
         <p>Töltse ki az adatokat a sikeres értékesítéshez</p>
