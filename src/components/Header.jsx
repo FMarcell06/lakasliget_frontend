@@ -19,6 +19,7 @@ export const Header = () => {
             <button className='home' onClick={()=>navigate("/")}>Home</button>
             <button className='form' onClick={()=>navigate("/addnew")}>Form</button>
             <button className='about' onClick={()=>navigate("/about")}>About</button>
+            <button className='about' onClick={()=>navigate("/listings")}>Hirdetések</button>
             <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Add</button>
             <div className="search-container">
               <input 
