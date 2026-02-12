@@ -33,7 +33,7 @@ export const Header = () => {
                     <RxAvatar size={50}/>
                 }
                 </span>
-                <h1 className='username'>{user.displayName}</h1>
+                <h3 className='username'>{user.displayName}</h3>
                 <button className='headerBtn' onClick={()=>logoutUser()}>Kijelentkezés</button>
             </div>
             :

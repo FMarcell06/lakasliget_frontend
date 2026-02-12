@@ -4,12 +4,15 @@
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+
 }
 
 .apartments-main {
   max-width: 1240px;
   margin: 0 auto;
+    margin-top: 50px;
   padding: 20px;
+    animation: fadeIn 0.5s ease;
 }
 
 /* Információs sáv felül */
@@ -153,7 +156,7 @@
 /* Kereső gomb */
 .apply-btn {
   width: 100%;
-  background: #e68900;
+  background: cornflowerblue;
   color: white;
   border: none;
   padding: 14px;
@@ -166,7 +169,7 @@
 }
 
 .apply-btn:hover {
-  background: #c57600;
+  background: rgb(71, 108, 177);
   box-shadow: 0 4px 12px rgba(230, 137, 0, 0.2);
 }
 
@@ -260,4 +263,9 @@
   .filter-container {
     position: static;
   }
-}   
+}  
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

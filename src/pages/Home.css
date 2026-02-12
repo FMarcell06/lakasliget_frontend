@@ -16,6 +16,7 @@
   align-items: center;
   padding: 20px;
   text-align: center;
+  animation: fadeIn 0.5s ease;
 }
 
 .hero-content h1 {
@@ -45,7 +46,7 @@
   display: grid;
   grid-template-columns: 1.2fr 1.5fr 1fr 0.8fr 0.8fr auto;
   gap: 15px;
-  align-items: flex-end;
+  align-items: center;
 }
 
 /* Mezők stílusa */
@@ -85,10 +86,11 @@
 
 /* Gomb stílusa */
 .search-btn {
-  background-color: #3182ce;
+  background-color: cornflowerblue;
   color: white;
   border: none;
   padding: 12px 25px;
+
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -119,4 +121,9 @@
   .search-btn {
     justify-content: center;
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
