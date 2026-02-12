@@ -6,111 +6,12 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.header {
-  box-shadow: 0px 5px 5px lightgray;
-    position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-    display: flex;
-  justify-content: space-between;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f599;
-  padding-top: 35px;
-  padding-bottom: 35px;
-  height: 5vh;
-  width: 100vw;
-}
 .header .home, .form, .about, .profile {
     background-color: cornflowerblue;
     padding: 10px 22px;
     border-radius: 25px;
     border: none;
     color:white;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 6%;
-  width: 100vw;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.search-container input {
-  padding: 10px 18px;
-  border-radius: 25px;
-  border: 1px solid #eee;
-  background-color: #f8f8f8;
-  outline: none;
-  width: 180px;
-  transition: width 0.3s;
-}
-
-.search-container input:focus {
-  width: 220px;
-  border-color: cornflowerblue;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 15px;
-}
-
-.btn-signin {
-  background: none;
-  border: none;
-  color: cornflowerblue;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-signup {
-  background: cornflowerblue;
-  color: white;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 25px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.3s;
-}
-
-.btn-signup:hover {
-  opacity: 0.85;
-}
-
-.hero {
-  position: relative;
-  height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  padding: 0 10%;
-}
-
-.hero p {
-  font-size: 18px;
-  color: lightgray;
-  margin-bottom: 35px;
-  line-height: 1.6;
-}
-
-.gomb{
-  background: cornflowerblue;
-  color: white;
-  border: none;
-  padding: 16px 35px;
-  font-size: 16px;
-  border-radius: 35px;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(155, 81, 224, 0.2);
 }
 
 
