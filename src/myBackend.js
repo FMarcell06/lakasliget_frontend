@@ -1,6 +1,6 @@
 import axios from "axios";
 import { db } from "./firebaseApp";
-import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 
 const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
@@ -113,3 +113,19 @@ export const deleteAvatar = async (uid) => {
     }
     
 }
+
+// Egyetlen ingatlan lekérése ID alapján
+export const readHome = async (id, callback) => {
+    try {
+        const docRef = doc(db, "apartments", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            callback({ ...docSnap.data(), id: docSnap.id });
+        } else {
+            console.log("Nincs ilyen dokumentum!");
+            callback(null);
+        }
+    } catch (error) {
+        console.error("Hiba a lekéréskor:", error);
+    }
+};
