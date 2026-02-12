@@ -16,7 +16,6 @@ function App() {
 
   return (
     <div>
-      <Header />
       <Routes>
         <Route path='/' element={<Home/>}></Route>
         <Route path='/signup' element={<SignUp />}></Route>

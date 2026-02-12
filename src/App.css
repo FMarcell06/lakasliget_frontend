@@ -6,13 +6,5 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.header .home, .form, .about, .profile {
-    background-color: cornflowerblue;
-    padding: 10px 22px;
-    border-radius: 25px;
-    border: none;
-    color:white;
-}
-
 
 

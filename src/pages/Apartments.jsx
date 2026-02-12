@@ -50,7 +50,7 @@ export const Apartments = () => {
 
   return (
     <div className="apartments-page">
-      
+        <Header />
       <main className="apartments-main">
         {/* Kék infó sáv (mint a screenshoton) */}
         <div className="info-banner">
