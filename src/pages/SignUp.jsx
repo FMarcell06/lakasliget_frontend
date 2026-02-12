@@ -1,17 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { Box, TextField, Button, Typography, IconButton, InputAdornment, Link, Grid, Alert, CircularProgress } from '@mui/material';
-import { 
-  MailOutline, 
-  Visibility, 
-  VisibilityOff, 
-  Facebook, 
-  Google, 
-  Apple, 
-  AccountCircle, 
-  ArrowBack 
-} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { MyUserContext } from '../context/MyUserProvider';
+import './SignUp.css';
+
+import { FaArrowLeft, FaRegEye, FaRegEyeSlash, FaRegUser, FaRegEnvelope } from 'react-icons/fa';
 
 export const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +16,7 @@ export const SignUp = () => {
     event.preventDefault();
     setLoading(true);
     
-    // Az event.currentTarget az maga a <Box component="form"> elem
+    // Hagyományos HTML form kezelés FormData-val
     const data = new FormData(event.currentTarget);
     
     try {
@@ -35,7 +27,7 @@ export const SignUp = () => {
       console.log("Regisztráció adatai:", { email, displayName, password });
       
       await signUpUser(email, displayName, password);
-      // Itt opcionálisan navigálhatsz tovább siker esetén:
+      // Siker esetén navigáció:
       // navigate('/login');
     } catch (error) {
       console.error("Hiba történt:", error);
@@ -45,144 +37,116 @@ export const SignUp = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%', position: 'relative' }}>
+    <div className="signup-container">
       
       {/* Vissza gomb */}
-      <Button
-        startIcon={<ArrowBack />}
+      <button 
+        className="back-btn" 
         onClick={() => navigate("/")}
-        sx={{
-          position: 'absolute', top: 20, left: 20,
-          color: 'text.secondary', textTransform: 'none', fontWeight: 'bold', zIndex: 10,
-          '&:hover': { color: '#d58224ff' }
-        }}
       >
-        Vissza a főoldalra
-      </Button>
+        <FaArrowLeft /> Vissza a főoldalra
+      </button>
 
-      {/* Bal oldali űrlap */}
-      <Box sx={{ 
-        flex: 1, display: 'flex', flexDirection: 'column', 
-        p: { xs: 4, md: 8 }, pt: { xs: 10, md: 8 },
-        justifyContent: 'space-between' 
-      }}>
+      {/* Bal oldali űrlap szekció */}
+      <div className="signup-form-section">
         
         {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ width: 30, height: 30, bgcolor: '#d58224ff', borderRadius: '5px', transform: 'rotate(45deg)' }} />
-          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: '1.8rem' }}>LakásLiget</Typography>
-        </Box>
+        <div className="logo-container">
+          <div className="logo-icon" />
+          <h1 className="logo-text">LakásLiget</h1>
+        </div>
 
         {/* Regisztrációs felület */}
-        <Box sx={{ maxWidth: 480, mx: 'auto', width: '100%', my: 4 }}>
-          <Typography variant="body1" color="textSecondary" sx={{ fontSize: '1.1rem' }}>Kezdjen böngészni</Typography>
-          <Typography variant="h3" fontWeight="bold" gutterBottom sx={{ mb: 4, fontSize: '2.5rem' }}>
-            Regisztráció
-          </Typography>
+        <div className="form-wrapper">
+          <p className="subtitle">Kezdjen böngészni</p>
+          <h2 className="title">Regisztráció</h2>
 
-          {/* Hibaüzenet megjelenítése a Context-ből */}
-{msg && <Alert severity="error" sx={{ mb: 2 }}>
-  {typeof msg === 'object' ? JSON.stringify(msg) : msg}
-</Alert>}
-          <Box component="form" onSubmit={handleSubmit} noValidate>
+          {/* Hibaüzenet */}
+          {/*{msg && (
+            <div className="alert-error">
+              {typeof msg === 'object' ? JSON.stringify(msg) : msg}
+            </div>
+          )}*/}
+
+          <form onSubmit={handleSubmit} noValidate>
             
             {/* Felhasználónév mező */}
-            <Typography variant="body2" fontWeight="bold" sx={{ color: 'text.secondary', ml: 1, mb: 0.5 }}>Felhasználónév</Typography>
-            <TextField
-              fullWidth
-              name="displayName" // Fontos a FormData-hoz!
-              placeholder="pelda_felhasznalo"
-              required
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <AccountCircle color="disabled" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2.5 }}
-            />
+            <div className="input-group">
+              <label className="input-label" htmlFor="displayName">Felhasználónév</label>
+              <div className="input-wrapper">
+                <input
+                  id="displayName"
+                  className="form-input"
+                  name="displayName"
+                  placeholder="pelda_felhasznalo"
+                  required
+                  type="text"
+                />
+                <span className="input-icon">
+                  <FaRegUser />
+                </span>
+              </div>
+            </div>
 
             {/* E-mail mező */}
-            <Typography variant="body2" fontWeight="bold" sx={{ color: 'text.secondary', ml: 1, mb: 0.5 }}>E-mail</Typography>
-            <TextField
-              fullWidth
-              name="email" // Fontos a FormData-hoz!
-              type="email"
-              placeholder="pelda@email.com"
-              required
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <MailOutline color="disabled" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2.5 }}
-            />
+            <div className="input-group">
+              <label className="input-label" htmlFor="email">E-mail</label>
+              <div className="input-wrapper">
+                <input
+                  id="email"
+                  className="form-input"
+                  name="email"
+                  type="email"
+                  placeholder="pelda@email.com"
+                  required
+                />
+                <span className="input-icon">
+                  <FaRegEnvelope />
+                </span>
+              </div>
+            </div>
 
             {/* Jelszó mező */}
-            <Typography variant="body2" fontWeight="bold" sx={{ color: 'text.secondary', ml: 1, mb: 0.5 }}>Jelszó</Typography>
-            <TextField
-              fullWidth
-              name="password" // Fontos a FormData-hoz!
-              type={showPassword ? 'text' : 'password'}
-              placeholder="********"
-              required
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 4 }}
-            />
+            <div className="input-group">
+              <label className="input-label" htmlFor="password">Jelszó</label>
+              <div className="input-wrapper">
+                <input
+                  id="password"
+                  className="form-input"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="********"
+                  required
+                />
+                <div className="input-icon">
+                  <button 
+                    type="button" 
+                    className="icon-btn" 
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                  </button>
+                </div>
+              </div>
+            </div>
 
-            <Button
-              fullWidth
-              type="submit" // A handleSubmit az onSubmit-on keresztül hívódik meg
-              variant="contained"
+            <button
+              type="submit"
+              className="submit-btn"
               disabled={loading}
-              size="large"
-              sx={{ 
-                bgcolor: '#d58224ff', py: 1.8, textTransform: 'none', 
-                fontSize: '1.2rem', borderRadius: '10px',
-                '&:hover': { bgcolor: '#b86d1c' }
-              }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Regisztráció"}
-            </Button>
+              {loading ? <div className="spinner"></div> : "Regisztráció"}
+            </button>
+          </form>
+        </div>
 
-            {/* Elválasztó és Social Gombok */}
-            <Box sx={{ display: 'flex', alignItems: 'center', my: 4 }}>
-              <Box sx={{ flex: 1, height: '1px', bgcolor: '#eee' }} />
-              <Typography variant="body2" sx={{ mx: 2, color: 'text.secondary' }}>vagy</Typography>
-              <Box sx={{ flex: 1, height: '1px', bgcolor: '#eee' }} />
-            </Box>
-
-            <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-              <Grid item xs={4}><Button fullWidth variant="outlined" sx={{ py: 1.5 }}><Facebook sx={{ color: '#1877F2' }} /></Button></Grid>
-              <Grid item xs={4}><Button fullWidth variant="outlined" sx={{ py: 1.5 }}><Google /></Button></Grid>
-              <Grid item xs={4}><Button fullWidth variant="outlined" sx={{ py: 1.5 }}><Apple /></Button></Grid>
-            </Grid>
-          </Box>
-        </Box>
-
-        <Typography variant="body1">
-          Már van fiókja? <Link href="#" underline="none" fontWeight="bold" sx={{ color: '#d58224ff' }}>Bejelentkezés!</Link>
-        </Typography>
-      </Box>
+        <p className="login-text">
+          Már van fiókja? <a onClick={() => navigate("/signin")} className="login-link">Bejelentkezés!</a>
+        </p>
+      </div>
 
       {/* Kép szekció */}
-      <Box sx={{ 
-        flex: 1, display: { xs: 'none', md: 'block' },
-        backgroundImage: 'url(https://images.unsplash.com/photo-1719773745404-d2e57e1af9bf?auto=format&fit=crop&q=80)',
-        backgroundSize: 'cover', backgroundPosition: 'center',
-        m: 1.5, borderRadius: '24px'
-      }} />
-    </Box>
+      <div className="image-section" />
+    </div>
   );
 };
