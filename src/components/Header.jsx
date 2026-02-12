@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { MyUserContext } from '../context/MyUserProvider';
 import { RxAvatar } from 'react-icons/rx';
+import './Header.css';
 
 export const Header = () => {
     const {user,logoutUser} = useContext(MyUserContext)
