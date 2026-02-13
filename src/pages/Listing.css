@@ -284,6 +284,44 @@
   text-align: right;
 }
 
+.description-container {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.description-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.description-content {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #333;
+    text-align: justify;
+}
+
+.description-content p {
+    margin: 0;
+    /* Ez biztosítja, hogy a leírásban lévő enterek megmaradjanak */
+    white-space: pre-wrap; 
+}
+
+/* Hirdető kártya stílusa */
+.contact-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+    border: 1px dashed #ccc;
+}
+
 /* Mobil nézet: egymás alá rakja az oszlopokat */
 @media (max-width: 850px) {
   .details-grid {

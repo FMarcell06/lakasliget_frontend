@@ -189,3 +189,49 @@
     gap: 20px;
   }
 }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Az új gombok konténere a szívecske helyén */
+.rc-actions-inline {
+  display: flex;
+  gap: 5px;
+}
+
+.rc-icon-mini {
+  background: #f5f5f5;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rc-edit { color: #e68900; }
+.rc-edit:hover { background: #e68900; color: white; }
+
+.rc-delete { color: #d32f2f; }
+.rc-delete:hover { background: #d32f2f; color: white; }
+
+/* Szívecske gomb (eredeti stílusod szerint) */
+.fav-button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fav-button:hover { color: #e68900; }

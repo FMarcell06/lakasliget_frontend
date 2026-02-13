@@ -54,11 +54,12 @@ export const Listing = () => {
       <Header />
       
       <main className="listing-container">
+        {/* Galéria rész */}
         <div className="listing-gallery" onClick={() => setIsModalOpen(true)}>
           <div className="main-img-box clickable">
             <img 
               src={gallery[currentIndex]?.url} 
-              alt="Ingatlan" 
+              alt={apartment.title} 
               className="fade-in" 
               key={currentIndex}
             />
@@ -77,26 +78,28 @@ export const Listing = () => {
           </div>
         </div>
 
+        {/* Összegző sáv */}
         <div className="listing-summary-bar">
           <div className="summary-item">
-            <span className="summary-label">Ár havonta</span>
+            <span className="summary-label">Havi bérleti díj</span>
             <span className="summary-value highlight">{price.toLocaleString()} Ft</span>
           </div>
           <div className="summary-item">
             <span className="summary-label">Alapterület</span>
-            <span className="summary-value">{apartment.size} m²</span>
+            <span className="summary-value">{apartment.area} m²</span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">Szobák</span>
+            <span className="summary-label">Szobák száma</span>
             <span className="summary-value">{apartment.rooms}</span>
           </div>
         </div>
 
+        {/* Kaució kalkulátor */}
         <div className="calc-card">
-          <h3>Kibérelnéd, de nincs elegendő pénzed? Segítünk!</h3>
+          <h3>Szerződéskötéskor esedékes költségek</h3>
           <div className="calc-flex">
             <div className="calc-block">
-              <span className="calc-label">2 havi kaució <InfoOutlined className="mini-info" /></span>
+              <span className="calc-label">2 havi kaució</span>
               <span className="calc-price">{(price * 2).toLocaleString()} Ft</span>
             </div>
             <div className="calc-operator">+</div>
@@ -106,72 +109,138 @@ export const Listing = () => {
             </div>
             <div className="calc-operator">=</div>
             <div className="calc-block highlight-block">
-              <span className="calc-label">Szerződéskor fizetendő <InfoOutlined className="mini-info" /></span>
+              <span className="calc-label">Összesen fizetendő</span>
               <span className="calc-price">{(price * 3).toLocaleString()} Ft</span>
             </div>
           </div>
-          <p className="calc-info">Hitel akár 1 nap alatt a kezdeti költségekre. Mérd fel hitelképességed online!</p>
-          <button className="calc-button">Megkaphatom a hitelt?</button>
         </div>
 
-<div className="details-section">
-  <h2>Ingatlan adatai</h2>
-  <div className="details-card">
-    <div className="details-grid">
-      {/* Első oszlop */}
-      <div className="details-column">
-        <div className="detail-row">
-          <span className="d-label">Ingatlan állapota</span>
-          <span className="d-value">{apartment.condition || 'felújított'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="d-label">Emelet</span>
-          <span className="d-value">{apartment.floor || '-'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="d-label">Építés éve</span>
-          <span className="d-value">{apartment.year || '2000 után'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="d-label">Belmagasság</span>
-          <span className="d-value">{apartment.height || '3m alatt'}</span>
-        </div>
-      </div>
+        {/* Részletes adatok - MINDEN MEZŐVEL */}
+        <div className="details-section">
+          <h2>Részletes paraméterek</h2>
+          <div className="details-card">
+            <div className="details-grid">
+              
+              {/* 1. oszlop: Épület adatai */}
+              <div className="details-column">
+                <div className="detail-row">
+                  <span className="d-label">Ingatlan típusa</span>
+                  <span className="d-value">{apartment.category}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Építés éve</span>
+                  <span className="d-value">{apartment.buildYear}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Emelet</span>
+                  <span className="d-value">{apartment.floor}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Épület szintjei</span>
+                  <span className="d-value">{apartment.buildingLevels}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Belmagasság</span>
+                  <span className="d-value">{apartment.ceilingHeight}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Lift</span>
+                  <span className="d-value">{apartment.lift}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Energetikai tanúsítvány</span>
+                  <span className="d-value">{apartment.energyCert}</span>
+                </div>
+              </div>
 
-      {/* Második oszlop */}
-      <div className="details-column">
-        <div className="detail-row">
-          <span className="d-label">Komfort</span>
-          <span className="d-value">{apartment.comfort || 'duplakomfortos'}</span>
+              {/* 2. oszlop: Műszaki és kényelmi extrák */}
+              <div className="details-column">
+                <div className="detail-row">
+                  <span className="d-label">Fűtés típusa</span>
+                  <span className="d-value">{apartment.heating}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Légkondicionáló</span>
+                  <span className="d-value">{apartment.airConditioner}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Szigetelés</span>
+                  <span className="d-value">{apartment.insulation}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Bútorozott</span>
+                  <span className="d-value">{apartment.furnished}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Gépesített/Equipped</span>
+                  <span className="d-value">{apartment.equipped}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Fürdő és WC</span>
+                  <span className="d-value">{apartment.bathroomWc}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Akadálymentesített</span>
+                  <span className="d-value">{apartment.accessible}</span>
+                </div>
+              </div>
+
+              {/* 3. oszlop: Elhelyezkedés és Szabályok */}
+              <div className="details-column">
+                <div className="detail-row">
+                  <span className="d-label">Kilátás</span>
+                  <span className="d-value">{apartment.view}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Tájolás</span>
+                  <span className="d-value">{apartment.orientation}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Erkély mérete</span>
+                  <span className="d-value">{apartment.balconySize ? `${apartment.balconySize} m²` : 'Nincs'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Kisállat hozható</span>
+                  <span className="d-value">{apartment.pets}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Dohányzás</span>
+                  <span className="d-value">{apartment.smoking}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Min. bérleti idő</span>
+                  <span className="d-value">{apartment.minRentTime}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="d-label">Költözhető</span>
+                  <span className="d-value">{apartment.moveInDate}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div className="description-container">
+            <h2>Hirdetés leírása</h2>
+            <div className="description-card">
+              <div className="description-content">
+                {/* A fehér szóközöket és újsorokat megtartjuk a leírásban */}
+                <p style={{ whiteSpace: 'pre-wrap' }}>
+                  {apartment.description}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="detail-row">
-          <span className="d-label">Tájolás</span>
-          <span className="d-value">{apartment.orientation || 'dél'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="d-label">Kilátás</span>
-          <span className="d-value">{apartment.view || 'panorámás'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="d-label">Akadálymentesített</span>
-          <span className="d-value">{apartment.accessible ? 'igen' : 'nem'}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
       </main>
 
+      {/* Modal / Fullscreen Galéria */}
       {isModalOpen && (
         <div className="image-modal-overlay" onClick={() => setIsModalOpen(false)}>
           <button className="modal-close" onClick={() => setIsModalOpen(false)}><Close /></button>
-          
-          {/* Fixált nyilak a képernyő szélén */}
           <button className="modal-fixed-arrow left" onClick={prevImg}><ArrowBackIosNew /></button>
           <button className="modal-fixed-arrow right" onClick={nextImg}><ArrowForwardIos /></button>
-
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={gallery[currentIndex]?.url} alt="Nagyított" className="modal-image" />
+            <img src={gallery[currentIndex]?.url} alt="Ingatlan nagyítva" className="modal-image" />
             <div className="modal-counter">{currentIndex + 1} / {gallery.length}</div>
           </div>
         </div>
