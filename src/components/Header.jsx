@@ -26,7 +26,7 @@ export const Header = () => {
 
         {user?
             <div className='headerBtn-container'>
-                <span onClick={()=>navigate("/profile")}>
+                <span className='profileIcon' onClick={()=>navigate("/profile")}>
                     {user?.photoURL ? 
                     <img src={user.photoURL} className="profileIcon" style={{width:"50px",height:"50px",borderRadius:"50%",objectFit:"cover"}} alt="előnézet"  />
                     :

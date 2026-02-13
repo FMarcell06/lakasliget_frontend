@@ -1,6 +1,6 @@
 import axios from "axios";
 import { db } from "./firebaseApp";
-import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 
 const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
@@ -113,8 +113,56 @@ export const deleteAvatar = async (uid) => {
     }
     
 }
+export const deleteHome = async (id, thumbnailDeleteUrl, imagesArray = []) => {
+    try {
+        // Opcionális: Képek törlése ImgBB-ről (ha a deleteUrl-ek működnek)
+        // if (thumbnailDeleteUrl) await axios.get(thumbnailDeleteUrl);
+        // for (const img of imagesArray) { if (img.delete_url) await axios.get(img.delete_url); }
 
-// Egyetlen ingatlan lekérése ID alapján
+        const docRef = doc(db, "apartments", id);
+        await deleteDoc(docRef);
+        return true;
+    } catch (error) {
+        console.error("Hiba a törléskor:", error);
+        throw error;
+    }
+};
+
+// 2. Ingatlan FRISSÍTÉSE (Képkezeléssel)
+export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFiles = []) => {
+    try {
+        let thumbnail = updatedData.thumbnail;
+        let images = updatedData.images || [];
+
+        // Új borítókép feltöltése, ha érkezett fájl
+        if (newThumbnailFile) {
+            const results = await uploadToImgBB(newThumbnailFile);
+            if (results) thumbnail = results;
+        }
+
+        // Új galéria képek hozzáadása, ha érkeztek fájlok
+        if (newImagesFiles.length > 0) {
+            for (const file of newImagesFiles) {
+                const res = await uploadToImgBB(file);
+                if (res) images.push(res);
+            }
+        }
+
+        const docRef = doc(db, "apartments", id);
+        await updateDoc(docRef, {
+            ...updatedData,
+            thumbnail,
+            images,
+            lastModified: serverTimestamp()
+        });
+        return true;
+    } catch (error) {
+        console.error("Firestore frissítési hiba:", error);
+        throw error;
+    }
+};
+
+// 3. Egyetlen ingatlan lekérése (A te korábbi readHome-od, kicsit finomítva)
 export const readHome = async (id, callback) => {
     try {
         const docRef = doc(db, "apartments", id);
@@ -122,10 +170,10 @@ export const readHome = async (id, callback) => {
         if (docSnap.exists()) {
             callback({ ...docSnap.data(), id: docSnap.id });
         } else {
-            console.log("Nincs ilyen dokumentum!");
             callback(null);
         }
     } catch (error) {
         console.error("Hiba a lekéréskor:", error);
     }
 };
+
