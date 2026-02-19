@@ -75,7 +75,7 @@ export const readHomes = (setRecipes, setLoading) => {
 export const updateAvatar = async (uid , public_id)=>{
     let oldPublicId = null
     try {
-        const docRef = doc(db,"avatars",uid)
+        const docRef = doc(db,"users",uid)
         const docSnap = await getDoc(docRef)
         if(!docSnap.exists()){
             await setDoc(docRef ,{uid,public_id})
@@ -97,7 +97,7 @@ export const deleteAvatar = async (uid) => {
     console.log(uid);
     let publicId = null
     try {
-        const docRef = doc(db,"avatars",uid)
+        const docRef = doc(db,"users",uid)
         const docSnap = await getDoc(docRef)
         if(!docSnap.exists()) return
         else {
