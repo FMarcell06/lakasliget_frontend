@@ -1,68 +1,47 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import './Home.css';
 
 export const Home = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper no-scroll">
       <Header />
       
-      <main className="hero-center">
+      <main className="hero-65">
         <div className="hero-content">
-          <h1>Lakás Liget</h1>
-          <p>Prémium kiadó ingatlanok közvetlenül a tulajdonostól.</p>
-        </div>
-
-        <div className="search-card">
-          <div className="search-grid">
-            {/* Ingatlan típusa */}
-            <div className="input-field">
-              <label>Ingatlan típusa</label>
-              <select defaultValue="lakás">
-                <option value="lakás">Lakás</option>
-                <option value="haz">Családi ház</option>
-                <option value="telek">Telek</option>
-                <option value="iroda">Iroda</option>
-              </select>
-            </div>
-
-            {/* Helyszín */}
-            <div className="input-field">
-              <label>Hol keresel?</label>
-              <input type="text" placeholder="Város, kerület..." />
-            </div>
-
-            {/* Ár */}
-            <div className="input-field">
-              <label>Max. ár (Ft)</label>
-              <input type="number" placeholder="0" min={1}/>
-            </div>
-
-            {/* Méret */}
-            <div className="input-field">
-              <label>Méret (m²)</label>
-              <input type="number" placeholder="min." min={1}/>
-            </div>
-
-            {/* Szobák */}
-            <div className="input-field">
-              <label>Szobák</label>
-              <input type="number" placeholder="db" min={1}/>
-            </div>
-
-            {/* Keresés gomb */}
-            <div className="button-field">
-              <button className="search-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <span>Keresés</span>
-              </button>
-            </div>
+          <div className="logo-container">
+            <div className="logo-icon" />
+            <h1 className="logo-text">Lakás Liget</h1>
           </div>
+          <p className="hero-subtitle">Prémium ingatlanok, egyszerűen.</p>
+          
+          <button className="main-cta-btn" onClick={() => navigate('/listings')}>
+            Összes hirdetés
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
       </main>
+
+      <section className="featured-35">
+        <div className="compact-grid">
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="mini-card-v2">
+              <div className="card-img-top" style={{backgroundImage: `url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400')`}}>
+                <div className="mini-tag">Kiemelt</div>
+              </div>
+              <div className="card-body-bottom">
+                <h3>Liget Rezidencia</h3>
+                <p className="mini-price">320.000 Ft / hó</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };
