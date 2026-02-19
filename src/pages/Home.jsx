@@ -35,19 +35,19 @@ export const Home = () => {
             {/* Ár */}
             <div className="input-field">
               <label>Max. ár (Ft)</label>
-              <input type="number" placeholder="0" />
+              <input type="number" placeholder="0" min={1}/>
             </div>
 
             {/* Méret */}
             <div className="input-field">
               <label>Méret (m²)</label>
-              <input type="number" placeholder="min." />
+              <input type="number" placeholder="min." min={1}/>
             </div>
 
             {/* Szobák */}
             <div className="input-field">
               <label>Szobák</label>
-              <input type="number" placeholder="db" />
+              <input type="number" placeholder="db" min={1}/>
             </div>
 
             {/* Keresés gomb */}

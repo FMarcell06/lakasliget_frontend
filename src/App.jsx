@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {  Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Home } from './pages/Home.jsx';
+import { About } from './pages/About.jsx';
 import { SignUp } from './pages/SignUp.jsx'
 import { Header } from './components/Header.jsx';
 import { SignIn } from './pages/SignIn.jsx';
@@ -19,6 +20,7 @@ function App() {
     <div>
       <Routes>
         <Route path='/' element={<Home/>}></Route>
+        <Route path='/about' element={<About/>}></Route>
         <Route path='/signup' element={<SignUp />}></Route>
         <Route path='/signin' element={<SignIn />}></Route>
         <Route path='/addnew' element={<ProtectedRoute><ApForm /></ProtectedRoute>}></Route>
