@@ -110,7 +110,32 @@ export const SignIn = () => {
 
       {/* Bejelentkezési űrlap szekció */}
       <div className="signin-form-section">
-        
+        <h2 className="signin-title">Sign In</h2>
+
+        <form onSubmit={handleSubmit} className="signin-form">
+
+          <label>Email</label>
+          <input
+          name='email'
+            type="email"
+            placeholder='email'
+            required
+
+          />
+
+          <label>Password</label>
+          <input
+          name='password'
+            type="password"
+            placeholder='password'
+            required
+          />
+
+          <button type="submit" className="signin-btn">
+            Log In
+          </button>
+        </form>
+        <div><p onClick={()=>{navigate("/pwreset");setMsg({})}}>Elfelejtett jelszó</p></div>
       </div>
     </div>
   );
