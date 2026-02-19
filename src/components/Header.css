@@ -34,7 +34,7 @@
 
 .search-container input:focus {
   width: 220px;
-  border-color: cornflowerblue;
+  border-color: #d58224;
 }
 
 .auth-buttons {
@@ -45,13 +45,13 @@
 .btn-signin {
   background: none;
   border: none;
-  color: cornflowerblue;
+  color: #d58224;
   font-weight: bold;
   cursor: pointer;
 }
 
 .btn-signup {
-  background: cornflowerblue;
+  background: #d58224;
   color: white;
   border: none;
   padding: 10px 22px;
@@ -66,7 +66,7 @@
 }
 
 .header button {
-    background-color: cornflowerblue;
+    background-color: #d58224;
     padding: 10px 22px;
     border-radius: 25px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
@@ -88,9 +88,8 @@
 }
 
 .header button:hover{
-  background-color: rgb(71, 108, 177);
+  background-color: #b86d1c;;
   transition: 0.05s;
-  text-decoration: underline;
 }
 
 .profileIcon{

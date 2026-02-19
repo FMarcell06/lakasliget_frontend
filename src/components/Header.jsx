@@ -17,11 +17,10 @@ export const Header = () => {
         <nav className="navbar">
           <div className="logo"></div>
           <div className="nav-links">
-            <button className='home' onClick={()=>navigate("/")}>Home</button>
-            <button className='form' onClick={()=>navigate("/addnew")}>Form</button>
-            <button className='about' onClick={()=>navigate("/about")}>Rólunk</button>
+            <button className='home' onClick={()=>navigate("/")}>Főoldal</button>     
             <button className='about' onClick={()=>navigate("/listings")}>Hirdetések</button>
-            <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Add</button>
+            <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Feltöltés</button>
+            <button className='about' onClick={()=>navigate("/about")}>Rólunk</button>
           </div>
 
         {user?
