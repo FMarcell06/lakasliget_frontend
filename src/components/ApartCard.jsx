@@ -20,7 +20,8 @@ export const ApartCard = ({ apartment }) => {
     thumbnail, 
     images, 
     category,
-    floor,       // Új mező az előnézethez
+    floor,
+    address,       // Új mező az előnézethez
     uid 
   } = apartment;
 
@@ -87,11 +88,10 @@ export const ApartCard = ({ apartment }) => {
             )}
           </div>
         </div>
-
         <div className="address-section">
           <h3 className="apartment-title">
             <LocationOnOutlined className="loc-icon" />
-            {title || "Cím nélküli hirdetés"}
+            {address || "Cím nélküli hirdetés"}
           </h3>
           {floor && floor !== "Nincs megadva" && (
             <span className="floor-info">{floor}</span>

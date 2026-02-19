@@ -6,10 +6,28 @@ import {
   ArrowForwardIos, 
   Close, 
   Fullscreen,
-  InfoOutlined 
+  InfoOutlined,
+  Place,
+  DirectionsWalk,
+  School
 } from '@mui/icons-material';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { readHome } from '../myBackend';
 import './Listing.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Ikon fixálása Leaflethez
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export const Listing = () => {
   const { id } = useParams();
@@ -48,6 +66,9 @@ export const Listing = () => {
   if (!apartment || gallery.length === 0) return <div className="listing-loader">Ingatlan nem található.</div>;
 
   const price = Number(apartment.price) || 0;
+  
+  // Térkép pozíciója a Firebase adatokból
+  const position = [apartment.lat, apartment.lon];
 
   return (
     <div className="listing-page">
@@ -115,13 +136,12 @@ export const Listing = () => {
           </div>
         </div>
 
-        {/* Részletes adatok - MINDEN MEZŐVEL */}
+        {/* Részletes adatok */}
         <div className="details-section">
           <h2>Részletes paraméterek</h2>
           <div className="details-card">
             <div className="details-grid">
               
-              {/* 1. oszlop: Épület adatai */}
               <div className="details-column">
                 <div className="detail-row">
                   <span className="d-label">Ingatlan típusa</span>
@@ -153,7 +173,6 @@ export const Listing = () => {
                 </div>
               </div>
 
-              {/* 2. oszlop: Műszaki és kényelmi extrák */}
               <div className="details-column">
                 <div className="detail-row">
                   <span className="d-label">Fűtés típusa</span>
@@ -172,7 +191,7 @@ export const Listing = () => {
                   <span className="d-value">{apartment.furnished}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="d-label">Gépesített/Equipped</span>
+                  <span className="d-label">Gépesített</span>
                   <span className="d-value">{apartment.equipped}</span>
                 </div>
                 <div className="detail-row">
@@ -185,7 +204,6 @@ export const Listing = () => {
                 </div>
               </div>
 
-              {/* 3. oszlop: Elhelyezkedés és Szabályok */}
               <div className="details-column">
                 <div className="detail-row">
                   <span className="d-label">Kilátás</span>
@@ -197,7 +215,7 @@ export const Listing = () => {
                 </div>
                 <div className="detail-row">
                   <span className="d-label">Erkély mérete</span>
-                  <span className="d-value">{apartment.balconySize ? `${apartment.balconySize} m²` : 'Nincs'}</span>
+                  <span className="d-value">{apartment.balconySize !== "Nincs megadva" ? `${apartment.balconySize} m²` : 'Nincs'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="d-label">Kisállat hozható</span>
@@ -219,17 +237,73 @@ export const Listing = () => {
 
             </div>
           </div>
+
           <div className="description-container">
             <h2>Hirdetés leírása</h2>
             <div className="description-card">
               <div className="description-content">
-                {/* A fehér szóközöket és újsorokat megtartjuk a leírásban */}
                 <p style={{ whiteSpace: 'pre-wrap' }}>
                   {apartment.description}
                 </p>
               </div>
             </div>
           </div>
+
+          {/* ELHELYEZKEDÉS SZEKCIÓ ÉLŐ TÉRKÉPPEL */}
+          <div className="location-container" style={{ marginTop: '40px' }}>
+            <h2><Place /> Elhelyezkedés</h2>
+            <div className="location-card">
+              <div className="address-header">
+                <p className="full-address-text">{apartment.fullAddress || apartment.address}</p>
+              </div>
+              
+              <div className="distance-grid">
+                <div className="distance-box">
+                  <School className="dist-icon" />
+                  <div className="dist-details">
+                    <span className="dist-label">Elhelyezkedés</span>
+                    <span className="dist-value">Budapest, {apartment.fullAddress?.split(',')[1] || 'Központi terület'}</span>
+                  </div>
+                </div>
+                <div className="distance-box">
+                  <DirectionsWalk className="dist-icon" />
+                  <div className="dist-details">
+                    <span className="dist-label">Tömegközlekedés</span>
+                    <span className="dist-value">Kiváló összeköttetés</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* TÉNYLEGES LEAFLET TÉRKÉP */}
+              <div className="map-wrapper" style={{ 
+                height: '350px', 
+                width: '100%', 
+                marginTop: '20px', 
+                borderRadius: '12px', 
+                overflow: 'hidden', 
+                border: '1px solid #ddd',
+                zIndex: 1 // Biztosítja, hogy ne lógjon rá másra
+              }}>
+                {apartment.lat && apartment.lon ? (
+                  <MapContainer center={position} zoom={15} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={position}>
+                      <Popup>
+                        <strong>{apartment.title}</strong><br />
+                        {price.toLocaleString()} Ft / hó
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                ) : (
+                  <div className="no-map">Nincsenek elérhető koordináták a térképhez.</div>
+                )}
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
 
