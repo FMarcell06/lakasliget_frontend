@@ -167,7 +167,7 @@ export const SignUp = () => {
         </p>
       </div>
 
-      {/* ÚJ: Csúszó Kép szekció */}
+      {/* Kép szekció */}
       <div className="image-section">
         <div 
           className="slider-track" 
@@ -182,7 +182,7 @@ export const SignUp = () => {
           ))}
         </div>
 
-        {/* Vezérlők - abszolút pozícionálva a képek felett */}
+        {/* Vezérlők */}
         <div className="slider-controls">
           <button className="slider-arrow" onClick={prevSlide}><FaChevronLeft /></button>
           <div className="slider-dots">

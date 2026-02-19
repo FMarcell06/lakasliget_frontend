@@ -1,0 +1,93 @@
+:root {
+  --primary-color: #d58224;
+  --text-secondary: #666;
+}
+
+.signin-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Kép szekció */
+.signin-image-section {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  margin: 12px;
+  margin-left: 70px;
+  border-radius: 24px;
+  background-color: #eee;
+}
+
+@media (min-width: 900px) {
+  .signin-image-section {
+    display: block;
+    flex: 0 0 35%;
+  }
+}
+
+.slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide {
+  flex: 0 0 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Vezérlők a kép alján */
+.slider-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  border-radius: 30px;
+  backdrop-filter: blur(4px);
+  z-index: 5;
+}
+
+.slider-arrow {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  transition: transform 0.2s;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: var(--primary-color);
+  width: 15px;
+  border-radius: 10px;
+}
+
+/* Form */
+.signin-form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 2rem;
+  justify-content: center;
+  align-items: center;
+}
