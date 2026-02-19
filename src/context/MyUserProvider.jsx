@@ -6,6 +6,7 @@ import { createContext } from 'react'
 import { auth } from '../firebaseApp.js'
 import { useNavigate } from 'react-router-dom'
 import { updateAvatar } from '../myBackend.js'
+import { uploadImage } from '../cloudinaryUtils.js'
 
 
 export const MyUserContext = createContext()
@@ -82,20 +83,27 @@ export const MyUserProvider = ({children}) => {
     
   }
 
-  const photoUpdate = async (file) => {
-    try {
-      const uploadResult = await uploadImage(file)
-      console.log(uploadResult);
-      if(uploadResult?.url) await updateProfile(auth.currentUser,{photoURL:uploadResult.url})
-        await updateAvatar(user.uid,uploadResult.public_id)
-        setUser({...auth.currentUser})
-        setMsg(null)
-        setMsg({updateProfile:"Sikeres profilmódosítás!"})
-      
-    } catch (error) {
-        setMsg({err:error.message})
+const photoUpdate = async (file) => {
+  try {
+    // 1. Feltöltés a Cloudinary-ra a segédfüggvényünkkel
+    const imageData = await uploadImage(file); // Megkapjuk: { url, public_id }
+    
+    if (imageData && imageData.url) {
+      // 2. Firebase Auth profil frissítése (hogy látszódjon a kép)
+      await updateProfile(auth.currentUser, { photoURL: imageData.url });
+
+      // 3. Adatbázis (Firestore) frissítése a public_id-val
+      await updateAvatar(auth.currentUser.uid, imageData.public_id);
+
+      // 4. Frissítjük a helyi állapotot, hogy a UI azonnal változzon
+      await auth.currentUser.reload();
+      setUser({ ...auth.currentUser });
+      setMsg({ updateProfile: "Sikeres mentés!" });
     }
+  } catch (error) {
+    setMsg({ err: "Hiba történt a profilkép frissítésekor!" });
   }
+};
 
   const deleteAccount = async (password) => {
     try {

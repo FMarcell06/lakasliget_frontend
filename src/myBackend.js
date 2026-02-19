@@ -1,6 +1,6 @@
 import axios from "axios";
 import { db } from "./firebaseApp";
-import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc, setDoc } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 
 const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
