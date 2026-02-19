@@ -45,7 +45,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  padding-top: 5rem; /* Mobil nézethez */
+  padding-top: 5rem;
   justify-content: space-between;
 }
 
@@ -95,16 +95,6 @@ body {
   font-weight: bold;
   margin-top: 0;
   margin-bottom: 2rem;
-}
-
-/* Hibaüzenet */
-.alert-error {
-  background-color: #fdeded;
-  color: #5f2120;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
 }
 
 /* Input csoportok */
@@ -199,52 +189,73 @@ body {
   text-decoration: underline;
 }
 
-/* Jobb oldali kép szekció */
+/* ========================================= */
+/* JOBB OLDALI KÉP SZEKCIÓ (BEÚSZÓ SLIDER) */
+/* ========================================= */
+
 .image-section {
   display: none;
   flex: 1;
-  background-size: cover;
-  background-position: center;
   margin: 12px;
   border-radius: 24px;
   position: relative;
-  transition: background-image 0.8s ease-in-out;
+  overflow: hidden; /* Elrejti a sínen kívül eső képeket */
 }
 
 @media (min-width: 900px) {
   .image-section {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 30px;
+    display: block;
   }
 }
 
-/* Csúszka vezérlők */
+/* A sín, ami mozog a képekkel */
+.slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  /* Ez végzi a beúszást: translateX-et kap a JSX-ből */
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Egyedi képkocka */
+.slide {
+  flex: 0 0 100%; /* Minden kép a konténer 100%-át tölti ki */
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Vezérlők a kép alján */
 .slider-controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 10px 20px;
-  border-radius: 30px;
-  backdrop-filter: blur(5px);
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 10px 18px;
+  border-radius: 50px;
+  backdrop-filter: blur(8px);
+  z-index: 5;
 }
 
 .slider-arrow {
   background: none;
   border: none;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: transform 0.2s;
+  padding: 5px;
+  transition: all 0.2s;
 }
 
 .slider-arrow:hover {
-  transform: scale(1.2);
   color: var(--primary-color);
+  transform: scale(1.2);
 }
 
 .slider-dots {
@@ -253,21 +264,21 @@ body {
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .dot.active {
   background-color: var(--primary-color);
-  width: 20px;
+  width: 20px; /* Megnyúlt aktív jelző */
   border-radius: 10px;
 }
 
-/* Spinner (CSS loader) */
+/* Spinner */
 .spinner {
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
