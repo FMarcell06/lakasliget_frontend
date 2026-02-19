@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Header } from '../components/Header';
-import { 
-  ArrowBackIosNew, 
-  ArrowForwardIos, 
-  Close, 
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Header } from "../components/Header";
+import {
+  ArrowBackIosNew,
+  ArrowForwardIos,
+  Close,
   Fullscreen,
   InfoOutlined,
   Place,
   DirectionsWalk,
-  School
-} from '@mui/icons-material';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { readHome } from '../myBackend';
-import './Listing.css';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+  School,
+} from "@mui/icons-material";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { readHome } from "../myBackend";
+import "./Listing.css";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 // Ikon fixálása Leaflethez
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -63,33 +63,91 @@ export const Listing = () => {
   };
 
   if (loading) return <div className="listing-loader">Adatok betöltése...</div>;
-  if (!apartment || gallery.length === 0) return <div className="listing-loader">Ingatlan nem található.</div>;
+  if (!apartment || gallery.length === 0)
+    return <div className="listing-loader">Ingatlan nem található.</div>;
 
   const price = Number(apartment.price) || 0;
-  
+
+  const getDistrict = (address) => {
+    if (!address) return "Budapest";
+
+    // Az API válasza általában: "Házszám, Utca, Kerület, Város..."
+    // Keressük a "kerület" szót vagy a római számokat (pl. VIII. kerület)
+    const parts = address.split(",").map((p) => p.trim());
+
+    // Megkeressük azt a részt, ami tartalmazza a "kerület" szót
+    const districtPart = parts.find((p) => p.toLowerCase().includes("kerület"));
+
+    if (districtPart) return districtPart;
+
+    // Ha nincs benne a "kerület" szó, de budapesti az irányítószám (1xxx),
+    // abból is tudjuk a kerületet (a középső két számjegy)
+    const zipMatch = address.match(/1(\d{2})\d/);
+    if (zipMatch) {
+      const districtNum = parseInt(zipMatch[1], 10);
+      // Római számok konvertálása (vagy maradhat sima szám is)
+      const romanDistricts = [
+        "I",
+        "II",
+        "III",
+        "IV",
+        "V",
+        "VI",
+        "VII",
+        "VIII",
+        "IX",
+        "X",
+        "XI",
+        "XII",
+        "XIII",
+        "XIV",
+        "XV",
+        "XVI",
+        "XVII",
+        "XVIII",
+        "XIX",
+        "XX",
+        "XXI",
+        "XXII",
+        "XXIII",
+      ];
+      return `${romanDistricts[districtNum - 1]}. kerület`;
+    }
+
+    return "Budapest";
+  };
+
+  const district = getDistrict(apartment.fullAddress);
+
   // Térkép pozíciója a Firebase adatokból
   const position = [apartment.lat, apartment.lon];
 
   return (
     <div className="listing-page">
       <Header />
-      
+
       <main className="listing-container">
         {/* Galéria rész */}
         <div className="listing-gallery" onClick={() => setIsModalOpen(true)}>
           <div className="main-img-box clickable">
-            <img 
-              src={gallery[currentIndex]?.url} 
-              alt={apartment.title} 
-              className="fade-in" 
+            <img
+              src={gallery[currentIndex]?.url}
+              alt={apartment.title}
+              className="fade-in"
               key={currentIndex}
             />
             {gallery.length > 1 && (
               <>
-                <button className="nav-arrow left" onClick={prevImg}><ArrowBackIosNew /></button>
-                <button className="nav-arrow right" onClick={nextImg}><ArrowForwardIos /></button>
+                <button className="nav-arrow left" onClick={prevImg}>
+                  <ArrowBackIosNew />
+                </button>
+                <button className="nav-arrow right" onClick={nextImg}>
+                  <ArrowForwardIos />
+                </button>
                 <div className="img-counter">
-                  {currentIndex === 0 ? "Borítókép" : `${currentIndex + 1} / ${gallery.length}`}
+                  {currentIndex === 0
+                    ? "Borítókép"
+                    : `${currentIndex + 1} / ${gallery.length}`}
                 </div>
               </>
             )}
@@ -103,7 +161,9 @@ export const Listing = () => {
         <div className="listing-summary-bar">
           <div className="summary-item">
             <span className="summary-label">Havi bérleti díj</span>
-            <span className="summary-value highlight">{price.toLocaleString()} Ft</span>
+            <span className="summary-value highlight">
+              {price.toLocaleString()} Ft
+            </span>
           </div>
           <div className="summary-item">
             <span className="summary-label">Alapterület</span>
@@ -121,7 +181,9 @@ export const Listing = () => {
           <div className="calc-flex">
             <div className="calc-block">
               <span className="calc-label">2 havi kaució</span>
-              <span className="calc-price">{(price * 2).toLocaleString()} Ft</span>
+              <span className="calc-price">
+                {(price * 2).toLocaleString()} Ft
+              </span>
             </div>
             <div className="calc-operator">+</div>
             <div className="calc-block">
@@ -131,7 +193,9 @@ export const Listing = () => {
             <div className="calc-operator">=</div>
             <div className="calc-block highlight-block">
               <span className="calc-label">Összesen fizetendő</span>
-              <span className="calc-price">{(price * 3).toLocaleString()} Ft</span>
+              <span className="calc-price">
+                {(price * 3).toLocaleString()} Ft
+              </span>
             </div>
           </div>
         </div>
@@ -141,7 +205,6 @@ export const Listing = () => {
           <h2>Részletes paraméterek</h2>
           <div className="details-card">
             <div className="details-grid">
-              
               <div className="details-column">
                 <div className="detail-row">
                   <span className="d-label">Ingatlan típusa</span>
@@ -215,7 +278,11 @@ export const Listing = () => {
                 </div>
                 <div className="detail-row">
                   <span className="d-label">Erkély mérete</span>
-                  <span className="d-value">{apartment.balconySize !== "Nincs megadva" ? `${apartment.balconySize} m²` : 'Nincs'}</span>
+                  <span className="d-value">
+                    {apartment.balconySize !== "Nincs megadva"
+                      ? `${apartment.balconySize} m²`
+                      : "Nincs"}
+                  </span>
                 </div>
                 <div className="detail-row">
                   <span className="d-label">Kisállat hozható</span>
@@ -234,7 +301,6 @@ export const Listing = () => {
                   <span className="d-value">{apartment.moveInDate}</span>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -242,7 +308,7 @@ export const Listing = () => {
             <h2>Hirdetés leírása</h2>
             <div className="description-card">
               <div className="description-content">
-                <p style={{ whiteSpace: 'pre-wrap' }}>
+                <p style={{ whiteSpace: "pre-wrap" }}>
                   {apartment.description}
                 </p>
               </div>
@@ -250,72 +316,101 @@ export const Listing = () => {
           </div>
 
           {/* ELHELYEZKEDÉS SZEKCIÓ ÉLŐ TÉRKÉPPEL */}
-          <div className="location-container" style={{ marginTop: '40px' }}>
-            <h2><Place /> Elhelyezkedés</h2>
+          <div className="location-container" style={{ marginTop: "40px" }}>
+            <h2>
+              <Place /> Elhelyezkedés
+            </h2>
             <div className="location-card">
               <div className="address-header">
-                <p className="full-address-text">{apartment.fullAddress || apartment.address}</p>
+                <p className="full-address-text">
+                  {apartment.fullAddress || apartment.address}
+                </p>
               </div>
-              
+
               <div className="distance-grid">
                 <div className="distance-box">
-                  <School className="dist-icon" />
+                  <Place className="dist-icon" style={{ color: "#d32f2f" }} />
                   <div className="dist-details">
-                    <span className="dist-label">Elhelyezkedés</span>
-                    <span className="dist-value">Budapest, {apartment.fullAddress?.split(',')[1] || 'Központi terület'}</span>
+                    <span className="dist-label">Városrész: </span>
+                    <span className="dist-value">{district}</span>
                   </div>
                 </div>
                 <div className="distance-box">
                   <DirectionsWalk className="dist-icon" />
                   <div className="dist-details">
-                    <span className="dist-label">Tömegközlekedés</span>
+                    <span className="dist-label">Tömegközlekedés: </span>
                     <span className="dist-value">Kiváló összeköttetés</span>
                   </div>
                 </div>
               </div>
 
               {/* TÉNYLEGES LEAFLET TÉRKÉP */}
-              <div className="map-wrapper" style={{ 
-                height: '350px', 
-                width: '100%', 
-                marginTop: '20px', 
-                borderRadius: '12px', 
-                overflow: 'hidden', 
-                border: '1px solid #ddd',
-                zIndex: 1 // Biztosítja, hogy ne lógjon rá másra
-              }}>
+              <div
+                className="map-wrapper"
+                style={{
+                  height: "350px",
+                  width: "100%",
+                  marginTop: "20px",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  border: "1px solid #ddd",
+                  zIndex: 1, // Biztosítja, hogy ne lógjon rá másra
+                }}
+              >
                 {apartment.lat && apartment.lon ? (
-                  <MapContainer center={position} zoom={15} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+                  <MapContainer
+                    center={position}
+                    zoom={15}
+                    scrollWheelZoom={false}
+                    style={{ height: "100%", width: "100%" }}
+                  >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     <Marker position={position}>
                       <Popup>
-                        <strong>{apartment.title}</strong><br />
+                        <strong>{apartment.title}</strong>
+                        <br />
                         {price.toLocaleString()} Ft / hó
                       </Popup>
                     </Marker>
                   </MapContainer>
                 ) : (
-                  <div className="no-map">Nincsenek elérhető koordináták a térképhez.</div>
+                  <div className="no-map">
+                    Nincsenek elérhető koordináták a térképhez.
+                  </div>
                 )}
               </div>
             </div>
           </div>
-
         </div>
       </main>
 
       {/* Modal / Fullscreen Galéria */}
       {isModalOpen && (
-        <div className="image-modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <button className="modal-close" onClick={() => setIsModalOpen(false)}><Close /></button>
-          <button className="modal-fixed-arrow left" onClick={prevImg}><ArrowBackIosNew /></button>
-          <button className="modal-fixed-arrow right" onClick={nextImg}><ArrowForwardIos /></button>
+        <div
+          className="image-modal-overlay"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <button className="modal-close" onClick={() => setIsModalOpen(false)}>
+            <Close />
+          </button>
+          <button className="modal-fixed-arrow left" onClick={prevImg}>
+            <ArrowBackIosNew />
+          </button>
+          <button className="modal-fixed-arrow right" onClick={nextImg}>
+            <ArrowForwardIos />
+          </button>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={gallery[currentIndex]?.url} alt="Ingatlan nagyítva" className="modal-image" />
-            <div className="modal-counter">{currentIndex + 1} / {gallery.length}</div>
+            <img
+              src={gallery[currentIndex]?.url}
+              alt="Ingatlan nagyítva"
+              className="modal-image"
+            />
+            <div className="modal-counter">
+              {currentIndex + 1} / {gallery.length}
+            </div>
           </div>
         </div>
       )}

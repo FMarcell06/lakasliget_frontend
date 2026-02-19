@@ -235,3 +235,28 @@
 }
 
 .fav-button:hover { color: #e68900; }
+
+.district-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.address-section {
+  margin-top: 10px;
+}
+
+.apartment-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  margin: 0;
+  color: #333;
+  /* Ha túl hosszú a cím, vágjuk le három ponttal */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

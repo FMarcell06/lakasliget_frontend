@@ -24,6 +24,7 @@ function App() {
         <Route path='/signup' element={<SignUp />}></Route>
         <Route path='/signin' element={<SignIn />}></Route>
         <Route path='/addnew' element={<ProtectedRoute><ApForm /></ProtectedRoute>}></Route>
+        <Route path='/edit/:id' element={<ProtectedRoute><ApForm /></ProtectedRoute>}></Route>
         <Route path='/listings' element={<Apartments />}></Route>
         <Route path='/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>}></Route>
         <Route path='/listing/:id' element={<Listing />}></Route>

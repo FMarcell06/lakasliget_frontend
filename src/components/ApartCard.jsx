@@ -10,20 +10,40 @@ export const ApartCard = ({ apartment }) => {
   const { user } = useContext(MyUserContext);
   const navigate = useNavigate();
 
-  // Az ApForm-ban használt mezőnevek kinyerése
   const { 
     id, 
-    title,       // Korábban 'name'
+    title,
     price, 
-    area,        // Korábban 'size'
+    area,
     rooms,
     thumbnail, 
     images, 
     category,
     floor,
-    address,       // Új mező az előnézethez
+    address,
+    fullAddress, // Vedd fel a destructuring-be!
     uid 
   } = apartment;
+
+  // KERÜLET KINYERÉSE (ugyanaz a logika, mint a Listing-nél)
+  const getDistrict = (addr, fullAddr) => {
+    const textToSearch = fullAddr || addr || "";
+    if (!textToSearch) return "";
+
+    const parts = textToSearch.split(',').map(p => p.trim());
+    const districtPart = parts.find(p => p.toLowerCase().includes('kerület'));
+    if (districtPart) return districtPart;
+
+    const zipMatch = textToSearch.match(/1(\d{2})\d/);
+    if (zipMatch) {
+      const districtNum = parseInt(zipMatch[1], 10);
+      const romanDistricts = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII"];
+      return districtNum > 0 && districtNum <= 23 ? `${romanDistricts[districtNum - 1]}. kerület` : "";
+    }
+    return "";
+  };
+
+  const district = getDistrict(address, fullAddress);
 
   const stopNav = (e) => e.stopPropagation();
 
@@ -31,7 +51,6 @@ export const ApartCard = ({ apartment }) => {
     stopNav(e);
     if (window.confirm("Biztosan törölni szeretnéd ezt a hirdetést?")) {
       try {
-        // Fontos: a thumbnail?.url és images átadása a törléshez (ha a backend igényli)
         await deleteHome(id, thumbnail?.delete_url, images);
       } catch (err) {
         console.error(err);
@@ -48,7 +67,6 @@ export const ApartCard = ({ apartment }) => {
           className="main-image"
         />
         
-        {/* Kategória badge (Lakás, Ház, stb.) */}
         {category && <div className="badge-new">{category}</div>}
 
         <div className="image-count-badge">
@@ -66,18 +84,10 @@ export const ApartCard = ({ apartment }) => {
           <div className="card-actions-area" onClick={stopNav}>
             {user && user.uid === uid ? (
               <div className="rc-actions-inline">
-                <button
-                  className="rc-icon-mini rc-edit"
-                  onClick={(e) => { stopNav(e); navigate("/edit/" + id); }}
-                  title="Szerkesztés"
-                >
+                <button className="rc-icon-mini rc-edit" onClick={(e) => { stopNav(e); navigate("/edit/" + id); }} title="Szerkesztés">
                   <MdModeEditOutline size={20} />
                 </button>
-                <button
-                  className="rc-icon-mini rc-delete"
-                  onClick={handleDelete}
-                  title="Törlés"
-                >
+                <button className="rc-icon-mini rc-delete" onClick={handleDelete} title="Törlés">
                   <MdDeleteForever size={20} />
                 </button>
               </div>
@@ -88,11 +98,16 @@ export const ApartCard = ({ apartment }) => {
             )}
           </div>
         </div>
+
         <div className="address-section">
+          {/* KERÜLET MEGJELENÍTÉSE A CÍM FELETT VAGY MELLETT */}
+          {district && <div className="district-badge">{district}</div>}
+          
           <h3 className="apartment-title">
             <LocationOnOutlined className="loc-icon" />
             {address || "Cím nélküli hirdetés"}
           </h3>
+          
           {floor && floor !== "Nincs megadva" && (
             <span className="floor-info">{floor}</span>
           )}
@@ -107,11 +122,10 @@ export const ApartCard = ({ apartment }) => {
             <span className="spec-label">Szobák</span>
             <span className="spec-value">{rooms || 0}</span>
           </div>
-          {/* Opcionális: hozzáadható egy harmadik specifikáció, pl. fűtés */}
-          {apartment.heating && apartment.heating !== "Nincs megadva" && (
+          {apartment.bathroomWc && apartment.bathroomWc !== "Nincs megadva" && (
              <div className="spec-item">
-                <span className="spec-label">Fűtés</span>
-                <span className="spec-value" style={{fontSize: '0.75rem'}}>{apartment.heating}</span>
+                <span className="spec-label">WC/Fürdő</span>
+                <span className="spec-value">{apartment.bathroomWc}</span>
              </div>
           )}
         </div>

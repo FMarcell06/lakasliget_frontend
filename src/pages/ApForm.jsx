@@ -5,13 +5,12 @@ import {
   FaCalendarAlt, FaAccessibleIcon, FaToilet
 } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
-import { addHome, uploadToImgBB } from '../myBackend'; 
+import { useNavigate, useParams } from 'react-router-dom';
+import { addHome, uploadToImgBB, readHome, updateHome } from '../myBackend'; 
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
 import './ApForm.css';
 
-// Segédfüggvény a cím koordinátává alakításához (Geocoding)
 const getCoords = async (address) => {
   if (!address || address.length < 5) return null;
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
@@ -19,11 +18,7 @@ const getCoords = async (address) => {
     const response = await fetch(url, { headers: { 'User-Agent': 'IngatlanApp/1.0' } });
     const data = await response.json();
     if (data && data.length > 0) {
-      return {
-        lat: parseFloat(data[0].lat),
-        lon: parseFloat(data[0].lon),
-        display: data[0].display_name
-      };
+      return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), display: data[0].display_name };
     }
     return null;
   } catch (error) {
@@ -32,11 +27,22 @@ const getCoords = async (address) => {
   }
 };
 
+const DEFAULT_EXTRA_FIELDS = {
+  buildYear: "", comfort: "", floor: "", buildingLevels: "", lift: "Nincs megadva",
+  ceilingHeight: "", airConditioner: "Nincs megadva", furnished: "Nincs megadva",
+  moveInDate: "", minRentTime: "", accessible: "Nincs megadva", bathroomWc: "",
+  orientation: "", view: "", balconySize: "", gardenAccess: "Nincs megadva",
+  attic: "Nincs megadva", equipped: "Nincs megadva", pets: "Nincs megadva",
+  smoking: "Nincs megadva", parking: "", heating: "", insulation: "Nincs megadva",
+  energyCert: ""
+};
+
 export const ApForm = () => {
   const { user } = useContext(MyUserContext);
   const navigate = useNavigate();
+  const { id } = useParams(); // ← ÚJ
 
-  // Alapadatok állapota
+  // Alapadatok
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState(""); 
   const [price, setPrice] = useState("");
@@ -44,26 +50,46 @@ export const ApForm = () => {
   const [rooms, setRooms] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Lakás");
+  const [extraFields, setExtraFields] = useState(DEFAULT_EXTRA_FIELDS);
 
-  // Részletes technikai mezők állapota (MINDEN benne van)
-  const [extraFields, setExtraFields] = useState({
-    buildYear: "", comfort: "", floor: "", buildingLevels: "", lift: "Nincs megadva",
-    ceilingHeight: "", airConditioner: "Nincs megadva", furnished: "Nincs megadva",
-    moveInDate: "", minRentTime: "", accessible: "Nincs megadva", bathroomWc: "",
-    orientation: "", view: "", balconySize: "", gardenAccess: "Nincs megadva",
-    attic: "Nincs megadva", equipped: "Nincs megadva", pets: "Nincs megadva",
-    smoking: "Nincs megadva", parking: "", heating: "", insulation: "Nincs megadva",
-    energyCert: ""
-  });
-
-  // Média állapota
+  // Média
   const [thumbnailImg, setThumbnailImg] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Kezelőfüggvények
+  // ← ÚJ: betöltött ingatlan tárolása (edit módhoz)
+  const [home, setHome] = useState(null);
+
+const [deletingIndex, setDeletingIndex] = useState(null);
+
+  // ← ÚJ: betöltés ha van id
+  useEffect(() => {
+    if (id) readHome(id, setHome);
+  }, [id]);
+
+  // ← ÚJ: mezők feltöltése a betöltött adatokkal
+  useEffect(() => {
+    if (home) {
+      setTitle(home.title || "");
+      setAddress(home.address || "");
+      setPrice(home.price || "");
+      setArea(home.area || "");
+      setRooms(home.rooms || "");
+      setDescription(home.description || "");
+      setCategory(home.category || "Lakás");
+      setThumbnailPreview(home.thumbnail?.url || null); // ha az ImgBB-s objektumból jön
+      
+      // extraFields betöltése – csak az ismert kulcsokat vesszük át
+      const loadedExtra = {};
+      Object.keys(DEFAULT_EXTRA_FIELDS).forEach(key => {
+        loadedExtra[key] = home[key] ?? DEFAULT_EXTRA_FIELDS[key];
+      });
+      setExtraFields(loadedExtra);
+    }
+  }, [home]);
+
   const handleExtraChange = (e) => {
     const { name, value } = e.target;
     setExtraFields(prev => ({ ...prev, [name]: value }));
@@ -92,6 +118,20 @@ export const ApForm = () => {
     setPreviews(prev => [...prev, ...newPreviews]);
   };
 
+const handleDeleteExistingImage = async (imageObj, index) => {
+    if (!window.confirm("Biztosan törlöd ezt a képet?")) return;
+    setDeletingIndex(index);
+    try {
+        const updatedImages = await deleteGalleryImage(id, imageObj, home.gallery);
+        // Lokálisan is frissítjük a home state-et
+        setHome(prev => ({ ...prev, gallery: updatedImages }));
+    } catch (error) {
+        alert("Hiba történt a törlés során!");
+    } finally {
+        setDeletingIndex(null);
+    }
+};
+
   const removeGalleryImage = (index) => {
     URL.revokeObjectURL(previews[index]);
     setFiles(prev => prev.filter((_, i) => i !== index));
@@ -101,10 +141,20 @@ export const ApForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return alert("A hirdetés feladásához be kell jelentkezned!");
+
+    // ← ÚJ: új hirdetésnél kötelező a borítókép
+    if (!id && !thumbnailImg) {
+      return alert("Kérlek tölts fel borítóképet!");
+    }
+
+    // ← ÚJ: edit módban meg kell várni a betöltést
+    if (id && !home) {
+      return alert("Az ingatlan adatai még nem töltődtek be!");
+    }
+
     setLoading(true);
 
     try {
-      // 1. Koordináták lekérése
       const coords = await getCoords(address);
       if (!coords) {
         alert("Nem sikerült beazonosítani a címet. Kérlek, add meg pontosabban!");
@@ -112,8 +162,8 @@ export const ApForm = () => {
         return;
       }
 
-      // 2. Képek feltöltése
-      let finalThumbnail = null;
+      // ← ÚJ: ha nincs új kép feltöltve, megtartjuk a régit
+      let finalThumbnail = id && !thumbnailImg ? home.thumbnail : null;
       if (thumbnailImg) finalThumbnail = await uploadToImgBB(thumbnailImg);
 
       let newGalleryImages = [];
@@ -122,30 +172,29 @@ export const ApForm = () => {
         newGalleryImages = results.filter(res => res !== null);
       }
 
-      // 3. Adatok tisztítása és mentése
       const finalExtraFields = {};
       Object.keys(extraFields).forEach(key => {
         finalExtraFields[key] = extraFields[key] === "" ? "Nincs megadva" : extraFields[key];
       });
 
       const apartmentData = { 
-        title, 
-        address,
-        lat: coords.lat, 
-        lon: coords.lon, 
-        fullAddress: coords.display,
-        price: Number(price), 
-        area: Number(area), 
-        rooms: Number(rooms), 
-        description, 
-        category,
+        title, address,
+        lat: coords.lat, lon: coords.lon, fullAddress: coords.display,
+        price: Number(price), area: Number(area), rooms: Number(rooms), 
+        description, category,
         ...finalExtraFields,
         thumbnail: finalThumbnail,
-        uid: user.uid, 
-        createdAt: new Date()
+        uid: user.uid,
       };
 
-      await addHome(apartmentData, newGalleryImages);
+      if (id) {
+        // ← ÚJ: update ág – a galériát is megőrzi és hozzáfűzi az újakat
+        const existingGallery = home.gallery || [];
+        await updateHome(id, apartmentData, [...existingGallery, ...newGalleryImages]);
+      } else {
+        await addHome(apartmentData, newGalleryImages);
+      }
+
       navigate("/home");
 
     } catch (error) {
@@ -160,32 +209,24 @@ export const ApForm = () => {
     <div className="property-form-container">
       <Header />
       <div className="form-header">
-        <h1><FaCloudUploadAlt /> Ingatlan hirdetés feladása</h1>
+        {/* ← ÚJ: cím változik edit módban */}
+        <h1><FaCloudUploadAlt /> {id ? "Hirdetés szerkesztése" : "Ingatlan hirdetés feladása"}</h1>
         <p>Töltse ki a részleteket a sikeres bérbeadáshoz</p>
       </div>
 
       <form className="property-form-card" onSubmit={handleSubmit}>
         
-        {/* 1. SZEKCIÓ: ALAPOK */}
         <div className="form-section">
           <h3><FaHome /> Alapadatok</h3>
           <div className="form-group">
             <label>Hirdetés címe *</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="pl. Modern garzon a Corvin negyedben" required />
           </div>
-
           <div className="form-group">
-            <label><FaMapMarkerAlt /> Pontos cím (Város, utca, házszám) *</label>
-            <input 
-              type="text" 
-              value={address} 
-              onChange={(e) => setAddress(e.target.value)} 
-              placeholder="pl. 1082 Budapest, Üllői út 25." 
-              required 
-            />
+            <label><FaMapMarkerAlt /> Pontos cím *</label>
+            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="pl. 1082 Budapest, Üllői út 25." required />
             <small style={{color: '#666'}}>A pontos cím alapján számoljuk ki a távolságot az egyetemektől.</small>
           </div>
-
           <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaMoneyBillWave /> Havi bérleti díj (Ft)</label>
@@ -202,32 +243,30 @@ export const ApForm = () => {
           </div>
         </div>
 
-        {/* 2. SZEKCIÓ: MŰSZAKI PARAMÉTEREK */}
         <div className="form-section">
           <h3><FaTools /> Műszaki jellemzők</h3>
           <div className="property-grid-inputs">
             <div className="input-group">
               <label>Építés éve</label>
-              <input type="number" name="buildYear" onChange={handleExtraChange} />
+              <input type="number" name="buildYear" value={extraFields.buildYear} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
               <label>Emelet</label>
-              <input type="text" name="floor" onChange={handleExtraChange} placeholder="pl. 2. emelet" />
+              <input type="text" name="floor" value={extraFields.floor} onChange={handleExtraChange} placeholder="pl. 2. emelet" />
             </div>
             <div className="input-group">
               <label>Épület szintjei</label>
-              <input type="number" name="buildingLevels" onChange={handleExtraChange} />
+              <input type="number" name="buildingLevels" value={extraFields.buildingLevels} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
               <label>Energia tanúsítvány</label>
-              <input type="text" name="energyCert" onChange={handleExtraChange} placeholder="pl. AA++" />
+              <input type="text" name="energyCert" value={extraFields.energyCert} onChange={handleExtraChange} placeholder="pl. AA++" />
             </div>
           </div>
-
           <div className="property-grid-inputs">
             <div className="input-group">
               <label>Lift</label>
-              <select name="lift" onChange={handleExtraChange}>
+              <select name="lift" value={extraFields.lift} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Van">Van</option>
                 <option value="Nincs">Nincs</option>
@@ -235,53 +274,51 @@ export const ApForm = () => {
             </div>
             <div className="input-group">
               <label><FaThermometerHalf /> Fűtés típusa</label>
-              <input type="text" name="heating" onChange={handleExtraChange} />
+              <input type="text" name="heating" value={extraFields.heating} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
               <label>Szigetelés</label>
-              <select name="insulation" onChange={handleExtraChange}>
+              <select name="insulation" value={extraFields.insulation} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Van">Van</option>
                 <option value="Nincs">Nincs</option>
               </select>
             </div>
             <div className="input-group">
-                <label>Tetőtér / Padlás</label>
-                <select name="attic" onChange={handleExtraChange}>
-                    <option value="Nincs megadva">Nincs megadva</option>
-                    <option value="Beépített">Beépített</option>
-                    <option value="Nincs">Nincs</option>
-                </select>
+              <label>Tetőtér / Padlás</label>
+              <select name="attic" value={extraFields.attic} onChange={handleExtraChange}>
+                <option value="Nincs megadva">Nincs megadva</option>
+                <option value="Beépített">Beépített</option>
+                <option value="Nincs">Nincs</option>
+              </select>
             </div>
           </div>
         </div>
 
-        {/* 3. SZEKCIÓ: KOMFORT ÉS EXTRÁK */}
         <div className="form-section">
           <h3>Komfort és Felszereltség</h3>
           <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaToilet /> Fürdő és WC</label>
-              <input type="text" name="bathroomWc" onChange={handleExtraChange} placeholder="pl. Külön / Egyben" />
+              <input type="text" name="bathroomWc" value={extraFields.bathroomWc} onChange={handleExtraChange} placeholder="pl. Külön / Egyben" />
             </div>
             <div className="input-group">
               <label>Komfort fokozat</label>
-              <input type="text" name="comfort" onChange={handleExtraChange} />
+              <input type="text" name="comfort" value={extraFields.comfort} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
-                <label><FaAccessibleIcon /> Akadálymentes</label>
-                <select name="accessible" onChange={handleExtraChange}>
-                    <option value="Nincs megadva">Nincs megadva</option>
-                    <option value="Igen">Igen</option>
-                    <option value="Nem">Nem</option>
-                </select>
+              <label><FaAccessibleIcon /> Akadálymentes</label>
+              <select name="accessible" value={extraFields.accessible} onChange={handleExtraChange}>
+                <option value="Nincs megadva">Nincs megadva</option>
+                <option value="Igen">Igen</option>
+                <option value="Nem">Nem</option>
+              </select>
             </div>
           </div>
-
           <div className="property-grid-inputs">
             <div className="input-group">
               <label>Bútorozott</label>
-              <select name="furnished" onChange={handleExtraChange}>
+              <select name="furnished" value={extraFields.furnished} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Igen">Igen</option>
                 <option value="Nem">Nem</option>
@@ -289,64 +326,61 @@ export const ApForm = () => {
             </div>
             <div className="input-group">
               <label>Gépesített</label>
-              <select name="equipped" onChange={handleExtraChange}>
+              <select name="equipped" value={extraFields.equipped} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Igen">Igen</option>
                 <option value="Nem">Nem</option>
               </select>
             </div>
             <div className="input-group">
-                <label>Légkondicionáló</label>
-                <select name="airConditioner" onChange={handleExtraChange}>
-                    <option value="Nincs megadva">Nincs megadva</option>
-                    <option value="Van">Van</option>
-                    <option value="Nincs">Nincs</option>
-                </select>
+              <label>Légkondicionáló</label>
+              <select name="airConditioner" value={extraFields.airConditioner} onChange={handleExtraChange}>
+                <option value="Nincs megadva">Nincs megadva</option>
+                <option value="Van">Van</option>
+                <option value="Nincs">Nincs</option>
+              </select>
             </div>
           </div>
-
           <div className="property-grid-inputs">
             <div className="input-group">
-                <label>Kilátás</label>
-                <input type="text" name="view" onChange={handleExtraChange} />
+              <label>Kilátás</label>
+              <input type="text" name="view" value={extraFields.view} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
-                <label>Tájolás</label>
-                <input type="text" name="orientation" onChange={handleExtraChange} />
+              <label>Tájolás</label>
+              <input type="text" name="orientation" value={extraFields.orientation} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
-                <label>Erkély mérete (m²)</label>
-                <input type="number" name="balconySize" onChange={handleExtraChange} />
+              <label>Erkély mérete (m²)</label>
+              <input type="number" name="balconySize" value={extraFields.balconySize} onChange={handleExtraChange} />
             </div>
           </div>
         </div>
 
-        {/* 4. SZEKCIÓ: BÉRLÉSI FELTÉTELEK */}
         <div className="form-section">
           <h3>Házirend és Bérlés</h3>
           <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaCalendarAlt /> Beköltözhető ekkortól</label>
-              <input type="date" name="moveInDate" onChange={handleExtraChange} />
+              <input type="date" name="moveInDate" value={extraFields.moveInDate} onChange={handleExtraChange} />
             </div>
             <div className="input-group">
-                <label>Min. bérleti idő</label>
-                <input type="text" name="minRentTime" onChange={handleExtraChange} placeholder="pl. 1 év" />
+              <label>Min. bérleti idő</label>
+              <input type="text" name="minRentTime" value={extraFields.minRentTime} onChange={handleExtraChange} placeholder="pl. 1 év" />
             </div>
             <div className="input-group">
               <label><FaDog /> Kisállat hozható?</label>
-              <select name="pets" onChange={handleExtraChange}>
+              <select name="pets" value={extraFields.pets} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Igen">Igen</option>
                 <option value="Nem">Nem</option>
               </select>
             </div>
           </div>
-
           <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaSmoking /> Dohányzás</label>
-              <select name="smoking" onChange={handleExtraChange}>
+              <select name="smoking" value={extraFields.smoking} onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Megengedett">Megengedett</option>
                 <option value="Tilos">Tilos</option>
@@ -354,43 +388,100 @@ export const ApForm = () => {
             </div>
             <div className="input-group">
               <label><FaCar /> Parkolás</label>
-              <input type="text" name="parking" onChange={handleExtraChange} placeholder="pl. Utcai / Garázs" />
+              <input type="text" name="parking" value={extraFields.parking} onChange={handleExtraChange} placeholder="pl. Utcai / Garázs" />
             </div>
           </div>
         </div>
 
-        {/* 5. SZEKCIÓ: LEÍRÁS ÉS MÉDIA */}
-        <div className="form-section">
-          <h3>Leírás és Média</h3>
-          <div className="form-group full-width">
-            <label>Részletes bemutatás *</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="5" required />
-          </div>
+<div className="form-section">
+  <h3>Leírás és Média</h3>
+  <div className="form-group full-width">
+    <label>Részletes bemutatás *</label>
+    <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="5" required />
+  </div>
 
-          <div className="upload-grid">
-            <div className="upload-box">
-                <label className="upload-label">Borítókép *</label>
-                <input id="thumbnail-input" type="file" accept="image/*" onChange={handleThumbnailChange} />
-                {thumbnailPreview && (
-                    <div className="main-preview-container">
-                        <img src={thumbnailPreview} className="preview-small" alt="Thumbnail" />
-                        <button type="button" className="delete-preview-btn" onClick={removeThumbnail}><IoClose size={14} /></button>
-                    </div>
-                )}
-            </div>
-
-            <div className="upload-box">
-                <label className="upload-label"><FaImages /> Galéria</label>
-                <input type="file" multiple onChange={handleGalleryChange} />
-                <div className="image-count-footer">{previews.length} kép kiválasztva</div>
-            </div>
-          </div>
+  {/* BORÍTÓKÉP */}
+  <div className="media-section">
+    <label className="media-label">Borítókép {!id && "*"}</label>
+    <div className="thumbnail-area">
+      {thumbnailPreview ? (
+        <div className="preview-wrapper">
+          <img src={thumbnailPreview} className="thumbnail-preview" alt="Borítókép" />
+          <button type="button" className="remove-img-btn" onClick={removeThumbnail}>
+            <IoClose size={16} />
+          </button>
         </div>
+      ) : (
+        <label className="custom-file-btn" htmlFor="thumbnail-input">
+          <FaCloudUploadAlt /> Borítókép feltöltése
+        </label>
+      )}
+      <input id="thumbnail-input" type="file" accept="image/*" onChange={handleThumbnailChange} style={{ display: "none" }} />
+    </div>
+  </div>
+
+  {/* GALÉRIA */}
+  <div className="media-section">
+    <label className="media-label">
+      <FaImages /> Galéria {id && <span className="media-hint">(új képek hozzáadása a meglévőkhöz)</span>}
+    </label>
+
+    <label className="custom-file-btn" htmlFor="gallery-input">
+      <FaPlus /> Képek hozzáadása
+    </label>
+    <input id="gallery-input" type="file" multiple accept="image/*" onChange={handleGalleryChange} style={{ display: "none" }} />
+
+    {/* Meglévő képek (edit mód) */}
+{id && home?.images?.length > 0 && (
+    <>
+        <p className="gallery-section-title">Jelenlegi képek ({home.images.length} db):</p>
+        <div className="gallery-grid">
+            {home.images.map((img, index) => (
+                <div className="gallery-item" key={index}>
+                    <img src={img.url} alt={`Kép ${index + 1}`} />
+                    <button
+                        type="button"
+                        className={`remove-img-btn ${deletingIndex === index ? "deleting" : ""}`}
+                        onClick={() => handleDeleteExistingImage(img, index)}
+                        disabled={deletingIndex === index}
+                    >
+                        {deletingIndex === index ? "..." : <IoClose size={14} />}
+                    </button>
+                </div>
+            ))}
+        </div>
+    </>
+)}
+
+    {/* Újonnan feltöltött képek */}
+{previews.length > 0 && (
+    <>
+        <p className="gallery-section-title">Új képek ({previews.length} db):</p>
+        <div className="gallery-grid">
+            {previews.map((src, index) => (
+                <div className="gallery-item" key={index}>
+                    <img src={src} alt={`Új kép ${index + 1}`} />
+                    <button
+                        type="button"
+                        className="remove-img-btn"
+                        onClick={() => removeGalleryImage(index)}
+                    >
+                        <IoClose size={14} />
+                    </button>
+                </div>
+            ))}
+        </div>
+    </>
+)}
+  </div>
+</div>
 
         <button className="submit-btn" disabled={loading}>
-          {loading ? "Feltöltés folyamatban..." : "Hirdetés közzététele"}
+          {loading ? "Feltöltés folyamatban..." : id ? "Módosítások mentése" : "Hirdetés közzététele"}
         </button>
       </form>
+
+      {loading && <div className="loading-overlay">Loading…</div>}
     </div>
   );
 };
