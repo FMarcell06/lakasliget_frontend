@@ -1,14 +1,36 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { 
   FaPlus, FaImages, FaCloudUploadAlt, FaBed, FaDrawPolygon, 
-  FaMoneyBillWave, FaTools, FaHome, FaDog, FaSmoking, FaCar, FaThermometerHalf 
+  FaMoneyBillWave, FaTools, FaHome, FaDog, FaSmoking, FaCar, FaThermometerHalf, FaMapMarkerAlt,
+  FaCalendarAlt, FaAccessibleIcon, FaToilet
 } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { addHome, uploadToImgBB } from '../myBackend'; 
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
 import './ApForm.css';
+
+// Segédfüggvény a cím koordinátává alakításához (Geocoding)
+const getCoords = async (address) => {
+  if (!address || address.length < 5) return null;
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
+  try {
+    const response = await fetch(url, { headers: { 'User-Agent': 'IngatlanApp/1.0' } });
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon),
+        display: data[0].display_name
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Geocoding error:", error);
+    return null;
+  }
+};
 
 export const ApForm = () => {
   const { user } = useContext(MyUserContext);
@@ -16,13 +38,14 @@ export const ApForm = () => {
 
   // Alapadatok állapota
   const [title, setTitle] = useState("");
+  const [address, setAddress] = useState(""); 
   const [price, setPrice] = useState("");
   const [area, setArea] = useState("");
   const [rooms, setRooms] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Lakás");
 
-  // Részletes technikai mezők állapota
+  // Részletes technikai mezők állapota (MINDEN benne van)
   const [extraFields, setExtraFields] = useState({
     buildYear: "", comfort: "", floor: "", buildingLevels: "", lift: "Nincs megadva",
     ceilingHeight: "", airConditioner: "Nincs megadva", furnished: "Nincs megadva",
@@ -55,15 +78,12 @@ export const ApForm = () => {
   };
 
   const removeThumbnail = () => {
-  if (thumbnailPreview) {
-    URL.revokeObjectURL(thumbnailPreview); // Memória felszabadítása
-  }
-  setThumbnailImg(null);
-  setThumbnailPreview(null);
-  // Reseteljük az input mezőt is, hogy ugyanazt a képet újra ki lehessen választani
-  const fileInput = document.getElementById('thumbnail-input');
-  if (fileInput) fileInput.value = "";
-};
+    if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview);
+    setThumbnailImg(null);
+    setThumbnailPreview(null);
+    const fileInput = document.getElementById('thumbnail-input');
+    if (fileInput) fileInput.value = "";
+  };
 
   const handleGalleryChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -84,18 +104,25 @@ export const ApForm = () => {
     setLoading(true);
 
     try {
-      // 1. Kiemelt kép feltöltése
+      // 1. Koordináták lekérése
+      const coords = await getCoords(address);
+      if (!coords) {
+        alert("Nem sikerült beazonosítani a címet. Kérlek, add meg pontosabban!");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Képek feltöltése
       let finalThumbnail = null;
       if (thumbnailImg) finalThumbnail = await uploadToImgBB(thumbnailImg);
 
-      // 2. Galéria feltöltése
       let newGalleryImages = [];
       if (files.length > 0) {
         const results = await Promise.all(files.map(f => uploadToImgBB(f)));
         newGalleryImages = results.filter(res => res !== null);
       }
 
-      // Üres extra mezők kitöltése alapértelmezett értékkel
+      // 3. Adatok tisztítása és mentése
       const finalExtraFields = {};
       Object.keys(extraFields).forEach(key => {
         finalExtraFields[key] = extraFields[key] === "" ? "Nincs megadva" : extraFields[key];
@@ -103,6 +130,10 @@ export const ApForm = () => {
 
       const apartmentData = { 
         title, 
+        address,
+        lat: coords.lat, 
+        lon: coords.lon, 
+        fullAddress: coords.display,
         price: Number(price), 
         area: Number(area), 
         rooms: Number(rooms), 
@@ -111,6 +142,7 @@ export const ApForm = () => {
         ...finalExtraFields,
         thumbnail: finalThumbnail,
         uid: user.uid, 
+        createdAt: new Date()
       };
 
       await addHome(apartmentData, newGalleryImages);
@@ -141,6 +173,19 @@ export const ApForm = () => {
             <label>Hirdetés címe *</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="pl. Modern garzon a Corvin negyedben" required />
           </div>
+
+          <div className="form-group">
+            <label><FaMapMarkerAlt /> Pontos cím (Város, utca, házszám) *</label>
+            <input 
+              type="text" 
+              value={address} 
+              onChange={(e) => setAddress(e.target.value)} 
+              placeholder="pl. 1082 Budapest, Üllői út 25." 
+              required 
+            />
+            <small style={{color: '#666'}}>A pontos cím alapján számoljuk ki a távolságot az egyetemektől.</small>
+          </div>
+
           <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaMoneyBillWave /> Havi bérleti díj (Ft)</label>
@@ -174,8 +219,8 @@ export const ApForm = () => {
               <input type="number" name="buildingLevels" onChange={handleExtraChange} />
             </div>
             <div className="input-group">
-              <label>Belmagasság (m)</label>
-              <input type="text" name="ceilingHeight" onChange={handleExtraChange} />
+              <label>Energia tanúsítvány</label>
+              <input type="text" name="energyCert" onChange={handleExtraChange} placeholder="pl. AA++" />
             </div>
           </div>
 
@@ -190,7 +235,7 @@ export const ApForm = () => {
             </div>
             <div className="input-group">
               <label><FaThermometerHalf /> Fűtés típusa</label>
-              <input type="text" name="heating" onChange={handleExtraChange} placeholder="pl. Házközponti" />
+              <input type="text" name="heating" onChange={handleExtraChange} />
             </div>
             <div className="input-group">
               <label>Szigetelés</label>
@@ -201,31 +246,45 @@ export const ApForm = () => {
               </select>
             </div>
             <div className="input-group">
-              <label>Légkondicionáló</label>
-              <select name="airConditioner" onChange={handleExtraChange}>
-                <option value="Nincs megadva">Nincs megadva</option>
-                <option value="Van">Van</option>
-                <option value="Nincs">Nincs</option>
-              </select>
+                <label>Tetőtér / Padlás</label>
+                <select name="attic" onChange={handleExtraChange}>
+                    <option value="Nincs megadva">Nincs megadva</option>
+                    <option value="Beépített">Beépített</option>
+                    <option value="Nincs">Nincs</option>
+                </select>
             </div>
           </div>
         </div>
 
-        {/* 3. SZEKCIÓ: KÉNYELEM ÉS EXTRÁK */}
+        {/* 3. SZEKCIÓ: KOMFORT ÉS EXTRÁK */}
         <div className="form-section">
           <h3>Komfort és Felszereltség</h3>
           <div className="property-grid-inputs">
             <div className="input-group">
-              <label>Komfort</label>
-              <input type="text" name="comfort" onChange={handleExtraChange} placeholder="pl. Összkomfortos" />
+              <label><FaToilet /> Fürdő és WC</label>
+              <input type="text" name="bathroomWc" onChange={handleExtraChange} placeholder="pl. Külön / Egyben" />
             </div>
+            <div className="input-group">
+              <label>Komfort fokozat</label>
+              <input type="text" name="comfort" onChange={handleExtraChange} />
+            </div>
+            <div className="input-group">
+                <label><FaAccessibleIcon /> Akadálymentes</label>
+                <select name="accessible" onChange={handleExtraChange}>
+                    <option value="Nincs megadva">Nincs megadva</option>
+                    <option value="Igen">Igen</option>
+                    <option value="Nem">Nem</option>
+                </select>
+            </div>
+          </div>
+
+          <div className="property-grid-inputs">
             <div className="input-group">
               <label>Bútorozott</label>
               <select name="furnished" onChange={handleExtraChange}>
                 <option value="Nincs megadva">Nincs megadva</option>
                 <option value="Igen">Igen</option>
                 <option value="Nem">Nem</option>
-                <option value="Részben">Részben</option>
               </select>
             </div>
             <div className="input-group">
@@ -236,12 +295,20 @@ export const ApForm = () => {
                 <option value="Nem">Nem</option>
               </select>
             </div>
+            <div className="input-group">
+                <label>Légkondicionáló</label>
+                <select name="airConditioner" onChange={handleExtraChange}>
+                    <option value="Nincs megadva">Nincs megadva</option>
+                    <option value="Van">Van</option>
+                    <option value="Nincs">Nincs</option>
+                </select>
+            </div>
           </div>
 
           <div className="property-grid-inputs">
             <div className="input-group">
                 <label>Kilátás</label>
-                <input type="text" name="view" onChange={handleExtraChange} placeholder="pl. Utcai / Kerti" />
+                <input type="text" name="view" onChange={handleExtraChange} />
             </div>
             <div className="input-group">
                 <label>Tájolás</label>
@@ -251,21 +318,21 @@ export const ApForm = () => {
                 <label>Erkély mérete (m²)</label>
                 <input type="number" name="balconySize" onChange={handleExtraChange} />
             </div>
-            <div className="input-group">
-                <label>Kertkapcsolatos</label>
-                <select name="gardenAccess" onChange={handleExtraChange}>
-                    <option value="Nincs megadva">Nincs megadva</option>
-                    <option value="Igen">Igen</option>
-                    <option value="Nem">Nem</option>
-                </select>
-            </div>
           </div>
         </div>
 
-        {/* 4. SZEKCIÓ: SZABÁLYOK ÉS ÉLETMÓD */}
+        {/* 4. SZEKCIÓ: BÉRLÉSI FELTÉTELEK */}
         <div className="form-section">
           <h3>Házirend és Bérlés</h3>
           <div className="property-grid-inputs">
+            <div className="input-group">
+              <label><FaCalendarAlt /> Beköltözhető ekkortól</label>
+              <input type="date" name="moveInDate" onChange={handleExtraChange} />
+            </div>
+            <div className="input-group">
+                <label>Min. bérleti idő</label>
+                <input type="text" name="minRentTime" onChange={handleExtraChange} placeholder="pl. 1 év" />
+            </div>
             <div className="input-group">
               <label><FaDog /> Kisállat hozható?</label>
               <select name="pets" onChange={handleExtraChange}>
@@ -274,6 +341,9 @@ export const ApForm = () => {
                 <option value="Nem">Nem</option>
               </select>
             </div>
+          </div>
+
+          <div className="property-grid-inputs">
             <div className="input-group">
               <label><FaSmoking /> Dohányzás</label>
               <select name="smoking" onChange={handleExtraChange}>
@@ -283,17 +353,13 @@ export const ApForm = () => {
               </select>
             </div>
             <div className="input-group">
-                <label>Min. bérleti idő</label>
-                <input type="text" name="minRentTime" onChange={handleExtraChange} placeholder="pl. 1 év" />
-            </div>
-            <div className="input-group">
               <label><FaCar /> Parkolás</label>
-              <input type="text" name="parking" onChange={handleExtraChange} placeholder="pl. Utcai / Teremgarázs" />
+              <input type="text" name="parking" onChange={handleExtraChange} placeholder="pl. Utcai / Garázs" />
             </div>
           </div>
         </div>
 
-        {/* 5. SZEKCIÓ: LEÍRÁS ÉS FOTÓK */}
+        {/* 5. SZEKCIÓ: LEÍRÁS ÉS MÉDIA */}
         <div className="form-section">
           <h3>Leírás és Média</h3>
           <div className="form-group full-width">
@@ -302,51 +368,21 @@ export const ApForm = () => {
           </div>
 
           <div className="upload-grid">
-<div className="upload-box">
-    <label className="upload-label">Borítókép *</label>
-    <input 
-      id="thumbnail-input" // Fontos az azonosító a reseteléshez
-      type="file" 
-      accept="image/*"
-      onChange={handleThumbnailChange} 
-    />
-    
-    {thumbnailPreview && (
-        <div className="main-preview-container" style={{ position: 'relative', marginTop: '10px' }}>
-            <img src={thumbnailPreview} className="preview-small" alt="Fő kép" />
-            <button 
-                type="button" 
-                className="delete-preview-btn" 
-                style={{ top: '-5px', right: '-5px' }} // Pozicionálás a kép sarkára
-                onClick={removeThumbnail}
-            >
-                <IoClose size={14} />
-            </button>
-        </div>
-    )}
-</div>
+            <div className="upload-box">
+                <label className="upload-label">Borítókép *</label>
+                <input id="thumbnail-input" type="file" accept="image/*" onChange={handleThumbnailChange} />
+                {thumbnailPreview && (
+                    <div className="main-preview-container">
+                        <img src={thumbnailPreview} className="preview-small" alt="Thumbnail" />
+                        <button type="button" className="delete-preview-btn" onClick={removeThumbnail}><IoClose size={14} /></button>
+                    </div>
+                )}
+            </div>
 
             <div className="upload-box">
                 <label className="upload-label"><FaImages /> Galéria</label>
                 <input type="file" multiple onChange={handleGalleryChange} />
-                
-                <div className="gallery-preview-container">
-                    {previews.length > 0 && (
-                        <div className="mini-previews-grid">
-                            {previews.map((url, index) => (
-                                <div key={index} className="preview-item">
-                                    <img src={url} alt={`Galéria ${index}`} className="preview-small" />
-                                    <button type="button" className="delete-preview-btn" onClick={() => removeGalleryImage(index)}>
-                                        <IoClose size={14} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    <div className="image-count-footer">
-                        {previews.length} kép kiválasztva
-                    </div>
-                </div>
+                <div className="image-count-footer">{previews.length} kép kiválasztva</div>
             </div>
           </div>
         </div>
