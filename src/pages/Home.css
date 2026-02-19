@@ -1,131 +1,202 @@
-/* Teljes képernyős elrendezés */
-.page-wrapper {
+/* ALAPBEÁLLÍTÁSOK - GÖRGETÉS TILTÁSA */
+.page-wrapper.no-scroll {
   height: 100vh;
+  width: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: 'Inter', sans-serif;
-
 }
 
-/* Függőleges és vízszintes középre igazítás */
-.hero-center {
-  flex: 1;
+/* FELSŐ 65% - HÁTTÉRKÉP ÉS BLUR */
+.hero-65 {
+  position: relative;
+  flex: 0 0 65%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
   text-align: center;
-    animation: fadeIn 0.5s ease;
-
+  background-color: #1a202c;
 }
 
-.hero-content h1 {
-  font-size: 3rem;
-  color: #1a202c;
-  margin-bottom: 10px;
-  letter-spacing: -1px;
+.hero-65::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("https://images.unsplash.com/photo-1618296498428-475b880e5b0a?q=80&w=1632&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px) brightness(0.65);
+  transform: scale(1.1);
+  z-index: 0;
 }
 
-.hero-content p {
-  color: #4a5568;
-  margin-bottom: 40px;
-  font-size: 1.1rem;
-}
-
-/* A modern kereső kártya */
-.search-card {
-  background: white;
-  padding: 30px;
-  border-radius: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+.hero-content {
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 1s ease-out;
   width: 100%;
-  max-width: 1100px;
 }
 
-.search-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1.5fr 1fr 0.8fr 0.8fr auto;
-  gap: 15px;
-  align-items: center;
-}
-
-/* Mezők stílusa */
-.input-field {
+/* LOGÓ ÉS ROMBUSZ (EXTREMELY LARGE) */
+.logo-container {
   display: flex;
-  flex-direction: column;
-  text-align: left;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 5px;
 }
 
-.input-field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #718096;
-  text-transform: uppercase;
-  padding-left: 5px;
+.logo-icon {
+  width: 50px!important; /* Megnövelve */
+  height: 50px!important;
+  background-color: #d58224;
+  border-radius: 15px;
+  transform: rotate(45deg);
+  flex-shrink: 0;
 }
 
-.input-field input, 
-.input-field select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background-color: #f8fafc;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-
-.input-field input:focus, 
-.input-field select:focus {
-  outline: none;
-  border-color: #3182ce;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
-}
-
-/* Gomb stílusa */
-.search-btn {
-  background-color: cornflowerblue;
+.logo-text {
+  font-size: 5rem!important; /* Brutális méret */
+  font-weight: 950;
   color: white;
-  border: none;
-  padding: 12px 25px;
+  margin: 0;
+  letter-spacing: -5px;
+  line-height: 1;
+  text-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
 
-  border-radius: 12px;
-  font-weight: 600;
+.hero-subtitle {
+  color: white;
+  font-size: 2.5rem; /* Jelentősen megnövelve */
+  margin-top: 30px;
+  margin-bottom: 60px;
+  font-weight: 500;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+/* GOMB (STABIL HOVERREL) */
+.main-cta-btn {
+  background: #d58224 !important;
+  color: white !important;
+  border: none !important;
+  /* Kisebbre vett padding és betűméret */
+  padding: 14px 35px !important; 
+  font-size: 1.1rem !important;
+  
+  font-weight: 700;
+  border-radius: 100px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: transform 0.1s, background-color 0.2s;
-  height: 48px;
+  margin: 0 auto;
+  transition: background-color 0.2s ease;
+  /* Megszüntetjük a felesleges árnyékokat is */
+  box-shadow: none !important;
 }
 
-.search-btn:hover {
-  background-color: #2b6cb0;
-  transform: translateY(-1px);
+.main-cta-btn:hover {
+  background: #b86b1a !important;
+  transform: none !important; /* Tiltjuk a nagyítást */
 }
 
-.search-btn:active {
-  transform: translateY(0);
+/* Az ikon is legyen kisebb a gombban */
+.main-cta-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+  transition: transform 0.2s;
 }
 
-/* Mobil nézet: ha kicsi a kijelző, egymás alá rakja */
-@media (max-width: 900px) {
-  .search-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .button-field {
-    grid-column: span 2;
-  }
-  .search-btn {
-    justify-content: center;
-  }
+/* ALSÓ 35% - FEHÉR SÁV */
+.featured-35 {
+  flex: 0 0 35%;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 0 8%;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 -15px 40px rgba(0,0,0,0.08);
 }
 
+.compact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mini-card-v2 {
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  height: 260px;
+}
+
+.mini-card-v2:hover {
+  transform: translateY(-10px);
+  border-color: #d58224;
+}
+
+.card-img-top {
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.mini-tag {
+  position: absolute;
+  top: 15px; left: 15px;
+  background: #d58224;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.card-body-bottom {
+  padding: 20px 25px;
+}
+
+.card-body-bottom h3 {
+  font-size: 1.3rem;
+  color: #1a202c;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.mini-price {
+  color: #d58224;
+  font-weight: 900;
+  font-size: 1.4rem;
+}
+
+/* ANIMÁCIÓ */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* MOBIL FIXES */
+@media (max-width: 1200px) {
+  .logo-text { font-size: 5.5rem; }
+  .hero-subtitle { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  .no-scroll { height: auto; overflow: visible; }
+  .logo-text { font-size: 3.5rem; letter-spacing: -2px; }
+  .hero-subtitle { font-size: 1.4rem; }
+  .logo-icon { width: 50px; height: 50px; }
+  .compact-grid { grid-template-columns: 1fr; }
 }
