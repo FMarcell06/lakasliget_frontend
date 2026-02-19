@@ -4,22 +4,21 @@
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
-
 }
 
 .apartments-main {
   max-width: 1240px;
   margin: 0 auto;
-    margin-top: 50px;
+  margin-top: 50px;
   padding: 20px;
-    animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.5s ease;
 }
 
 /* Információs sáv felül */
 .info-banner {
   background-color: #fff;
   border: 1px solid #ffecdb;
-  border-left: 5px solid #e68900; /* Meleg narancssárga hangsúly */
+  border-left: 5px solid #e68900;
   border-radius: 12px;
   padding: 15px 20px;
   margin-bottom: 30px;
@@ -55,44 +54,10 @@
   margin-left: 5px;
 }
 
-/* Elrendezés (Grid helyett Flex) */
+/* Elrendezés */
 .apartments-layout {
   display: flex;
   gap: 30px;
-}
-
-.filter-column {
-  width: 320px;
-  flex-shrink: 0;
-}
-
-.results-column {
-  flex-grow: 1;
-}
-
-/* Szűrő kártya stílusa */
-.filter-container {
-  background: white;
-  border: 1px solid #e0e4e8;
-  border-radius: 12px;
-  padding: 24px;
-  position: sticky;
-  top: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.filter-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 19px;
-  margin-bottom: 25px;
-  color: #1a1a1a;
-}
-
-.icon-orange {
-  color: #e68900;
 }
 
 /* Input mezők */
@@ -121,7 +86,8 @@
   font-size: 20px !important;
 }
 
-.input-field input, .input-field select {
+.input-field input,
+.input-field select {
   width: 100%;
   padding: 12px 12px 12px 40px;
   border: 1px solid #ddd;
@@ -135,7 +101,8 @@
   padding-left: 12px;
 }
 
-.input-field input:focus, .input-field select:focus {
+.input-field input:focus,
+.input-field select:focus {
   outline: none;
   border-color: #e68900;
   background-color: #fff;
@@ -146,7 +113,6 @@
   gap: 12px;
 }
 
-/* Csúszka (Slider) */
 .price-slider {
   width: 100%;
   accent-color: #e68900;
@@ -173,7 +139,7 @@
   box-shadow: 0 4px 12px rgba(230, 137, 0, 0.2);
 }
 
-/* Találatok fejléc szekciója */
+/* Találatok fejléc */
 .results-meta {
   display: flex;
   justify-content: space-between;
@@ -240,7 +206,10 @@
   margin: 0 auto 15px;
 }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* Üres állapot */
 .no-results {
@@ -252,20 +221,136 @@
   color: #666;
 }
 
-/* Mobilos nézet */
-@media (max-width: 1024px) {
-  .apartments-layout {
-    flex-direction: column;
-  }
-  .filter-column {
-    width: 100%;
-  }
-  .filter-container {
-    position: static;
-  }
-}  
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- GÉPES NÉZET: görgethető szűrő --- */
+@media (min-width: 1025px) {
+  .apartments-layout {
+    align-items: flex-start;
+  }
+
+.filter-column {
+  position: sticky;
+  top: 80px; /* ← header magassága */
+  width: 300px;
+  min-width: 300px;
+  height: calc(100vh - 100px); /* ← 100vh mínusz header + kis margó */
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden; /* ← ez kell */
+}
+
+  .filter-title {
+    padding: 20px 20px 10px 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    border-radius: 8px 8px 0 0;
+    z-index: 2;
+  }
+
+.filter-inputs {
+  overflow-y: auto;
+  padding: 20px;
+  flex-grow: 1;
+  scroll-behavior: smooth; /* ← simább görgetés */
+  -webkit-overflow-scrolling: touch; /* ← iOS-en is smooth */
+  scrollbar-width: thin;
+  scrollbar-color: #ff8c00 #f5f5f5;
+}
+
+  .filter-inputs::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .filter-inputs::-webkit-scrollbar-track {
+    background: #f5f5f5;
+  }
+
+  .filter-inputs::-webkit-scrollbar-thumb {
+    background-color: #ff8c00;
+    border-radius: 10px;
+  }
+
+  .results-column {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .icon-orange {
+    color: #e68900;
+  }
+}
+
+/* --- MOBIL NÉZET: eredeti megjelenés --- */
+@media (max-width: 1024px) {
+  .apartments-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-column {
+    position: static;
+    width: 100%;
+    min-width: unset;
+    height: auto;
+  }
+
+  .filter-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: static;
+  }
+
+  .filter-title {
+    padding: 20px 20px 10px 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+  }
+
+  .filter-inputs {
+    overflow-y: visible;
+    padding: 20px;
+    flex-grow: unset;
+  }
+
+  .icon-orange {
+    color: #e68900;
+  }
+}
+
+@media (min-width: 1025px) {
+  .apartments-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    align-items: start;
+    height: calc(100vh - 120px); /* ← fix magasság */
+  }
+
+  .filter-column {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .results-column {
+    height: calc(100vh - 120px);
+    overflow-y: auto; /* ← csak a találatok görögnek */
+  }
 }
