@@ -156,7 +156,7 @@
 /* Kereső gomb */
 .apply-btn {
   width: 100%;
-  background: cornflowerblue;
+  background: #e68900;
   color: white;
   border: none;
   padding: 14px;
@@ -169,7 +169,7 @@
 }
 
 .apply-btn:hover {
-  background: rgb(71, 108, 177);
+  background: #b86d1c;
   box-shadow: 0 4px 12px rgba(230, 137, 0, 0.2);
 }
 

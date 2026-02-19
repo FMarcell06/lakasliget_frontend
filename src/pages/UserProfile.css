@@ -1,6 +1,7 @@
 /* Profil oldal konténer */
 .recipe-form-container {
   background-color: #fcfcfc;
+  margin-top: 75px;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-bottom: 50px;
@@ -78,7 +79,7 @@
 
 /* Mentés gomb */
 .save-btn {
-  background: cornflowerblue;
+  background: #e68900;
   color: white;
   border: none;
   padding: 14px;
@@ -90,7 +91,7 @@
 }
 
 .save-btn:hover:not(:disabled) {
-  background: rgb(71, 108, 177);
+  background: #b86d1c;
   box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3);
 }
 
@@ -153,6 +154,8 @@
   margin: 0 auto;
   gap: 40px;
   padding: 0 20px;
+      animation: fadeIn 0.5s ease;
+
 }
 
 .profile-sidebar {
@@ -195,6 +198,12 @@
   border-radius: 12px;
   border: 1px dashed #ccc;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 
 /* Mobilos nézet: egymás alá ugrik */
 @media (max-width: 900px) {

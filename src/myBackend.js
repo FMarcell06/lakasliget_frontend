@@ -182,6 +182,7 @@ export const deleteGalleryImage = async (apartmentId, imageObj, currentImages) =
     }
 };
 
+
 // 3. Egyetlen ingatlan lekérése (A te korábbi readHome-od, kicsit finomítva)
 export const readHome = async (id, callback) => {
     try {
