@@ -5,6 +5,7 @@
   flex-direction: column;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: 'Inter', sans-serif;
+
 }
 
 /* Függőleges és vízszintes középre igazítás */
@@ -16,7 +17,8 @@
   align-items: center;
   padding: 20px;
   text-align: center;
-  animation: fadeIn 0.5s ease;
+    animation: fadeIn 0.5s ease;
+
 }
 
 .hero-content h1 {
