@@ -167,14 +167,24 @@ export const SignUp = () => {
         </p>
       </div>
 
-      {/* Kép szekció */}
-      <div 
-        className="image-section" 
-        style={{ backgroundImage: `url(${images[currentImg]})` }}
-      >
+      {/* ÚJ: Csúszó Kép szekció */}
+      <div className="image-section">
+        <div 
+          className="slider-track" 
+          style={{ transform: `translateX(-${currentImg * 100}%)` }}
+        >
+          {images.map((img, index) => (
+            <div 
+              key={index} 
+              className="slide" 
+              style={{ backgroundImage: `url(${img})` }} 
+            />
+          ))}
+        </div>
+
+        {/* Vezérlők - abszolút pozícionálva a képek felett */}
         <div className="slider-controls">
           <button className="slider-arrow" onClick={prevSlide}><FaChevronLeft /></button>
-          
           <div className="slider-dots">
             {images.map((_, index) => (
               <span 
@@ -184,7 +194,6 @@ export const SignUp = () => {
               />
             ))}
           </div>
-
           <button className="slider-arrow" onClick={nextSlide}><FaChevronRight /></button>
         </div>
       </div>
