@@ -48,3 +48,138 @@
     border-radius: 5px;
     margin-top: 10px;
 }
+
+/* Ha van kép, eltüntetjük a dekorációt a feltöltő dobozról */
+.upload-box.has-image {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+/* A kép tárolója, hogy ne essen szét a design */
+.preview-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.preview-small {
+  width: 100%;
+  height: 180px; /* Vagy amekkora magasságot szeretnél */
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Média szekció */
+.media-section {
+  margin-bottom: 25px;
+}
+
+.media-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.media-hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.gallery-section-title {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 12px 0 8px;
+}
+
+/* Feltöltés gomb */
+.custom-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f5f5f5;
+  border: 1.5px dashed #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.custom-file-btn:hover {
+  background: #eee;
+  border-color: #aaa;
+  color: #333;
+}
+
+/* Borítókép előnézet */
+.thumbnail-area {
+  width: 100%;
+  max-width: 400px;
+}
+
+.thumbnail-preview {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+/* Galéria grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Törlés gomb (borítókép + galéria) */
+.preview-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 400px;
+}
+
+.remove-img-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-img-btn:hover {
+  background: rgba(200, 0, 0, 0.8);
+}

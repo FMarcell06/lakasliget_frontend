@@ -162,6 +162,26 @@ export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFil
     }
 };
 
+// Galéria kép törlése ImgBB-ről + Firestore-ból
+export const deleteGalleryImage = async (apartmentId, imageObj, currentImages) => {
+    try {
+        // 1. ImgBB törlés
+        if (imageObj.delete_url) {
+            await axios.get(imageObj.delete_url);
+        }
+
+        // 2. Firestore frissítés – kivesszük a törölt képet
+        const updatedImages = currentImages.filter(img => img.url !== imageObj.url);
+        const docRef = doc(db, "apartments", apartmentId);
+        await updateDoc(docRef, { images: updatedImages });
+
+        return updatedImages;
+    } catch (error) {
+        console.error("Kép törlési hiba:", error);
+        throw error;
+    }
+};
+
 // 3. Egyetlen ingatlan lekérése (A te korábbi readHome-od, kicsit finomítva)
 export const readHome = async (id, callback) => {
     try {
