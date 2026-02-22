@@ -1,39 +1,32 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FavoriteBorder, CameraAltOutlined, LocationOnOutlined } from '@mui/icons-material';
+import { CameraAltOutlined, LocationOnOutlined } from '@mui/icons-material';
 import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { MyUserContext } from "../context/MyUserProvider";
 import { deleteHome } from "../myBackend";
+import { useFavourites } from "../useFavourites";
 import './ApartCard.css';
 
 export const ApartCard = ({ apartment }) => {
   const { user } = useContext(MyUserContext);
   const navigate = useNavigate();
+  const { toggle, isFav } = useFavourites();
 
   const { 
-    id, 
-    title,
-    price, 
-    area,
-    rooms,
-    thumbnail, 
-    images, 
-    category,
-    floor,
-    address,
-    fullAddress, // Vedd fel a destructuring-be!
-    uid 
+    id, title, price, area, rooms,
+    thumbnail, images, category,
+    floor, address, fullAddress, uid 
   } = apartment;
 
-  // KERÜLET KINYERÉSE (ugyanaz a logika, mint a Listing-nél)
+  const fav = isFav(id);
+
   const getDistrict = (addr, fullAddr) => {
     const textToSearch = fullAddr || addr || "";
     if (!textToSearch) return "";
-
     const parts = textToSearch.split(',').map(p => p.trim());
     const districtPart = parts.find(p => p.toLowerCase().includes('kerület'));
     if (districtPart) return districtPart;
-
     const zipMatch = textToSearch.match(/1(\d{2})\d/);
     if (zipMatch) {
       const districtNum = parseInt(zipMatch[1], 10);
@@ -44,7 +37,6 @@ export const ApartCard = ({ apartment }) => {
   };
 
   const district = getDistrict(address, fullAddress);
-
   const stopNav = (e) => e.stopPropagation();
 
   const handleDelete = async (e) => {
@@ -56,6 +48,11 @@ export const ApartCard = ({ apartment }) => {
         console.error(err);
       }
     }
+  };
+
+  const handleFav = (e) => {
+    stopNav(e);
+    toggle(id);
   };
 
   return (
@@ -84,7 +81,11 @@ export const ApartCard = ({ apartment }) => {
           <div className="card-actions-area" onClick={stopNav}>
             {user && user.uid === uid ? (
               <div className="rc-actions-inline">
-                <button className="rc-icon-mini rc-edit" onClick={(e) => { stopNav(e); navigate("/edit/" + id); }} title="Szerkesztés">
+                <button
+                  className="rc-icon-mini rc-edit"
+                  onClick={(e) => { stopNav(e); navigate("/edit/" + id); }}
+                  title="Szerkesztés"
+                >
                   <MdModeEditOutline size={20} />
                 </button>
                 <button className="rc-icon-mini rc-delete" onClick={handleDelete} title="Törlés">
@@ -92,22 +93,26 @@ export const ApartCard = ({ apartment }) => {
                 </button>
               </div>
             ) : (
-              <button className="fav-button">
-                <FavoriteBorder />
-              </button>
+              // Csak bejelentkezett, nem saját hirdetésnél jelenik meg
+              user && (
+                <button
+                  className={`fav-btn ${fav ? "active" : ""}`}
+                  onClick={handleFav}
+                  title={fav ? "Eltávolítás a kedvencekből" : "Hozzáadás a kedvencekhez"}
+                >
+                  {fav ? <FaHeart size={18} /> : <FaRegHeart size={18} />}
+                </button>
+              )
             )}
           </div>
         </div>
 
         <div className="address-section">
-          {/* KERÜLET MEGJELENÍTÉSE A CÍM FELETT VAGY MELLETT */}
           {district && <div className="district-badge">{district}</div>}
-          
           <h3 className="apartment-title">
             <LocationOnOutlined className="loc-icon" />
             {address || "Cím nélküli hirdetés"}
           </h3>
-          
           {floor && floor !== "Nincs megadva" && (
             <span className="floor-info">{floor}</span>
           )}
@@ -123,10 +128,10 @@ export const ApartCard = ({ apartment }) => {
             <span className="spec-value">{rooms || 0}</span>
           </div>
           {apartment.bathroomWc && apartment.bathroomWc !== "Nincs megadva" && (
-             <div className="spec-item">
-                <span className="spec-label">WC/Fürdő</span>
-                <span className="spec-value">{apartment.bathroomWc}</span>
-             </div>
+            <div className="spec-item">
+              <span className="spec-label">WC/Fürdő</span>
+              <span className="spec-value">{apartment.bathroomWc}</span>
+            </div>
           )}
         </div>
       </div>
