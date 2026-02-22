@@ -182,6 +182,33 @@ export const deleteGalleryImage = async (apartmentId, imageObj, currentImages) =
     }
 };
 
+export const toggleFavourite = async (uid, apartmentId) => {
+    try {
+        const docRef = doc(db, "favourites", uid);
+        const docSnap = await getDoc(docRef);
+
+        let current = docSnap.exists() ? docSnap.data().ids || [] : [];
+
+        const isFav = current.includes(apartmentId);
+        const updated = isFav
+            ? current.filter(id => id !== apartmentId)
+            : [...current, apartmentId];
+
+        await setDoc(docRef, { ids: updated });
+        return !isFav; // visszaadja az új állapotot
+    } catch (error) {
+        console.error("Kedvenc hiba:", error);
+        throw error;
+    }
+};
+
+export const readFavourites = (uid, setFavourites) => {
+    const docRef = doc(db, "favourites", uid);
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+        setFavourites(snap.exists() ? snap.data().ids || [] : []);
+    });
+    return unsubscribe;
+};
 
 // 3. Egyetlen ingatlan lekérése (A te korábbi readHome-od, kicsit finomítva)
 export const readHome = async (id, callback) => {

@@ -244,6 +244,31 @@
   letter-spacing: 0.5px;
 }
 
+.fav-btn {
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+    color: #ccc;
+}
+
+.fav-btn.active {
+    color: #e68900;
+}
+
+.fav-btn:hover {
+    transform: scale(1.15);
+}
+
 .address-section {
   margin-top: 10px;
 }

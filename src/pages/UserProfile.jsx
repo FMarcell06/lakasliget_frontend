@@ -3,34 +3,37 @@ import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
-import { readHomes } from '../myBackend'; // Beimportáljuk az olvasás függvényt
-import { ApartCard } from '../components/ApartCard'; // Használjuk a már meglévő kártyát
+import { readHomes } from '../myBackend';
+import { ApartCard } from '../components/ApartCard';
+import { useFavourites } from '../useFavourites';
 import './UserProfile.css';
 
 export const UserProfile = () => {
-  const { user, photoUpdate, deleteAccount, deleteAvatar, msg } = useContext(MyUserContext);
+  const { user, photoUpdate, deleteAccount, deleteAvatar } = useContext(MyUserContext);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [myHomes, setMyHomes] = useState([]); // Saját hirdetések állapota
+  const [myHomes, setMyHomes] = useState([]);
+  const [allHomes, setAllHomes] = useState([]);
+  const [activeTab, setActiveTab] = useState("own"); // "own" vagy "favs"
+  const { favourites } = useFavourites();
   const navigate = useNavigate();
 
-  // Saját hirdetések betöltése
   useEffect(() => {
     if (user) {
       const unsubscribe = readHomes((data) => {
-        // Csak azokat tartjuk meg, amiket ez a felhasználó töltött fel
-        const filtered = data.filter(home => home.uid === user.uid);
-        setMyHomes(filtered);
+        setAllHomes(data);
+        setMyHomes(data.filter(home => home.uid === user.uid));
       });
       return () => unsubscribe && typeof unsubscribe === 'function' && unsubscribe();
     }
   }, [user]);
 
+  const favHomes = allHomes.filter(home => favourites.includes(home.id));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) return;
-    
     setLoading(true);
     try {
       await photoUpdate(file);
@@ -72,7 +75,7 @@ export const UserProfile = () => {
   return (
     <div className="recipe-form-container">
       <Header />
-      <IoClose onClick={() => navigate("/home")} className="close-icon" title="Vissza" />
+      <IoClose onClick={() => navigate("/")} className="close-icon" title="Vissza" />
       
       <h1 className="form-title">Profil Beállítások</h1>
 
@@ -108,24 +111,61 @@ export const UserProfile = () => {
           </button>
         </div>
 
-        {/* JOBB OLDAL: Saját hirdetések */}
+        {/* JOBB OLDAL: Hirdetések */}
         <div className="my-listings-section">
-          <h2>Saját hirdetéseim ({myHomes.length})</h2>
-          <div className="my-listings-grid">
-            {myHomes.length > 0 ? (
-              myHomes.map(home => (
-                <div key={home.id} className="my-home-item" onClick={() => navigate("/listing/" + home.id)}>
-                  <ApartCard apartment={home} />
-                  {/* Itt később elhelyezhetsz egy Törlés vagy Szerkesztés gombot is */}
-                </div>
-              ))
-            ) : (
-              <div className="no-listings">
-                <p>Még nem töltöttél fel hirdetést.</p>
-                <button className="apply-btn" onClick={() => navigate("/add")}>Hirdetés feladása</button>
-              </div>
-            )}
+
+          {/* TAB FEJLÉC */}
+          <div className="listings-tabs">
+            <button
+              className={`tab-btn ${activeTab === "own" ? "active" : ""}`}
+              onClick={() => setActiveTab("own")}
+            >
+              Saját hirdetéseim ({myHomes.length})
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "favs" ? "active" : ""}`}
+              onClick={() => setActiveTab("favs")}
+            >
+              Kedvenceim ({favHomes.length})
+            </button>
           </div>
+
+          {/* SAJÁT HIRDETÉSEK */}
+          {activeTab === "own" && (
+            <div className="my-listings-grid">
+              {myHomes.length > 0 ? (
+                myHomes.map(home => (
+                  <div key={home.id} className="my-home-item" onClick={() => navigate("/listing/" + home.id)}>
+                    <ApartCard apartment={home} />
+                  </div>
+                ))
+              ) : (
+                <div className="no-listings">
+                  <p>Még nem töltöttél fel hirdetést.</p>
+                  <button className="apply-btn" onClick={() => navigate("/add")}>Hirdetés feladása</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* KEDVENCEK */}
+          {activeTab === "favs" && (
+            <div className="my-listings-grid">
+              {favHomes.length > 0 ? (
+                favHomes.map(home => (
+                  <div key={home.id} className="my-home-item" onClick={() => navigate("/listing/" + home.id)}>
+                    <ApartCard apartment={home} />
+                  </div>
+                ))
+              ) : (
+                <div className="no-listings">
+                  <p>Még nincs kedvenc hirdetésed.</p>
+                  <button className="apply-btn" onClick={() => navigate("/listings")}>Hirdetések böngészése</button>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 
