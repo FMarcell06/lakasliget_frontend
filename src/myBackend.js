@@ -1,6 +1,6 @@
 import axios from "axios";
 import { db } from "./firebaseApp";
-import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc, setDoc, getDocs } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 
 const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
@@ -61,15 +61,17 @@ export const updateRecipe = async (id, updatedData) => {
 };
 
 // 4. Adatok lekérése (Valós idejű)
-export const readHomes = (setRecipes, setLoading) => {
-    const collectionRef = collection(db, "apartments");
-    const q = query(collectionRef, orderBy("timestamp", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        setRecipes(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-        setLoading(false);
-    });
-    return unsubscribe;
-}
+export const readHomes = async () => {
+    try {
+        const collectionRef = collection(db, "apartments");
+        const q = query(collectionRef, orderBy("timestamp", "desc"));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Hiba a lekéréskor:", error);
+        return [];
+    }
+};
 
 
 export const updateAvatar = async (uid , public_id)=>{

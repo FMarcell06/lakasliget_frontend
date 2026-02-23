@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import {
-  ArrowBackIosNew,
-  ArrowForwardIos,
-  Close,
-  Fullscreen,
-  InfoOutlined,
-  Place,
-  DirectionsWalk,
-  School,
-} from "@mui/icons-material";
+  MdArrowBackIos,
+  MdArrowForwardIos,
+  MdClose,
+  MdFullscreen,
+  MdInfoOutline,
+  MdPlace,
+  MdDirectionsWalk,
+  MdSchool,
+} from "react-icons/md";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { readHome } from "../myBackend";
 import "./Listing.css";
@@ -71,45 +71,18 @@ export const Listing = () => {
   const getDistrict = (address) => {
     if (!address) return "Budapest";
 
-    // Az API válasza általában: "Házszám, Utca, Kerület, Város..."
-    // Keressük a "kerület" szót vagy a római számokat (pl. VIII. kerület)
     const parts = address.split(",").map((p) => p.trim());
-
-    // Megkeressük azt a részt, ami tartalmazza a "kerület" szót
     const districtPart = parts.find((p) => p.toLowerCase().includes("kerület"));
 
     if (districtPart) return districtPart;
 
-    // Ha nincs benne a "kerület" szó, de budapesti az irányítószám (1xxx),
-    // abból is tudjuk a kerületet (a középső két számjegy)
     const zipMatch = address.match(/1(\d{2})\d/);
     if (zipMatch) {
       const districtNum = parseInt(zipMatch[1], 10);
-      // Római számok konvertálása (vagy maradhat sima szám is)
       const romanDistricts = [
-        "I",
-        "II",
-        "III",
-        "IV",
-        "V",
-        "VI",
-        "VII",
-        "VIII",
-        "IX",
-        "X",
-        "XI",
-        "XII",
-        "XIII",
-        "XIV",
-        "XV",
-        "XVI",
-        "XVII",
-        "XVIII",
-        "XIX",
-        "XX",
-        "XXI",
-        "XXII",
-        "XXIII",
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+        "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX",
+        "XX", "XXI", "XXII", "XXIII",
       ];
       return `${romanDistricts[districtNum - 1]}. kerület`;
     }
@@ -118,8 +91,6 @@ export const Listing = () => {
   };
 
   const district = getDistrict(apartment.fullAddress);
-
-  // Térkép pozíciója a Firebase adatokból
   const position = [apartment.lat, apartment.lon];
 
   return (
@@ -139,10 +110,10 @@ export const Listing = () => {
             {gallery.length > 1 && (
               <>
                 <button className="nav-arrow left" onClick={prevImg}>
-                  <ArrowBackIosNew />
+                  <MdArrowBackIos />
                 </button>
                 <button className="nav-arrow right" onClick={nextImg}>
-                  <ArrowForwardIos />
+                  <MdArrowForwardIos />
                 </button>
                 <div className="img-counter">
                   {currentIndex === 0
@@ -152,7 +123,7 @@ export const Listing = () => {
               </>
             )}
             <div className="fullscreen-hint">
-              <Fullscreen /> Kattints a nagyításhoz
+              <MdFullscreen /> Kattints a nagyításhoz
             </div>
           </div>
         </div>
@@ -318,7 +289,7 @@ export const Listing = () => {
           {/* ELHELYEZKEDÉS SZEKCIÓ ÉLŐ TÉRKÉPPEL */}
           <div className="location-container" style={{ marginTop: "40px" }}>
             <h2>
-              <Place /> Elhelyezkedés
+              <MdPlace /> Elhelyezkedés
             </h2>
             <div className="location-card">
               <div className="address-header">
@@ -329,14 +300,14 @@ export const Listing = () => {
 
               <div className="distance-grid">
                 <div className="distance-box">
-                  <Place className="dist-icon" style={{ color: "#d32f2f" }} />
+                  <MdPlace className="dist-icon" style={{ color: "#d32f2f" }} />
                   <div className="dist-details">
                     <span className="dist-label">Városrész: </span>
                     <span className="dist-value">{district}</span>
                   </div>
                 </div>
                 <div className="distance-box">
-                  <DirectionsWalk className="dist-icon" />
+                  <MdDirectionsWalk className="dist-icon" />
                   <div className="dist-details">
                     <span className="dist-label">Tömegközlekedés: </span>
                     <span className="dist-value">Kiváló összeköttetés</span>
@@ -354,7 +325,7 @@ export const Listing = () => {
                   borderRadius: "12px",
                   overflow: "hidden",
                   border: "1px solid #ddd",
-                  zIndex: 1, // Biztosítja, hogy ne lógjon rá másra
+                  zIndex: 1,
                 }}
               >
                 {apartment.lat && apartment.lon ? (
@@ -394,13 +365,13 @@ export const Listing = () => {
           onClick={() => setIsModalOpen(false)}
         >
           <button className="modal-close" onClick={() => setIsModalOpen(false)}>
-            <Close />
+            <MdClose />
           </button>
           <button className="modal-fixed-arrow left" onClick={prevImg}>
-            <ArrowBackIosNew />
+            <MdArrowBackIos />
           </button>
           <button className="modal-fixed-arrow right" onClick={nextImg}>
-            <ArrowForwardIos />
+            <MdArrowForwardIos />
           </button>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <img

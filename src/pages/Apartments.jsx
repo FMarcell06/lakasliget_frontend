@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Tune, Search, SwapVert } from "@mui/icons-material";
+import { MdTune, MdSearch, MdSwapVert } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { Header } from "../components/Header";
@@ -29,14 +29,14 @@ export const Apartments = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = readHomes((data) => {
+useEffect(() => {
+    const load = async () => {
+      const data = await readHomes();
       setHomes(data);
       setFilteredHomes(data);
       setLoading(false);
-    }, setLoading);
-    return () =>
-      unsubscribe && typeof unsubscribe === "function" && unsubscribe();
+    };
+    load();
   }, []);
 
   const handleChange = (e) => {
@@ -120,7 +120,8 @@ export const Apartments = () => {
           <aside className="filter-column">
             <div className="filter-container">
               <div className="filter-title">
-                <Tune className="icon-orange" />
+<MdTune className="icon-orange" />
+
                 <span>Szűrés</span>
               </div>
 
@@ -129,7 +130,8 @@ export const Apartments = () => {
                 <div className="input-field">
                   <label>Keresés</label>
                   <div className="search-wrapper">
-                    <Search className="search-icon" />
+<MdSearch className="search-icon" />
+
                     <input
                       type="text"
                       name="title"
@@ -262,7 +264,8 @@ export const Apartments = () => {
               </div>
               <div className="meta-right">
                 <button className="sort-btn">
-                  <SwapVert />
+                <MdSwapVert />
+
                   Rendezés
                 </button>
               </div>
