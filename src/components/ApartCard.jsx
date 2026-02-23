@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CameraAltOutlined, LocationOnOutlined } from '@mui/icons-material';
+import { MdCameraAlt, MdLocationOn } from "react-icons/md";
 import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { MyUserContext } from "../context/MyUserProvider";
@@ -67,7 +67,7 @@ export const ApartCard = ({ apartment }) => {
         {category && <div className="badge-new">{category}</div>}
 
         <div className="image-count-badge">
-          <CameraAltOutlined className="cam-icon" />
+            <MdCameraAlt className="cam-icon" />
           <span>{(images?.length || 0) + (thumbnail ? 1 : 0)}</span>
         </div>
       </div>
@@ -86,7 +86,8 @@ export const ApartCard = ({ apartment }) => {
                   onClick={(e) => { stopNav(e); navigate("/edit/" + id); }}
                   title="Szerkesztés"
                 >
-                  <MdModeEditOutline size={20} />
+                <MdLocationOn className="loc-icon" />
+
                 </button>
                 <button className="rc-icon-mini rc-delete" onClick={handleDelete} title="Törlés">
                   <MdDeleteForever size={20} />
@@ -110,7 +111,8 @@ export const ApartCard = ({ apartment }) => {
         <div className="address-section">
           {district && <div className="district-badge">{district}</div>}
           <h3 className="apartment-title">
-            <LocationOnOutlined className="loc-icon" />
+<MdLocationOn className="loc-icon" />
+
             {address || "Cím nélküli hirdetés"}
           </h3>
           {floor && floor !== "Nincs megadva" && (
