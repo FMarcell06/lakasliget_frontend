@@ -19,13 +19,14 @@ export const UserProfile = () => {
   const { favourites } = useFavourites();
   const navigate = useNavigate();
 
-  useEffect(() => {
+useEffect(() => {
     if (user) {
-      const unsubscribe = readHomes((data) => {
+      const load = async () => {
+        const data = await readHomes();
         setAllHomes(data);
         setMyHomes(data.filter(home => home.uid === user.uid));
-      });
-      return () => unsubscribe && typeof unsubscribe === 'function' && unsubscribe();
+      };
+      load();
     }
   }, [user]);
 
