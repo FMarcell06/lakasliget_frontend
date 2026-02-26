@@ -86,7 +86,7 @@ export const ApartCard = ({ apartment }) => {
                   onClick={(e) => { stopNav(e); navigate("/edit/" + id); }}
                   title="Szerkesztés"
                 >
-                <MdLocationOn className="loc-icon" />
+                <MdModeEditOutline size={20} />
 
                 </button>
                 <button className="rc-icon-mini rc-delete" onClick={handleDelete} title="Törlés">
