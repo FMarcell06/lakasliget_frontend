@@ -49,8 +49,6 @@ export const SignUp = () => {
       console.log("Regisztráció adatai:", { email, displayName, password });
       
       await signUpUser(email, displayName, password);
-      // Siker esetén navigáció:
-      // navigate('/login');
     } catch (error) {
       console.error("Hiba történt:", error);
     } finally {
@@ -80,7 +78,7 @@ export const SignUp = () => {
 
         {/* Regisztrációs felület */}
         <div className="form-wrapper">
-          <p className="subtitle">Kezdjen böngészni</p>
+          <p className="subtitle">Hozzon létre fiókot!</p>
           <h2 className="title">Regisztráció</h2>
 
           {/* Hibaüzenet */}
@@ -100,7 +98,7 @@ export const SignUp = () => {
                   id="displayName"
                   className="form-input"
                   name="displayName"
-                  placeholder="Addja meg felhasználónevét"
+                  placeholder="Adja meg felhasználónevét"
                   required
                   type="text"
                 />
@@ -119,7 +117,7 @@ export const SignUp = () => {
                   className="form-input"
                   name="email"
                   type="email"
-                  placeholder="Addja meg e-mail címét"
+                  placeholder="Adja meg e-mail címét"
                   required
                 />
                 <span className="input-icon">
