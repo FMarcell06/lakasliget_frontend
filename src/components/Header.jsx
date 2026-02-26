@@ -6,7 +6,7 @@ import { RxAvatar } from 'react-icons/rx';
 import './Header.css';
 
 export const Header = () => {
-    const {user,logoutUser} = useContext(MyUserContext)
+    const {user,isAdmin,logoutUser} = useContext(MyUserContext)
     console.log(user);
     
     const navigate = useNavigate()
@@ -21,6 +21,7 @@ export const Header = () => {
             <button className='about' onClick={()=>navigate("/listings")}>Hirdetések</button>
             <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Feltöltés</button>
             <button className='about' onClick={()=>navigate("/about")}>Rólunk</button>
+            {isAdmin&&(<button className='about' onClick={()=>navigate("/admin")}>Admin</button>)}
           </div>
 
         {user?

@@ -287,7 +287,6 @@
   /* Ha túl hosszú a cím, vágjuk le három ponttal */
   white-space: normal;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
 }
