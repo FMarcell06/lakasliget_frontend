@@ -1,6 +1,14 @@
 :root {
   --primary-color: #d58224;
+  --primary-hover: #b86d1c;
   --text-secondary: #666;
+  --border-color: #ccc;
+  --bg-light: #f5f5f5;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .signin-container {
@@ -9,7 +17,7 @@
   width: 100%;
 }
 
-/* Kép szekció */
+/* Kép szekció - eredeti */
 .signin-image-section {
   display: none;
   position: relative;
@@ -41,7 +49,6 @@
   background-position: center;
 }
 
-/* Vezérlők a kép alján */
 .slider-controls {
   position: absolute;
   bottom: 20px;
@@ -81,13 +88,214 @@
   border-radius: 10px;
 }
 
-/* Form */
+/* Jobb oldali űrlap szekció */
 .signin-form-section {
   flex: 1;
   display: flex;
   flex-direction: column;
-  position: relative;
   padding: 2rem;
+  padding-top: 5rem;
+  justify-content: space-between;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .signin-form-section {
+    padding: 4rem;
+    padding-top: 4rem;
+  }
+}
+
+/* Vissza gomb - jobb felül */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  z-index: 10;
+}
+
+.back-btn:hover {
+  color: var(--primary-color);
+}
+
+/* Logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.logo-icon {
+  width: 45px;
+  height: 45px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  transform: rotate(45deg);
+}
+
+.logo-text2 {
+  font-size: 4.5rem;
+  font-weight: 950;
+  color: white;
+  margin: 0;
+  letter-spacing: -5px;
+  line-height: 1;
+  text-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Form Container */
+.form-wrapper {
+  max-width: 480px;
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+/* Input csoportok */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  margin-left: 4px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  color: #999;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #999;
+  display: flex;
+}
+
+/* Elfelejtett jelszó */
+.forgot-password {
+  text-align: right;
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-link {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Bejelentkezés gomb */
+.submit-btn {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Regisztráció link */
+.register-text {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.register-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* Spinner */
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid white;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
