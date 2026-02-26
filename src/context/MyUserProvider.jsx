@@ -8,119 +8,98 @@ import { useNavigate } from 'react-router-dom'
 import { updateAvatar } from '../myBackend.js'
 import { uploadImage } from '../cloudinaryUtils.js'
 
-
 export const MyUserContext = createContext()
 
 export const MyUserProvider = ({children}) => {
-  const [user,setUser] = useState(null)
-  const [msg,setMsg] = useState({})
-
+  const [user, setUser] = useState(null)
+  const [msg, setMsg] = useState({})
   const navigate = useNavigate()
-  useEffect(()=>{
-    const unsubsrcibe = onAuthStateChanged(auth,(currentUser)=>{
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setMsg({})
       setUser(currentUser)
     })
-    return ()=>unsubsrcibe()
-  },[])
+    return () => unsubscribe()
+  }, [])
 
-  const signUpUser = async (email,displayName,password)=>{
-    console.log(email,displayName,password);
+  const signUpUser = async (email, displayName, password) => {
     try {
-      await createUserWithEmailAndPassword(auth,email,password)
-      await updateProfile(auth.currentUser,{displayName})
+      await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(auth.currentUser, { displayName })
       await sendEmailVerification(auth.currentUser)
-      console.log("visszaigazolo email elkuldve");
-      
-      console.log("sikerers regisztracio");
-    setMsg(prev=>({...prev},{signUp:"Kattints az email címben küldött linkre!"}))
-    logoutUser()
+      setMsg(prev => ({...prev}, { signUp: "Kattints az email címben küldött linkre!" }))
+      logoutUser()
     } catch (error) {
-      console.log(error);
-      setMsg({err:error.message})
-      
+      console.log(error)
+      setMsg({ err: error.message })
     }
-    
   }
 
-  const logoutUser = async ()=>{
+  const logoutUser = async () => {
     await signOut(auth)
-    setMsg({signIn:false})
+    setMsg({ signIn: false })
   }
 
-  const signInUser = async (email,password)=>{
-      try {
-        await signInWithEmailAndPassword(auth,email,password)
-        const currentUser = auth.currentUser
-        if(!currentUser.emailVerified){
-          setMsg({signUp:"Kérlek kattints a az aktiváló linkre!",info:"Kérlek kattints a az aktiváló linkre!"})
-          logoutUser()
-          return
-        }
-        console.log("Sikeres bejelentkezes");
-        setMsg({signIn:true})
-      } catch (error) {
-        console.log(error);
-        setMsg({err:error.message})
-      }
-  }
-
-  const resetPassword = async (email)=> {
-    let success = false
+  const signInUser = async (email, password) => {
     try {
-      await sendPasswordResetEmail(auth,email)
-      setMsg({resetPw:"A jelszó visszaállítási email elküldve!"})
-      console.log(msg);
-      
-      success = true
+      await signInWithEmailAndPassword(auth, email, password)
+      const currentUser = auth.currentUser
+      if (!currentUser.emailVerified) {
+        setMsg({ signUp: "Kérlek kattints a az aktiváló linkre!", info: "Kérlek kattints a az aktiváló linkre!" })
+        logoutUser()
+        return
+      }
+      setMsg({ signIn: true })
     } catch (error) {
-      setMsg({err:error.message})
-    }finally{
-      
+      console.log(error)
+      setMsg({ err: error.message })
     }
-
-    console.log(msg);
-    
   }
 
-const photoUpdate = async (file) => {
-  try {
-    // 1. Feltöltés a Cloudinary-ra a segédfüggvényünkkel
-    const imageData = await uploadImage(file); // Megkapjuk: { url, public_id }
-    
-    if (imageData && imageData.url) {
-      // 2. Firebase Auth profil frissítése (hogy látszódjon a kép)
-      await updateProfile(auth.currentUser, { photoURL: imageData.url });
-
-      // 3. Adatbázis (Firestore) frissítése a public_id-val
-      await updateAvatar(auth.currentUser.uid, imageData.public_id);
-
-      // 4. Frissítjük a helyi állapotot, hogy a UI azonnal változzon
-      await auth.currentUser.reload();
-      setUser({ ...auth.currentUser });
-      setMsg({ updateProfile: "Sikeres mentés!" });
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setMsg({ resetPw: "A jelszó visszaállítási email elküldve!" })
+    } catch (error) {
+      setMsg({ err: error.message })
     }
-  } catch (error) {
-    setMsg({ err: "Hiba történt a profilkép frissítésekor!" });
   }
-};
+
+  const photoUpdate = async (file) => {
+    try {
+      const imageData = await uploadImage(file); // { url, public_id }
+      if (imageData && imageData.url) {
+        // 1. Firebase Auth profil frissítése
+        await updateProfile(auth.currentUser, { photoURL: imageData.url });
+        // 2. Firestore frissítése - most már az avatarUrl-t is átadjuk!
+        await updateAvatar(auth.currentUser.uid, imageData.public_id, imageData.url);
+        // 3. Helyi állapot frissítése
+        await auth.currentUser.reload();
+        setUser({ ...auth.currentUser });
+        setMsg({ updateProfile: "Sikeres mentés!" });
+      }
+    } catch (error) {
+      setMsg({ err: "Hiba történt a profilkép frissítésekor!" });
+    }
+  };
 
   const deleteAccount = async (password) => {
     try {
-      const credential = EmailAuthProvider.credential(auth.currentUser.email,password)
-      await reauthenticateWithCredential(auth.currentUser,credential)
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, password)
+      await reauthenticateWithCredential(auth.currentUser, credential)
       await deleteUser(auth.currentUser)
       setMsg(null)
-      setMsg({serverMsg:"Felhasználói fiók törölve!"})
+      setMsg({ serverMsg: "Felhasználói fiók törölve!" })
     } catch (error) {
-      console.log(error);
-      if(error.code=="auth/wrong-password") setMsg({err:"Hibás jelszó!"})
-      else setMsg({err:"Hiba történt a hiba törlésekor!"})
+      console.log(error)
+      if (error.code == "auth/wrong-password") setMsg({ err: "Hibás jelszó!" })
+      else setMsg({ err: "Hiba történt a fiók törlésekor!" })
     }
   }
 
   return (
-    <MyUserContext.Provider value={{user,signUpUser,logoutUser,signInUser,msg,setMsg,resetPassword,photoUpdate,deleteAccount}}>
+    <MyUserContext.Provider value={{ user, signUpUser, logoutUser, signInUser, msg, setMsg, resetPassword, photoUpdate, deleteAccount }}>
       {children}
     </MyUserContext.Provider>
   )
