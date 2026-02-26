@@ -9,8 +9,10 @@ import {
   MdPlace,
   MdDirectionsWalk,
 } from "react-icons/md";
-import { FaUser, FaPhone, FaEnvelope, FaBuilding } from "react-icons/fa";
+import { FaUser, FaPhone, FaEnvelope } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { doc, getDoc } from "firebase/firestore"; // Importáltuk a lekéréshez
+import { db } from "../firebaseApp"; // A saját Firebase configod
 import { readHome } from "../myBackend";
 import "./Listing.css";
 import L from "leaflet";
@@ -34,13 +36,30 @@ export const Listing = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Állapot a hirdető adatainak (pl. avatarUrl)
+  const [seller, setSeller] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    readHome(id, (data) => {
+    readHome(id, async (data) => {
       if (data) {
         setApartment(data);
+
+        // Hirdető adatainak lekérése az uid alapján a 'users' kollekcióból
+        if (data.uid) {
+          try {
+            const userDocRef = doc(db, "users", data.uid);
+            const userSnap = await getDoc(userDocRef);
+            if (userSnap.exists()) {
+              setSeller(userSnap.data());
+            }
+          } catch (error) {
+            console.error("Hiba a hirdető lekérésekor:", error);
+          }
+        }
+
         const combined = [];
         if (data.thumbnail) combined.push(data.thumbnail);
         if (data.images && Array.isArray(data.images)) {
@@ -173,100 +192,38 @@ export const Listing = () => {
           <div className="details-card">
             <div className="details-grid">
               <div className="details-column">
-                <div className="detail-row">
-                  <span className="d-label">Ingatlan típusa</span>
-                  <span className="d-value">{apartment.category}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Építés éve</span>
-                  <span className="d-value">{apartment.buildYear}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Emelet</span>
-                  <span className="d-value">{apartment.floor}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Épület szintjei</span>
-                  <span className="d-value">{apartment.buildingLevels}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Belmagasság</span>
-                  <span className="d-value">{apartment.ceilingHeight}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Lift</span>
-                  <span className="d-value">{apartment.lift}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Energetikai tanúsítvány</span>
-                  <span className="d-value">{apartment.energyCert}</span>
-                </div>
+                <div className="detail-row"><span className="d-label">Ingatlan típusa</span><span className="d-value">{apartment.category}</span></div>
+                <div className="detail-row"><span className="d-label">Építés éve</span><span className="d-value">{apartment.buildYear}</span></div>
+                <div className="detail-row"><span className="d-label">Emelet</span><span className="d-value">{apartment.floor}</span></div>
+                <div className="detail-row"><span className="d-label">Épület szintjei</span><span className="d-value">{apartment.buildingLevels}</span></div>
+                <div className="detail-row"><span className="d-label">Belmagasság</span><span className="d-value">{apartment.ceilingHeight}</span></div>
+                <div className="detail-row"><span className="d-label">Lift</span><span className="d-value">{apartment.lift}</span></div>
+                <div className="detail-row"><span className="d-label">Energetikai tanúsítvány</span><span className="d-value">{apartment.energyCert}</span></div>
               </div>
 
               <div className="details-column">
-                <div className="detail-row">
-                  <span className="d-label">Fűtés típusa</span>
-                  <span className="d-value">{apartment.heating}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Légkondicionáló</span>
-                  <span className="d-value">{apartment.airConditioner}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Szigetelés</span>
-                  <span className="d-value">{apartment.insulation}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Bútorozott</span>
-                  <span className="d-value">{apartment.furnished}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Gépesített</span>
-                  <span className="d-value">{apartment.equipped}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Fürdő és WC</span>
-                  <span className="d-value">{apartment.bathroomWc}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Akadálymentesített</span>
-                  <span className="d-value">{apartment.accessible}</span>
-                </div>
+                <div className="detail-row"><span className="d-label">Fűtés típusa</span><span className="d-value">{apartment.heating}</span></div>
+                <div className="detail-row"><span className="d-label">Légkondicionáló</span><span className="d-value">{apartment.airConditioner}</span></div>
+                <div className="detail-row"><span className="d-label">Szigetelés</span><span className="d-value">{apartment.insulation}</span></div>
+                <div className="detail-row"><span className="d-label">Bútorozott</span><span className="d-value">{apartment.furnished}</span></div>
+                <div className="detail-row"><span className="d-label">Gépesített</span><span className="d-value">{apartment.equipped}</span></div>
+                <div className="detail-row"><span className="d-label">Fürdő és WC</span><span className="d-value">{apartment.bathroomWc}</span></div>
+                <div className="detail-row"><span className="d-label">Akadálymentesített</span><span className="d-value">{apartment.accessible}</span></div>
               </div>
 
               <div className="details-column">
-                <div className="detail-row">
-                  <span className="d-label">Kilátás</span>
-                  <span className="d-value">{apartment.view}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Tájolás</span>
-                  <span className="d-value">{apartment.orientation}</span>
-                </div>
+                <div className="detail-row"><span className="d-label">Kilátás</span><span className="d-value">{apartment.view}</span></div>
+                <div className="detail-row"><span className="d-label">Tájolás</span><span className="d-value">{apartment.orientation}</span></div>
                 <div className="detail-row">
                   <span className="d-label">Erkély mérete</span>
                   <span className="d-value">
-                    {apartment.balconySize !== "Nincs megadva"
-                      ? `${apartment.balconySize} m²`
-                      : "Nincs"}
+                    {apartment.balconySize !== "Nincs megadva" ? `${apartment.balconySize} m²` : "Nincs"}
                   </span>
                 </div>
-                <div className="detail-row">
-                  <span className="d-label">Kisállat hozható</span>
-                  <span className="d-value">{apartment.pets}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Dohányzás</span>
-                  <span className="d-value">{apartment.smoking}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Min. bérleti idő</span>
-                  <span className="d-value">{apartment.minRentTime}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="d-label">Költözhető</span>
-                  <span className="d-value">{apartment.moveInDate}</span>
-                </div>
+                <div className="detail-row"><span className="d-label">Kisállat hozható</span><span className="d-value">{apartment.pets}</span></div>
+                <div className="detail-row"><span className="d-label">Dohányzás</span><span className="d-value">{apartment.smoking}</span></div>
+                <div className="detail-row"><span className="d-label">Min. bérleti idő</span><span className="d-value">{apartment.minRentTime}</span></div>
+                <div className="detail-row"><span className="d-label">Költözhető</span><span className="d-value">{apartment.moveInDate}</span></div>
               </div>
             </div>
           </div>
@@ -283,32 +240,40 @@ export const Listing = () => {
             </div>
           </div>
 
-          {/* Hirdető adatai */}
-          {(apartment.contactName || apartment.contactPhone || apartment.contactEmail) && (
+          {/* Hirdető adatai - JAVÍTOTT KÉPPEL */}
+          {(apartment.contactName || seller?.contactName) && (
             <div className="contact-section">
               <h2><FaUser style={{ marginRight: 8, color: "#e68900" }} />Hirdető adatai</h2>
               <div className="contact-card-listing" onClick={() => navigate("/users/" + apartment.uid)}>
                 <div className="contact-avatar">
-                  <FaUser size={28} />
+                  {seller?.avatarUrl ? (
+                    <img 
+                      src={seller.avatarUrl} 
+                      alt="Profil" 
+                      style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                    />
+                  ) : (
+                    <FaUser size={28} />
+                  )}
                 </div>
                 <div className="contact-details">
                   <div className="contact-name-row">
-                    <span className="contact-name">{apartment.contactName || "Ismeretlen"}</span>
-                    {apartment.contactType && (
-                      <span className="contact-type-badge">{apartment.contactType}</span>
+                    <span className="contact-name">{seller?.contactName || apartment.contactName || "Ismeretlen"}</span>
+                    {(seller?.contactType || apartment.contactType) && (
+                      <span className="contact-type-badge">{seller?.contactType || apartment.contactType}</span>
                     )}
                   </div>
                   <div className="contact-links">
-                    {apartment.contactPhone && (
-                      <a href={`tel:${apartment.contactPhone}`} className="contact-link phone">
+                    {(seller?.contactPhone || apartment.contactPhone) && (
+                      <a href={`tel:${seller?.contactPhone || apartment.contactPhone}`} className="contact-link phone" onClick={(e) => e.stopPropagation()}>
                         <FaPhone />
-                        {apartment.contactPhone}
+                        {seller?.contactPhone || apartment.contactPhone}
                       </a>
                     )}
-                    {apartment.contactEmail && (
-                      <a href={`mailto:${apartment.contactEmail}`} className="contact-link email">
+                    {(seller?.contactEmail || apartment.contactEmail) && (
+                      <a href={`mailto:${seller?.contactEmail || apartment.contactEmail}`} className="contact-link email" onClick={(e) => e.stopPropagation()}>
                         <FaEnvelope />
-                        {apartment.contactEmail}
+                        {seller?.contactEmail || apartment.contactEmail}
                       </a>
                     )}
                   </div>
@@ -319,68 +284,30 @@ export const Listing = () => {
 
           {/* Elhelyezkedés */}
           <div className="location-container" style={{ marginTop: "40px" }}>
-            <h2>
-              <MdPlace /> Elhelyezkedés
-            </h2>
+            <h2><MdPlace /> Elhelyezkedés</h2>
             <div className="location-card">
               <div className="address-header">
-                <p className="full-address-text">
-                  {apartment.fullAddress || apartment.address}
-                </p>
+                <p className="full-address-text">{apartment.fullAddress || apartment.address}</p>
               </div>
-
               <div className="distance-grid">
                 <div className="distance-box">
                   <MdPlace className="dist-icon" style={{ color: "#d32f2f" }} />
-                  <div className="dist-details">
-                    <span className="dist-label">Városrész: </span>
-                    <span className="dist-value">{district}</span>
-                  </div>
+                  <div className="dist-details"><span className="dist-label">Városrész: </span><span className="dist-value">{district}</span></div>
                 </div>
                 <div className="distance-box">
                   <MdDirectionsWalk className="dist-icon" />
-                  <div className="dist-details">
-                    <span className="dist-label">Tömegközlekedés: </span>
-                    <span className="dist-value">Kiváló összeköttetés</span>
-                  </div>
+                  <div className="dist-details"><span className="dist-label">Tömegközlekedés: </span><span className="dist-value">Kiváló összeköttetés</span></div>
                 </div>
               </div>
 
-              <div
-                className="map-wrapper"
-                style={{
-                  height: "350px",
-                  width: "100%",
-                  marginTop: "20px",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  border: "1px solid #ddd",
-                  zIndex: 1,
-                }}
-              >
+              <div className="map-wrapper" style={{ height: "350px", width: "100%", marginTop: "20px", borderRadius: "12px", overflow: "hidden", border: "1px solid #ddd", zIndex: 1 }}>
                 {apartment.lat && apartment.lon ? (
-                  <MapContainer
-                    center={position}
-                    zoom={15}
-                    scrollWheelZoom={false}
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Marker position={position}>
-                      <Popup>
-                        <strong>{apartment.title}</strong>
-                        <br />
-                        {price.toLocaleString()} Ft / hó
-                      </Popup>
-                    </Marker>
+                  <MapContainer center={position} zoom={15} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
+                    <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <Marker position={position}><Popup><strong>{apartment.title}</strong><br />{price.toLocaleString()} Ft / hó</Popup></Marker>
                   </MapContainer>
                 ) : (
-                  <div className="no-map">
-                    Nincsenek elérhető koordináták a térképhez.
-                  </div>
+                  <div className="no-map">Nincsenek elérhető koordináták a térképhez.</div>
                 )}
               </div>
             </div>
@@ -390,28 +317,13 @@ export const Listing = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div
-          className="image-modal-overlay"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <button className="modal-close" onClick={() => setIsModalOpen(false)}>
-            <MdClose />
-          </button>
-          <button className="modal-fixed-arrow left" onClick={prevImg}>
-            <MdArrowBackIos />
-          </button>
-          <button className="modal-fixed-arrow right" onClick={nextImg}>
-            <MdArrowForwardIos />
-          </button>
+        <div className="image-modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <button className="modal-close" onClick={() => setIsModalOpen(false)}><MdClose /></button>
+          <button className="modal-fixed-arrow left" onClick={prevImg}><MdArrowBackIos /></button>
+          <button className="modal-fixed-arrow right" onClick={nextImg}><MdArrowForwardIos /></button>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={gallery[currentIndex]?.url}
-              alt="Ingatlan nagyítva"
-              className="modal-image"
-            />
-            <div className="modal-counter">
-              {currentIndex + 1} / {gallery.length}
-            </div>
+            <img src={gallery[currentIndex]?.url} alt="Ingatlan" className="modal-image" />
+            <div className="modal-counter">{currentIndex + 1} / {gallery.length}</div>
           </div>
         </div>
       )}
