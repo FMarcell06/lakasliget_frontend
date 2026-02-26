@@ -75,7 +75,7 @@ export const SignUp = () => {
         {/* Logo */}
         <div className="logo-container">
           <div className="logo-icon" />
-          <h1 className="logo-text">LakásLiget</h1>
+          <h1 className="logo-text2">LakásLiget</h1>
         </div>
 
         {/* Regisztrációs felület */}
@@ -100,7 +100,7 @@ export const SignUp = () => {
                   id="displayName"
                   className="form-input"
                   name="displayName"
-                  placeholder="pelda_felhasznalo"
+                  placeholder="Addja meg felhasználónevét"
                   required
                   type="text"
                 />
@@ -119,7 +119,7 @@ export const SignUp = () => {
                   className="form-input"
                   name="email"
                   type="email"
-                  placeholder="pelda@email.com"
+                  placeholder="Addja meg e-mail címét"
                   required
                 />
                 <span className="input-icon">
@@ -137,7 +137,7 @@ export const SignUp = () => {
                   className="form-input"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="********"
+                  placeholder="••••••••••"
                   required
                 />
                 <div className="input-icon">

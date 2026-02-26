@@ -66,7 +66,7 @@ export const SignIn = () => {
   const nextSlide = () => setCurrentImg((prev) => (prev + 1) % images.length);
   const prevSlide = () => setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
 
-  const { signInUser } = useContext(MyUserContext);
+  const { signInUser, msg, setMsg } = useContext(MyUserContext);
 
   const handleSubmit = (event) => {
     event.preventDefault()
