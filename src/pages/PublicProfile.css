@@ -1,0 +1,224 @@
+.pub-page-container {
+  background-color: #fcfcfc;
+  margin-top: 75px;
+  height: calc(100vh - 75px); /* Teljes magasság a Header alatt */
+  overflow: hidden; /* Megakadályozza a teljes oldal görgetését */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pub-layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 30px;
+  padding: 30px 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* BAL OLDAL - FIX */
+.pub-sidebar {
+  flex: 0 0 350px;
+  height: fit-content;
+}
+
+.pub-profile-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid #e0e4e8;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pub-avatar-section {
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.pub-profile-img, .pub-img-placeholder {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e68900;
+  margin: 0 auto 15px;
+}
+
+.pub-img-placeholder {
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+  color: #ccc;
+  border-color: #ddd;
+}
+
+.pub-status-badge {
+  background: #fff5eb;
+  color: #e68900;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pub-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.pub-detail-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pub-detail-item p {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.pub-detail-item a {
+  color: #e68900;
+  text-decoration: none;
+}
+
+.pub-main-contact-btn {
+  background: #e68900;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pub-main-contact-btn:hover {
+  background: #b86d1c;
+}
+
+/* JOBB OLDAL - GÖRGETHETŐ */
+.pub-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Hogy a belső div görögjön */
+}
+
+.pub-list-header h2 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.pub-scroll-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* UserProfile-hoz hasonlóan egy oszlop, vagy 1fr 1fr ha szélesebbet akarsz */
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 10px;
+  padding-bottom: 20px;
+}
+
+/* Scrollbar stílus */
+.pub-scroll-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.pub-scroll-grid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.pub-scroll-grid::-webkit-scrollbar-thumb {
+  background: #e68900;
+  border-radius: 10px;
+}
+
+.pub-card-wrapper {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.pub-card-wrapper:hover {
+  transform: translateY(-5px);
+}
+
+.pub-close-icon {
+  position: absolute;
+  top: 90px;
+  right: 40px;
+  font-size: 30px;
+  color: #999;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Mobilos nézet */
+@media (max-width: 900px) {
+  .pub-page-container {
+    height: auto;
+    overflow: visible;
+  }
+  .pub-layout {
+    flex-direction: column;
+  }
+  .pub-sidebar {
+    flex: none;
+    width: 100%;
+  }
+  .pub-main-content {
+    overflow: visible;
+  }
+  .pub-scroll-grid {
+    overflow-y: visible;
+  }
+}
+
+.placeholder-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5;
+  border: 2px dashed #ddd;
+}
+
+.public-img-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.public-img-shadow:hover {
+  transform: scale(1.05);
+}
+
+.contact-status-tag {
+  text-align: center;
+  background: #e6f7ff;
+  color: #1890ff;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.contact-link {
+  color: #e68900;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
