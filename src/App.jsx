@@ -12,6 +12,7 @@ import { UserProfile } from './pages/UserProfile.jsx';
 import { ProtectedRoute } from './ProtectedRoute.jsx';
 import { NotFound } from './components/NotFound.jsx';
 import { Listing } from './pages/Listing.jsx';
+import { PublicProfile } from './pages/PublicProfile.jsx';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -27,6 +28,7 @@ function App() {
         <Route path='/edit/:id' element={<ProtectedRoute><ApForm /></ProtectedRoute>}></Route>
         <Route path='/listings' element={<Apartments />}></Route>
         <Route path='/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>}></Route>
+        <Route path="/users/:uid" element={<PublicProfile />} />
         <Route path='/listing/:id' element={<Listing />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>

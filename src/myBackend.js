@@ -30,13 +30,13 @@ export const uploadToImgBB = async (file) => {
     }
 };
 
-// 2. Új lakás/recept hozzáadása
+// 2. Új lakás hozzáadása
 export const addHome = async (apartment, imagesArray) => {
     try {
         const collectionRef = collection(db, "apartments");
         await addDoc(collectionRef, {
-            ...apartment,      // Ebben már benne van a 'thumbnail' a handleSubmit-ből
-            images: imagesArray, 
+            ...apartment,
+            images: imagesArray,
             timestamp: serverTimestamp()
         });
         return true;
@@ -46,7 +46,7 @@ export const addHome = async (apartment, imagesArray) => {
     }
 };
 
-// 3. Meglévő lakás/recept frissítése
+// 3. Meglévő lakás frissítése
 export const updateRecipe = async (id, updatedData) => {
     try {
         const docRef = doc(db, "apartments", id);
@@ -60,7 +60,7 @@ export const updateRecipe = async (id, updatedData) => {
     }
 };
 
-// 4. Adatok lekérése (Valós idejű)
+// 4. Adatok lekérése
 export const readHomes = async () => {
     try {
         const collectionRef = collection(db, "apartments");
@@ -73,54 +73,44 @@ export const readHomes = async () => {
     }
 };
 
-
-export const updateAvatar = async (uid , public_id)=>{
-    let oldPublicId = null
+// 5. Avatar frissítése - avatarUrl-t is elmenti
+export const updateAvatar = async (uid, public_id, avatarUrl = null) => {
+    let oldPublicId = null;
     try {
-        const docRef = doc(db,"users",uid)
-        const docSnap = await getDoc(docRef)
-        if(!docSnap.exists()){
-            await setDoc(docRef ,{uid,public_id})
-        }else{
-            oldPublicId = docSnap.data().public_id
-            await updateDoc(docRef,{public_id})
+        const docRef = doc(db, "users", uid);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            await setDoc(docRef, { uid, public_id, avatarUrl });
+        } else {
+            oldPublicId = docSnap.data().public_id;
+            await updateDoc(docRef, { public_id, avatarUrl });
         }
-        console.log("oldpublic" + oldPublicId);
-        
-        if(oldPublicId) await deleteImage(oldPublicId)
+
+        if (oldPublicId) await deleteImage(oldPublicId);
 
     } catch (error) {
         console.log("Hiba az avatár módosításakor!");
-        
     }
-}
+};
 
 export const deleteAvatar = async (uid) => {
-    console.log(uid);
-    let publicId = null
+    let publicId = null;
     try {
-        const docRef = doc(db,"users",uid)
-        const docSnap = await getDoc(docRef)
-        if(!docSnap.exists()) return
+        const docRef = doc(db, "users", uid);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) return;
         else {
-            publicId = docSnap.data().public
-            console.log("aasdasdsads"+publicId);
-            
-            await deleteImage(publicId)
-            await deleteDoc(docRef)
+            publicId = docSnap.data().public_id;
+            await deleteImage(publicId);
+            await deleteDoc(docRef);
         }
     } catch (error) {
         console.log("Avatár törlési hiba!");
-        
     }
-    
-}
+};
+
 export const deleteHome = async (id, thumbnailDeleteUrl, imagesArray = []) => {
     try {
-        // Opcionális: Képek törlése ImgBB-ről (ha a deleteUrl-ek működnek)
-        // if (thumbnailDeleteUrl) await axios.get(thumbnailDeleteUrl);
-        // for (const img of imagesArray) { if (img.delete_url) await axios.get(img.delete_url); }
-
         const docRef = doc(db, "apartments", id);
         await deleteDoc(docRef);
         return true;
@@ -130,19 +120,17 @@ export const deleteHome = async (id, thumbnailDeleteUrl, imagesArray = []) => {
     }
 };
 
-// 2. Ingatlan FRISSÍTÉSE (Képkezeléssel)
+// Ingatlan frissítése képkezeléssel
 export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFiles = []) => {
     try {
         let thumbnail = updatedData.thumbnail;
         let images = updatedData.images || [];
 
-        // Új borítókép feltöltése, ha érkezett fájl
         if (newThumbnailFile) {
             const results = await uploadToImgBB(newThumbnailFile);
             if (results) thumbnail = results;
         }
 
-        // Új galéria képek hozzáadása, ha érkeztek fájlok
         if (newImagesFiles.length > 0) {
             for (const file of newImagesFiles) {
                 const res = await uploadToImgBB(file);
@@ -164,19 +152,15 @@ export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFil
     }
 };
 
-// Galéria kép törlése ImgBB-ről + Firestore-ból
+// Galéria kép törlése
 export const deleteGalleryImage = async (apartmentId, imageObj, currentImages) => {
     try {
-        // 1. ImgBB törlés
         if (imageObj.delete_url) {
             await axios.get(imageObj.delete_url);
         }
-
-        // 2. Firestore frissítés – kivesszük a törölt képet
         const updatedImages = currentImages.filter(img => img.url !== imageObj.url);
         const docRef = doc(db, "apartments", apartmentId);
         await updateDoc(docRef, { images: updatedImages });
-
         return updatedImages;
     } catch (error) {
         console.error("Kép törlési hiba:", error);
@@ -188,16 +172,13 @@ export const toggleFavourite = async (uid, apartmentId) => {
     try {
         const docRef = doc(db, "favourites", uid);
         const docSnap = await getDoc(docRef);
-
         let current = docSnap.exists() ? docSnap.data().ids || [] : [];
-
         const isFav = current.includes(apartmentId);
         const updated = isFav
             ? current.filter(id => id !== apartmentId)
             : [...current, apartmentId];
-
         await setDoc(docRef, { ids: updated });
-        return !isFav; // visszaadja az új állapotot
+        return !isFav;
     } catch (error) {
         console.error("Kedvenc hiba:", error);
         throw error;
@@ -212,7 +193,6 @@ export const readFavourites = (uid, setFavourites) => {
     return unsubscribe;
 };
 
-// 3. Egyetlen ingatlan lekérése (A te korábbi readHome-od, kicsit finomítva)
 export const readHome = async (id, callback) => {
     try {
         const docRef = doc(db, "apartments", id);
@@ -226,4 +206,3 @@ export const readHome = async (id, callback) => {
         console.error("Hiba a lekéréskor:", error);
     }
 };
-

@@ -9,6 +9,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { addHome, uploadToImgBB, readHome, updateHome, deleteGalleryImage } from "../myBackend";
 import { MyUserContext } from "../context/MyUserProvider";
 import { Header } from "../components/Header";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseApp";
 import "./ApForm.css";
 
 const getCoords = async (address) => {
@@ -138,6 +140,21 @@ export const ApForm = () => {
     setLoading(true);
 
     try {
+      // Kontakt adatok automatikus lekérése a user profiljából
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      const contactData = userDocSnap.exists() ? {
+        contactName: userDocSnap.data().contactName || user.displayName || "",
+        contactPhone: userDocSnap.data().contactPhone || "",
+        contactEmail: userDocSnap.data().contactEmail || user.email || "",
+        contactType: userDocSnap.data().contactType || "Magánszemély",
+      } : {
+        contactName: user.displayName || "",
+        contactPhone: "",
+        contactEmail: user.email || "",
+        contactType: "Magánszemély",
+      };
+
       const coords = await getCoords(address);
       if (!coords) {
         alert("Nem sikerült beazonosítani a címet!");
@@ -155,6 +172,7 @@ export const ApForm = () => {
         price: Number(price), area: Number(area), rooms: Number(rooms),
         description, category,
         ...finalExtraFields,
+        ...contactData,
         thumbnail: home?.thumbnail || null,
         uid: user.uid,
       };
@@ -385,7 +403,6 @@ export const ApForm = () => {
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="5" required />
           </div>
 
-          {/* BORÍTÓKÉP */}
           <div className="media-section">
             <label className="media-label">Borítókép {!id && "*"}</label>
             <div className="thumbnail-area">
@@ -405,19 +422,16 @@ export const ApForm = () => {
             </div>
           </div>
 
-          {/* GALÉRIA */}
           <div className="media-section">
             <label className="media-label">
               <FaImages /> Galéria{" "}
               {id && <span className="media-hint">(új képek hozzáadása a meglévőkhöz)</span>}
             </label>
-
             <label className="custom-file-btn" htmlFor="gallery-input">
               <FaPlus /> Képek hozzáadása
             </label>
             <input id="gallery-input" type="file" multiple accept="image/*" onChange={handleGalleryChange} style={{ display: "none" }} />
 
-            {/* Meglévő képek (edit mód) */}
             {id && home?.images?.length > 0 && (
               <>
                 <p className="gallery-section-title">Jelenlegi képek ({home.images.length} db):</p>
@@ -439,7 +453,6 @@ export const ApForm = () => {
               </>
             )}
 
-            {/* Újonnan feltöltött képek előnézete */}
             {previews.length > 0 && (
               <>
                 <p className="gallery-section-title">Új képek ({previews.length} db):</p>

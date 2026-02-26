@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import {
   MdArrowBackIos,
   MdArrowForwardIos,
   MdClose,
   MdFullscreen,
-  MdInfoOutline,
   MdPlace,
   MdDirectionsWalk,
-  MdSchool,
 } from "react-icons/md";
+import { FaUser, FaPhone, FaEnvelope, FaBuilding } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { readHome } from "../myBackend";
 import "./Listing.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Ikon fixálása Leaflethez
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
@@ -36,6 +34,8 @@ export const Listing = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     readHome(id, (data) => {
@@ -70,12 +70,9 @@ export const Listing = () => {
 
   const getDistrict = (address) => {
     if (!address) return "Budapest";
-
     const parts = address.split(",").map((p) => p.trim());
     const districtPart = parts.find((p) => p.toLowerCase().includes("kerület"));
-
     if (districtPart) return districtPart;
-
     const zipMatch = address.match(/1(\d{2})\d/);
     if (zipMatch) {
       const districtNum = parseInt(zipMatch[1], 10);
@@ -86,7 +83,6 @@ export const Listing = () => {
       ];
       return `${romanDistricts[districtNum - 1]}. kerület`;
     }
-
     return "Budapest";
   };
 
@@ -275,6 +271,7 @@ export const Listing = () => {
             </div>
           </div>
 
+          {/* Leírás */}
           <div className="description-container">
             <h2>Hirdetés leírása</h2>
             <div className="description-card">
@@ -286,7 +283,41 @@ export const Listing = () => {
             </div>
           </div>
 
-          {/* ELHELYEZKEDÉS SZEKCIÓ ÉLŐ TÉRKÉPPEL */}
+          {/* Hirdető adatai */}
+          {(apartment.contactName || apartment.contactPhone || apartment.contactEmail) && (
+            <div className="contact-section">
+              <h2><FaUser style={{ marginRight: 8, color: "#e68900" }} />Hirdető adatai</h2>
+              <div className="contact-card-listing" onClick={() => navigate("/users/" + apartment.uid)}>
+                <div className="contact-avatar">
+                  <FaUser size={28} />
+                </div>
+                <div className="contact-details">
+                  <div className="contact-name-row">
+                    <span className="contact-name">{apartment.contactName || "Ismeretlen"}</span>
+                    {apartment.contactType && (
+                      <span className="contact-type-badge">{apartment.contactType}</span>
+                    )}
+                  </div>
+                  <div className="contact-links">
+                    {apartment.contactPhone && (
+                      <a href={`tel:${apartment.contactPhone}`} className="contact-link phone">
+                        <FaPhone />
+                        {apartment.contactPhone}
+                      </a>
+                    )}
+                    {apartment.contactEmail && (
+                      <a href={`mailto:${apartment.contactEmail}`} className="contact-link email">
+                        <FaEnvelope />
+                        {apartment.contactEmail}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Elhelyezkedés */}
           <div className="location-container" style={{ marginTop: "40px" }}>
             <h2>
               <MdPlace /> Elhelyezkedés
@@ -315,7 +346,6 @@ export const Listing = () => {
                 </div>
               </div>
 
-              {/* TÉNYLEGES LEAFLET TÉRKÉP */}
               <div
                 className="map-wrapper"
                 style={{
@@ -358,7 +388,7 @@ export const Listing = () => {
         </div>
       </main>
 
-      {/* Modal / Fullscreen Galéria */}
+      {/* Modal */}
       {isModalOpen && (
         <div
           className="image-modal-overlay"

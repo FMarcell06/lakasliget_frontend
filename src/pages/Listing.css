@@ -396,3 +396,121 @@
     border-bottom: 1px solid #f0f0f0; /* Mobilon az első oszlop alján is kell a vonal */
   }
 }
+
+/* Hirdető szekció a Listing oldalon */
+.contact-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.contact-section h2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.contact-card-listing {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  border: 1px solid #e0e4e8;
+  border-radius: 12px;
+  padding: 24px 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.contact-avatar {
+  width: 56px;
+  height: 56px;
+  background: #fff3e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e68900;
+  flex-shrink: 0;
+}
+
+.contact-avatar:hover {
+  cursor: pointer;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.contact-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.contact-type-badge {
+  background: #fff3e0;
+  color: #e68900;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.contact-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.contact-link.phone {
+  background: #e68900;
+  color: white;
+}
+
+.contact-link.phone:hover {
+  background: #cf7a00;
+}
+
+.contact-link.email {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.contact-link.email:hover {
+  background: #eeeeee;
+}
+
+@media (max-width: 600px) {
+  .contact-card-listing {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .contact-links {
+    flex-direction: column;
+  }
+  .contact-link {
+    width: 100%;
+    justify-content: center;
+  }
+}

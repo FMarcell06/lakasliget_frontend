@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { IoClose } from 'react-icons/io5';
+import { FaPhone, FaEnvelope, FaUser, FaBuilding } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
 import { readHomes } from '../myBackend';
 import { ApartCard } from '../components/ApartCard';
 import { useFavourites } from '../useFavourites';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseApp';
 import './UserProfile.css';
 
 export const UserProfile = () => {
@@ -15,11 +18,19 @@ export const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [myHomes, setMyHomes] = useState([]);
   const [allHomes, setAllHomes] = useState([]);
-  const [activeTab, setActiveTab] = useState("own"); // "own" vagy "favs"
+  const [activeTab, setActiveTab] = useState("own");
   const { favourites } = useFavourites();
   const navigate = useNavigate();
 
-useEffect(() => {
+  const [contact, setContact] = useState({
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
+    contactType: "Magánszemély",
+  });
+  const [contactSaved, setContactSaved] = useState(false);
+
+  useEffect(() => {
     if (user) {
       const load = async () => {
         const data = await readHomes();
@@ -27,6 +38,32 @@ useEffect(() => {
         setMyHomes(data.filter(home => home.uid === user.uid));
       };
       load();
+
+      // Kontakt adatok betöltése Firestore-ból
+      const loadContact = async () => {
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setContact({
+              contactName: data.contactName || user.displayName || "",
+              contactPhone: data.contactPhone || "",
+              contactEmail: data.contactEmail || user.email || "",
+              contactType: data.contactType || "Magánszemély",
+            });
+          } else {
+            setContact(prev => ({
+              ...prev,
+              contactName: user.displayName || "",
+              contactEmail: user.email || "",
+            }));
+          }
+        } catch (err) {
+          console.error("Kontakt betöltési hiba:", err);
+        }
+      };
+      loadContact();
     }
   }, [user]);
 
@@ -42,6 +79,31 @@ useEffect(() => {
       setPreview(null);
     } catch (error) {
       console.error("Feltöltési hiba:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContactSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // 1. User profil mentése
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      const existing = docSnap.exists() ? docSnap.data() : {};
+      await setDoc(docRef, { ...existing, ...contact });
+
+      // 2. Összes saját hirdetés frissítése
+      for (const home of myHomes) {
+        const homeRef = doc(db, "apartments", home.id);
+        await updateDoc(homeRef, { ...contact });
+      }
+
+      setContactSaved(true);
+      setTimeout(() => setContactSaved(false), 3000);
+    } catch (err) {
+      console.error("Kontakt mentési hiba:", err);
     } finally {
       setLoading(false);
     }
@@ -83,6 +145,8 @@ useEffect(() => {
       <div className="profile-layout">
         {/* BAL OLDAL: Profil adatok */}
         <div className="profile-sidebar">
+
+          {/* Profilkép kártya */}
           <form className="recipe-card" onSubmit={handleSubmit}>
             <div className="user-info">
               <h3>{user?.displayName || "Felhasználó"}</h3>
@@ -107,6 +171,60 @@ useEffect(() => {
             </button>
           </form>
 
+          {/* Kontakt adatok kártya */}
+          <form className="recipe-card contact-card-form" onSubmit={handleContactSave}>
+            <h3 className="contact-form-title">
+              <FaUser style={{ color: "#e68900" }} /> Elérhetőségeim
+            </h3>
+            <p className="contact-form-subtitle">Ezek az adatok megjelennek a hirdetéseiden.</p>
+
+            <div className="contact-form-field">
+              <label><FaUser className="cff-icon" /> Neve</label>
+              <input
+                type="text"
+                value={contact.contactName}
+                onChange={e => setContact(p => ({ ...p, contactName: e.target.value }))}
+                placeholder="pl. Kiss János"
+              />
+            </div>
+
+            <div className="contact-form-field">
+              <label><FaPhone className="cff-icon" /> Telefonszám</label>
+              <input
+                type="tel"
+                value={contact.contactPhone}
+                onChange={e => setContact(p => ({ ...p, contactPhone: e.target.value }))}
+                placeholder="pl. +36 30 123 4567"
+              />
+            </div>
+
+            <div className="contact-form-field">
+              <label><FaEnvelope className="cff-icon" /> Email cím</label>
+              <input
+                type="email"
+                value={contact.contactEmail}
+                onChange={e => setContact(p => ({ ...p, contactEmail: e.target.value }))}
+                placeholder="pl. kiss.janos@email.hu"
+              />
+            </div>
+
+            <div className="contact-form-field">
+              <label><FaBuilding className="cff-icon" /> Hirdető típusa</label>
+              <select
+                value={contact.contactType}
+                onChange={e => setContact(p => ({ ...p, contactType: e.target.value }))}
+              >
+                <option value="Magánszemély">Magánszemély</option>
+                <option value="Tulajdonos">Tulajdonos</option>
+                <option value="Ingatlaniroda">Ingatlaniroda</option>
+              </select>
+            </div>
+
+            <button className="save-btn" type="submit" disabled={loading}>
+              {contactSaved ? "✓ Mentve!" : loading ? "Mentés..." : "Elérhetőség mentése"}
+            </button>
+          </form>
+
           <button className='accDelBtn' onClick={handleDelete} disabled={loading}>
             Fiók törlése
           </button>
@@ -114,8 +232,6 @@ useEffect(() => {
 
         {/* JOBB OLDAL: Hirdetések */}
         <div className="my-listings-section">
-
-          {/* TAB FEJLÉC */}
           <div className="listings-tabs">
             <button
               className={`tab-btn ${activeTab === "own" ? "active" : ""}`}
@@ -131,7 +247,6 @@ useEffect(() => {
             </button>
           </div>
 
-          {/* SAJÁT HIRDETÉSEK */}
           {activeTab === "own" && (
             <div className="my-listings-grid">
               {myHomes.length > 0 ? (
@@ -149,7 +264,6 @@ useEffect(() => {
             </div>
           )}
 
-          {/* KEDVENCEK */}
           {activeTab === "favs" && (
             <div className="my-listings-grid">
               {favHomes.length > 0 ? (
@@ -166,7 +280,6 @@ useEffect(() => {
               )}
             </div>
           )}
-
         </div>
       </div>
 
