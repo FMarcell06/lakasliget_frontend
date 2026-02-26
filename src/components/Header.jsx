@@ -21,12 +21,12 @@ export const Header = () => {
             <button className='about' onClick={()=>navigate("/listings")}>Hirdetések</button>
             <button disabled={!user} className='about' onClick={()=>navigate("/addnew")}>Feltöltés</button>
             <button className='about' onClick={()=>navigate("/about")}>Rólunk</button>
-            {isAdmin&&(<button className='about' onClick={()=>navigate("/admin")}>Admin</button>)}
+            {isAdmin&&(<button className='about adminBtn' onClick={()=>navigate("/admin")}>Admin</button>)}
           </div>
 
         {user?
             <div className='headerBtn-container'>
-                <span className='profileIcon' onClick={()=>navigate("/profile")}>
+                <span onClick={()=>navigate("/profile")}>
                     {user?.photoURL ? 
                     <img src={user.photoURL} className="profileIcon" style={{width:"50px",height:"50px",borderRadius:"50%",objectFit:"cover"}} alt="előnézet"  />
                     :

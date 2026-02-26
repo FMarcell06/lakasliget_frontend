@@ -501,6 +501,89 @@
   background: #eeeeee;
 }
 
+/* MAP LAYER TOGGLE GOMBOK */
+.map-layer-toggles {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.layer-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 2px solid #e0e4e8;
+  border-radius: 30px;
+  background: white;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.layer-toggle-btn svg {
+  font-size: 15px;
+  color: #aaa;
+  transition: color 0.2s;
+}
+
+.layer-toggle-btn:hover {
+  border-color: var(--layer-color);
+  color: var(--layer-color);
+}
+
+.layer-toggle-btn:hover svg {
+  color: var(--layer-color);
+}
+
+.layer-toggle-btn.active {
+  background: var(--layer-color);
+  border-color: var(--layer-color);
+  color: white;
+}
+
+.layer-toggle-btn.active svg {
+  color: white;
+}
+
+.layer-count {
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.layer-toggle-btn:not(.active) .layer-count {
+  background: var(--layer-color);
+  color: white;
+}
+
+/* Loading spinner a gombban */
+.layer-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.layer-toggle-btn:not(.active) .layer-spinner {
+  border-color: rgba(0,0,0,0.15);
+  border-top-color: var(--layer-color);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 600px) {
   .contact-card-listing {
     flex-direction: column;
