@@ -78,7 +78,7 @@ export const SignUp = () => {
 
         {/* Regisztrációs felület */}
         <div className="form-wrapper">
-          <p className="subtitle">Hozzon létre fiókot!</p>
+          <p className="subtitle">Hozzon létre egy fiókot!</p>
           <h2 className="title">Regisztráció</h2>
 
           {/* Hibaüzenet */}
