@@ -1,78 +1,151 @@
+/* Fő konténer igazítása a Header alá */
+.property-form-container {
+  padding-top: 100px; /* Kicsit nagyobb hely a biztonság kedvéért */
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
 .property-form-card {
   max-width: 900px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 30px; /* Megnövelt belső margó a szellősebb érzetért */
   background: white;
-  border-radius: 15px;
+  border-radius: 20px; /* Erősebb kerekítés a fő kártyán */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
-.form-section {
+.form-header h1 {
+  color: #d58224;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.form-header p {
+  text-align: center;
+  color: #666;
   margin-bottom: 30px;
-  padding-bottom: 20px;
+}
+
+/* Szekciók */
+.form-section {
+  margin-bottom: 40px;
+  padding-bottom: 25px;
   border-bottom: 1px solid #eee;
 }
 
 .form-section h3 {
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 25px;
+  color: #d58224;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-size: 1.3rem;
 }
 
+/* Alapadatok és inputok tuningolása */
 .property-grid-inputs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Kicsit szélesebb oszlopok */
+  gap: 25px; /* Megnövelt gap az elemek között */
+  margin-bottom: 20px;
 }
 
-.input-group label {
+.form-group {
+  margin-bottom: 20px;
+}
+
+.input-group label, .form-group label {
   display: block;
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
 }
 
-.input-group input, .input-group select {
+/* Nagyobb inputok és több kerekítés */
+.input-group input, 
+.input-group select, 
+.form-group input {
   width: 100%;
-  padding: 10px;
+  padding: 14px; /* Nagyobb belső térköz */
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 12px; /* Több kerekítés */
+  font-size: 1rem;
+  outline-color: #d58224;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.preview-small {
-    width: 100px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 5px;
-    margin-top: 10px;
+.input-group input:focus, 
+.form-group input:focus {
+  border-color: #d58224;
+  box-shadow: 0 0 0 3px rgba(213, 130, 36, 0.1);
 }
 
-/* Ha van kép, eltüntetjük a dekorációt a feltöltő dobozról */
-.upload-box.has-image {
-  background: none !important;
-  border: none !important;
-  padding: 0 !important;
-  min-height: auto !important;
-}
-
-/* A kép tárolója, hogy ne essen szét a design */
-.preview-wrapper {
-  position: relative;
+/* Leírás textarea illeszkedése */
+.form-group.full-width {
   width: 100%;
-  margin-top: 10px;
 }
 
-.preview-small {
+textarea {
   width: 100%;
-  height: 180px; /* Vagy amekkora magasságot szeretnél */
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
+  max-width: 100%; /* Ne lógjon ki semmiképp */
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px; /* Kerekítés itt is */
+  font-size: 1rem;
+  font-family: inherit;
+  outline-color: #d58224;
+  resize: vertical; /* Csak függőlegesen lehessen méretezni */
+  min-height: 150px;
+  box-sizing: border-box; /* Hogy a padding ne növelje a szélességet */
 }
 
-/* Média szekció */
+/* Gombok és ikonok színe */
+.form-section h3 svg, 
+.input-group label svg,
+.media-label svg {
+  color: #d58224;
+}
+
+.custom-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f5f5f5;
+  border: 1.5px dashed #b3b1b1;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #d58224;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.submit-btn:hover {
+  background-color: #b06a1d;
+}
+
+.submit-btn:active {
+  transform: scale(0.99);
+}
+
+/* MÉDIA RÉSZEK */
 .media-section {
   margin-bottom: 25px;
 }
@@ -82,48 +155,21 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #333;
+  color: #d58224;
   margin-bottom: 12px;
   font-size: 0.95rem;
 }
 
-.media-hint {
-  font-weight: 400;
-  font-size: 0.8rem;
-  color: #999;
-}
-
-.gallery-section-title {
-  font-size: 0.85rem;
-  color: #666;
-  margin: 12px 0 8px;
-}
-
-/* Feltöltés gomb */
-.custom-file-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background: #f5f5f5;
-  border: 1.5px dashed #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #555;
-  transition: all 0.2s;
-}
-
-.custom-file-btn:hover {
-  background: #eee;
-  border-color: #aaa;
-  color: #333;
-}
-
-/* Borítókép előnézet */
 .thumbnail-area {
   width: 100%;
   max-width: 400px;
+}
+
+/* Ez a wrapper biztosítja, hogy a borítókép X gombja a helyére kerüljön */
+.preview-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
 }
 
 .thumbnail-preview {
@@ -134,7 +180,6 @@
   display: block;
 }
 
-/* Galéria grid */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -155,14 +200,7 @@
   display: block;
 }
 
-/* Törlés gomb (borítókép + galéria) */
-.preview-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: 400px;
-}
-
+/* Törlés gomb (X) stílusa és ANIMÁCIÓJA */
 .remove-img-btn {
   position: absolute;
   top: 6px;
@@ -177,9 +215,26 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
+  z-index: 10;
+  /* Animáció beállítása */
+  transition: all 0.3s ease;
 }
 
+/* PIROS HOVER EFFEKT */
 .remove-img-btn:hover {
-  background: rgba(200, 0, 0, 0.8);
+  background: #ff0000;
+  transform: scale(1.15); /* Kicsit megnő, ha rávisszük az egeret */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: #d58224;
+  font-weight: bold;
 }
