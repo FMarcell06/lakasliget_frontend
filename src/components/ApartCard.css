@@ -123,6 +123,10 @@
   color: #e68900;
 }
 
+.loc-icon:hover{
+  color: white;
+}
+
 /* Paraméterek rácsa */
 .specs-row {
   display: flex;
