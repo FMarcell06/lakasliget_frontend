@@ -1,115 +1,94 @@
-/* ALAPBEÁLLÍTÁSOK - GÖRGETÉS TILTÁSA */
-.page-wrapper.no-scroll {
+.home-page {
   height: 100vh;
   width: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   font-family: 'Inter', sans-serif;
+  
 }
 
-/* FELSŐ 65% - HÁTTÉRKÉP ÉS BLUR */
-.hero-65 {
+.home-container {
+  animation: fadeIn 0.5s ease;
+}
+
+.home-main {
   position: relative;
   flex: 0 0 65%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #1a202c;
 }
 
-.hero-65::before {
+.home-main::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image: url("https://images.unsplash.com/photo-1618296498428-475b880e5b0a?q=80&w=1632&auto=format&fit=crop");
   background-size: cover;
   background-position: center;
-  filter: blur(12px) brightness(0.65);
+  filter: blur(10px) brightness(0.65);
   transform: scale(1.1);
   z-index: 0;
 }
 
-.hero-content {
+.home-content {
   position: relative;
   z-index: 2;
   animation: fadeIn 1s ease-out;
   width: 100%;
+  padding-top: 10px;
 }
 
-/* LOGÓ ÉS ROMBUSZ (EXTREMELY LARGE) */
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 5px;
-}
-
-.logo-icon {
-  width: 50px!important; /* Megnövelve */
-  height: 50px!important;
-  background-color: #d58224;
-  border-radius: 15px;
-  transform: rotate(45deg);
-  flex-shrink: 0;
-}
-
-.logo-text {
-  font-size: 5rem!important; /* Brutális méret */
-  font-weight: 950;
+.home-logo-text {
   color: white;
-  margin: 0;
-  letter-spacing: -5px;
-  line-height: 1;
-  text-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  font-size: 6rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  margin-top: 60px;
+  line-height: 85px;
+  text-decoration: none;
 }
 
-.hero-subtitle {
-  color: white;
-  font-size: 2.5rem; /* Jelentősen megnövelve */
-  margin-top: 30px;
-  margin-bottom: 60px;
+.home-title {
+  color: #b6b8b9;
+  font-size: 2.5rem; 
+  margin-bottom: 50px;
   font-weight: 500;
   text-shadow: 0 4px 15px rgba(0,0,0,0.6);
 }
 
-/* GOMB (STABIL HOVERREL) */
-.main-cta-btn {
-  background: #d58224 !important;
-  color: white !important;
-  border: none !important;
-  /* Kisebbre vett padding és betűméret */
-  padding: 14px 35px !important; 
-  font-size: 1.1rem !important;
-  
-  font-weight: 700;
+.home-button {
+  background: #d58224 ;
+  color: white ;
+  border: none ;
+  padding: 10px 25px ; 
+  font-size: 1.3rem ;
+  font-weight: 775;
   border-radius: 100px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin: 0 auto;
-  transition: background-color 0.2s ease;
-  /* Megszüntetjük a felesleges árnyékokat is */
-  box-shadow: none !important;
+  height: 75px;
+  width: 270px;
 }
 
-.main-cta-btn:hover {
-  background: #b86b1a !important;
-  transform: none !important; /* Tiltjuk a nagyítást */
+.home-button:hover {
+  background: #b86b1a;
 }
 
-/* Az ikon is legyen kisebb a gombban */
-.main-cta-btn svg {
-  width: 20px !important;
-  height: 20px !important;
-  transition: transform 0.2s;
+.home-button svg {
+  width: 30px; 
+  height: 30px;
+  padding-top: 4px
 }
 
-/* ALSÓ 35% - FEHÉR SÁV */
-.featured-35 {
+.home-section {
   flex: 0 0 35%;
   background-color: #ffffff;
   display: flex;
@@ -181,13 +160,11 @@
   font-size: 1.4rem;
 }
 
-/* ANIMÁCIÓ */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* MOBIL FIXES */
 @media (max-width: 1200px) {
   .logo-text { font-size: 5.5rem; }
   .hero-subtitle { font-size: 2rem; }
