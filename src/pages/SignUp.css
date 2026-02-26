@@ -31,7 +31,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   z-index: 10;
 }
 
@@ -60,21 +60,25 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
 }
 
 .logo-icon {
-  width: 30px;
-  height: 30px;
+  width: 45px !important;
+  height: 45px !important;
   background-color: var(--primary-color);
   border-radius: 5px;
   transform: rotate(45deg);
 }
 
-.logo-text {
-  font-size: 1.8rem;
-  font-weight: bold;
+.logo-text2 {
+  font-size: 4.5rem !important; /* Brutális méret */
+  font-weight: 950;
+  color: white;
   margin: 0;
+  letter-spacing: -5px;
+  line-height: 1;
+  text-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 /* Form Container */
@@ -176,6 +180,7 @@ body {
 /* Login link */
 .login-text {
   margin-top: 1rem;
+  text-align: center;
 }
 
 .login-link {
