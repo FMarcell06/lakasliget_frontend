@@ -1,11 +1,9 @@
 .home-page {
-  height: 100vh;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden és height: 100vh ELTÁVOLÍTVA — térkép miatt scrollozhatóvá tesszük */
   display: flex;
   flex-direction: column;
   font-family: 'Inter', sans-serif;
-  
 }
 
 .home-container {
@@ -14,11 +12,12 @@
 
 .home-main {
   position: relative;
-  flex: 0 0 65%;
+  height: 65vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: hidden; /* ← ez fogja vissza a scale-t */
 }
 
 .home-main::before {
@@ -54,18 +53,18 @@
 
 .home-title {
   color: #b6b8b9;
-  font-size: 2.5rem; 
+  font-size: 2.5rem;
   margin-bottom: 50px;
   font-weight: 500;
   text-shadow: 0 4px 15px rgba(0,0,0,0.6);
 }
 
 .home-button {
-  background: #d58224 ;
-  color: white ;
-  border: none ;
-  padding: 10px 25px ; 
-  font-size: 1.3rem ;
+  background: #d58224;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 1.3rem;
   font-weight: 775;
   border-radius: 100px;
   cursor: pointer;
@@ -78,24 +77,135 @@
   width: 270px;
 }
 
-.home-button:hover {
-  background: #b86b1a;
-}
+.home-button:hover { background: #b86b1a; }
 
 .home-button svg {
-  width: 30px; 
+  width: 30px;
   height: 30px;
-  padding-top: 4px
+  padding-top: 4px;
 }
 
+/* TÉRKÉP SZEKCIÓ */
+.home-map-section {
+  max-width: 1300px;
+  width: 100%;
+  margin: 60px auto;
+  padding: 0 40px;
+}
+
+.home-map-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.home-map-header h2 {
+  font-size: 30px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.home-map-header p {
+  color: #999;
+  font-size: 15px;
+}
+
+.home-map-wrapper {
+  height: 560px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #e0e4e8;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+/* POPUP KÁRTYA */
+.home-map-popup .leaflet-popup-content-wrapper {
+  border-radius: 14px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  border: none !important;
+  width: 220px !important;
+}
+
+.home-map-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: 220px !important;
+}
+
+.home-map-popup .leaflet-popup-tip {
+  background: white !important;
+}
+
+.popup-card {
+  cursor: pointer;
+  width: 220px;
+}
+
+.popup-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.popup-body {
+  padding: 12px 14px;
+}
+
+.popup-price {
+  font-size: 17px;
+  font-weight: 800;
+  color: #e68900;
+  margin-bottom: 4px;
+}
+
+.popup-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-meta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.popup-address {
+  font-size: 11px;
+  color: #bbb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 10px;
+}
+
+.popup-btn {
+  width: 100%;
+  background: #e68900;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.popup-btn:hover { background: #cf7a00; }
+
+/* KIEMELT KÁRTYÁK */
 .home-section {
-  flex: 0 0 35%;
   background-color: #ffffff;
   display: flex;
   align-items: center;
-  padding: 0 8%;
-  position: relative;
-  z-index: 5;
+  padding: 50px 8%;
   box-shadow: 0 -15px 40px rgba(0,0,0,0.08);
 }
 
@@ -166,14 +276,14 @@
 }
 
 @media (max-width: 1200px) {
-  .logo-text { font-size: 5.5rem; }
-  .hero-subtitle { font-size: 2rem; }
+  .home-logo-text { font-size: 5.5rem !important; }
+  .home-title { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
-  .no-scroll { height: auto; overflow: visible; }
-  .logo-text { font-size: 3.5rem; letter-spacing: -2px; }
-  .hero-subtitle { font-size: 1.4rem; }
-  .logo-icon { width: 50px; height: 50px; }
+  .home-logo-text { font-size: 3.5rem !important; letter-spacing: -2px; }
+  .home-title { font-size: 1.4rem; }
   .compact-grid { grid-template-columns: 1fr; }
+  .home-map-section { padding: 0 16px; }
+  .home-map-wrapper { height: 380px; }
 }
