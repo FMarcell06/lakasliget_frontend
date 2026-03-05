@@ -1,10 +1,11 @@
+/* ===== EREDETI CSS — VÁLTOZATLAN ===== */
 .header {
   box-shadow: 0px 5px 5px lightgray;
-    position: fixed;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-    display: flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   justify-content: center;
@@ -14,7 +15,6 @@
   height: 5vh;
   width: 100vw;
 }
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -22,7 +22,6 @@
   padding: 20px 6%;
   width: 100vw;
 }
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -30,18 +29,14 @@
   position: absolute;
   height: 100%;
 }
-
-
 .search-container input:focus {
   width: 220px;
   border-color: #d58224;
 }
-
 .auth-buttons {
   display: flex;
   gap: 15px;
 }
-
 .btn-signin {
   background: none;
   border: none;
@@ -49,7 +44,6 @@
   font-weight: bold;
   cursor: pointer;
 }
-
 .btn-signup {
   background: #d58224;
   color: white;
@@ -60,23 +54,20 @@
   cursor: pointer;
   transition: opacity 0.3s;
 }
-
 .btn-signup:hover {
   opacity: 0.85;
 }
-
 .header button {
-    background-color: #d58224;
-    padding: 10px 22px;
-    border-radius: 25px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    cursor: pointer;
-    border: none;
-    color:white;
+  background-color: #d58224;
+  padding: 10px 22px;
+  border-radius: 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  cursor: pointer;
+  border: none;
+  color:white;
 }
-
 .headerBtn-container {
-    display: flex;
+  display: flex;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
@@ -84,43 +75,140 @@
   height: 100%;
   top: 0;
   right: 0;
-
 }
-
 .header button:hover{
   background-color: #b86d1c;
   transition: 0.05s;
 }
-
 .profileIcon{
   cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08)
-
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08)
 }
-
 .noProfileIcon{
   cursor: pointer;
 }
-
 .adminBtn{
   border: 3px solid #d58224 !important;
   color: #d58224 !important;
   background-color: whitesmoke !important;
   transition: 0.25s;
 }
-
 .adminBtn:hover{
   background-color: #d58224 !important;
   color: white !important;
 }
-
 @media (max-width: 920px) {
   .username {
     display: none;
   }
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HAMBURGER MENÜ — CSAK MOBIL ===== */
+
+.hamburger-btn {
+  display: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 6px !important;
+  color: #d58224 !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 768px) {
+  /* Nagy képernyős elemek elrejtése */
+  .nav-links { display: none !important; }
+  .headerBtn-container { display: none !important; }
+  .auth-buttons { display: none !important; }
+
+  /* Hamburger megjelenítése */
+  .hamburger-btn { display: flex !important; }
+
+  /* Header legyen flex-column hogy a menü alá nyíljon */
+  .header {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+
+  .navbar {
+    padding: 14px 5% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 16px 16px;
+  background: white;
+  border-top: 1px solid #eee;
+  animation: slideDown 0.2s ease;
+}
+
+.mobile-nav-btn {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 11px 16px !important;
+  border-radius: 10px !important;
+  background-color: #d58224 !important;
+  color: white !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+}
+
+.mobile-nav-btn:hover {
+  background-color: #b86d1c !important;
+}
+
+.mobile-nav-btn:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+.mobile-divider {
+  height: 1px;
+  background: #eee;
+  margin: 4px 0;
+}
+
+.mobile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.mobile-logout {
+  background-color: #d58224 !important;
+  color: white !important;
+}
+
+.mobile-logout:hover {
+  background-color: #b86d1c !important;
+  color: white !important;
+}
+
+.mobile-auth-row {
+  display: flex;
+  gap: 10px;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
