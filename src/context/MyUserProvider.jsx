@@ -18,7 +18,7 @@ import { auth, db } from "../firebaseApp.js";
 import { useNavigate } from "react-router-dom";
 import { updateAvatar } from "../myBackend.js";
 import { uploadImage } from "../cloudinaryUtils.js";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export const MyUserContext = createContext();
 
@@ -43,23 +43,32 @@ export const MyUserProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const signUpUser = async (email, displayName, password) => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(auth.currentUser, { displayName });
-      await sendEmailVerification(auth.currentUser);
-      setMsg(
-        (prev) => (
-          { ...prev },
-          { signUp: "Kattints az email címben küldött linkre!" }
-        ),
-      );
-      logoutUser();
-    } catch (error) {
-      console.log(error);
-      setMsg({ err: error.message });
-    }
-  };
+const signUpUser = async (email, displayName, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const newUser = userCredential.user; // ← ezt használd auth.currentUser helyett
+
+    await updateProfile(newUser, { displayName });
+    await sendEmailVerification(newUser);
+
+    await setDoc(doc(db, "users", newUser.uid), {
+      uid: newUser.uid,
+      contactName: displayName,
+      contactEmail: email,
+      contactPhone: "",
+      contactType: "Magánszemély",
+      avatarUrl: null,
+      public_id: null,
+      isAdmin: false,
+    });
+
+    setMsg(prev => ({...prev}, { signUp: "Kattints az email címben küldött linkre!" }));
+    logoutUser();
+  } catch (error) {
+    console.log(error);
+    setMsg({ err: error.message });
+  }
+};
 
   const logoutUser = async () => {
     await signOut(auth);

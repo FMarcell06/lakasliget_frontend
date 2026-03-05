@@ -14,6 +14,7 @@ import { NotFound } from './components/NotFound.jsx';
 import { Listing } from './pages/Listing.jsx';
 import { PublicProfile } from './pages/PublicProfile.jsx';
 import { Admin } from './pages/Admin.jsx';
+import { PwReset } from './pages/PwReset.jsx';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -31,6 +32,7 @@ function App() {
         <Route path='/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>}></Route>
         <Route path="/users/:uid" element={<PublicProfile />} />
         <Route path='/admin' element={<ProtectedRoute><Admin /></ProtectedRoute>}></Route>
+        <Route path='/pwreset' element={<PwReset />}></Route>
         <Route path='/listing/:id' element={<Listing />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
