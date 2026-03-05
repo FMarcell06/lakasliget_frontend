@@ -5,13 +5,13 @@ import { FaArrowLeft, FaRegEye, FaRegEyeSlash, FaRegEnvelope, FaChevronLeft, FaC
 import './SignIn.css';
 
 const images = [
-  "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1606744888344-493238951221?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1562438668-bcf0ca6578f0?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1615876234886-fd9a39fda97f?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1615529162924-f8605388461d?auto=format&fit=crop&q=80"
+  "https://images.unsplash.com/photo-1618221520382-3d68e64f58ff?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1691745034385-d5376238a97c?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1691036561573-4b76998b60de?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1721630175454-0ca4517bb530?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1649511134921-67afc567280c?auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80"
 ];
 
 export const SignIn = () => {
