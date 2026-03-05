@@ -14,7 +14,21 @@
   padding-bottom: 35px;
   height: 5vh;
   width: 100vw;
+
+  /* Görgetés animáció */
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
+
+.header--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.header--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;

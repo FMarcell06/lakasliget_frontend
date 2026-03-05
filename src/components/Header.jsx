@@ -11,7 +11,9 @@ export const Header = () => {
   const { user, isAdmin, logoutUser } = useContext(MyUserContext)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [visible, setVisible] = useState(true)
   const menuRef = useRef(null)
+  const lastScrollY = useRef(0)
   const location = useLocation();
 
 
@@ -25,13 +27,54 @@ export const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth > 768) setMenuOpen(false);
-  };
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) setMenuOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const HIDE_THRESHOLD = 80;
+    const SHOW_THRESHOLD = 60;
+    let scrolledDown = 0;
+    let scrolledUp = 0;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const diff = currentScrollY - lastScrollY.current;
+
+      if (currentScrollY < 10) {
+        // Oldal tetején mindig látszik
+        setVisible(true);
+        scrolledDown = 0;
+        scrolledUp = 0;
+      } else if (diff > 0) {
+        // Lefelé görgetés
+        scrolledDown += diff;
+        scrolledUp = 0;
+        if (scrolledDown > HIDE_THRESHOLD) {
+          setVisible(false);
+          setMenuOpen(false);
+          scrolledDown = 0;
+        }
+      } else {
+        // Felfelé görgetés
+        scrolledUp += Math.abs(diff);
+        scrolledDown = 0;
+        if (scrolledUp > SHOW_THRESHOLD) {
+          setVisible(true);
+          scrolledUp = 0;
+        }
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const goTo = (path) => {
     navigate(path)
@@ -39,7 +82,7 @@ useEffect(() => {
   }
 
   return (
-    <div className='header' ref={menuRef}>
+    <div className={`header ${visible ? 'header--visible' : 'header--hidden'}`} ref={menuRef}>
       <nav className="navbar">
         <div className="logo"></div>
 
