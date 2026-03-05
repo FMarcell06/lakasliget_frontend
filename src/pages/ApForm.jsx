@@ -223,7 +223,7 @@ export const ApForm = () => {
           <h3><FaHome /> Alapadatok</h3>
           <div className="form-group">
             <label>Hirdetés címe *</label>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="pl. Modern garzon a Corvin negyedben" required />
+            <input className="form-group-input-hirdetes" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="pl. Modern garzon a Corvin negyedben" required/>
           </div>
           <div className="form-group">
             <label><FaMapMarkerAlt /> Pontos cím *</label>
