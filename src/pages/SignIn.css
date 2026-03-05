@@ -299,3 +299,40 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Password-reset */
+.pw-reset-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.pw-reset-success {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.pw-reset-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.pw-reset-success p {
+  color: #2e7d32;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  background: #e8f5e9;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.error-msg {
+  color: #c62828;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  background: #fce4ec;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
