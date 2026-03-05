@@ -98,6 +98,10 @@
 
 }
 
+.noProfileIcon{
+  cursor: pointer;
+}
+
 .adminBtn{
   border: 3px solid #d58224 !important;
   color: #d58224 !important;

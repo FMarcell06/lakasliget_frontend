@@ -4,7 +4,7 @@ import { MdCameraAlt, MdLocationOn } from "react-icons/md";
 import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { MyUserContext } from "../context/MyUserProvider";
-import { deleteHome } from "../myBackend";
+import { deleteHome, notify } from "../myBackend";
 import { useFavourites } from "../useFavourites";
 import './ApartCard.css';
 
@@ -44,8 +44,10 @@ export const ApartCard = ({ apartment }) => {
     if (window.confirm("Biztosan törölni szeretnéd ezt a hirdetést?")) {
       try {
         await deleteHome(id, thumbnail?.delete_url, images);
+        notify.success("Hirdetés törölve!")
       } catch (err) {
         console.error(err);
+        notify.error("Hiba történt a törllés során!")
       }
     }
   };

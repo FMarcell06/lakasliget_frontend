@@ -30,7 +30,7 @@ export const Header = () => {
                     {user?.photoURL ? 
                     <img src={user.photoURL} className="profileIcon" style={{width:"50px",height:"50px",borderRadius:"50%",objectFit:"cover"}} alt="előnézet"  />
                     :
-                    <RxAvatar size={50}/>
+                    <RxAvatar className='noProfileIcon' size={50}/>
                 }
                 </span>
                 <h3 className='username'>{user.displayName}</h3>
