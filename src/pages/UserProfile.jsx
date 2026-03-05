@@ -4,7 +4,7 @@ import { FaPhone, FaEnvelope, FaUser, FaBuilding } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
-import { readHomes } from '../myBackend';
+import { notify, readHomes } from '../myBackend';
 import { ApartCard } from '../components/ApartCard';
 import { useFavourites } from '../useFavourites';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -100,9 +100,11 @@ export const UserProfile = () => {
         await updateDoc(homeRef, { ...contact });
       }
 
+      notify.success("Sikeres mentés!")
       setContactSaved(true);
       setTimeout(() => setContactSaved(false), 3000);
     } catch (err) {
+      notify.error("Hiba történt mentéskor!")
       console.error("Kontakt mentési hiba:", err);
     } finally {
       setLoading(false);

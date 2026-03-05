@@ -16,9 +16,10 @@ import { useState } from "react";
 import { createContext } from "react";
 import { auth, db } from "../firebaseApp.js";
 import { useNavigate } from "react-router-dom";
-import { updateAvatar } from "../myBackend.js";
+import { notify, updateAvatar } from "../myBackend.js";
 import { uploadImage } from "../cloudinaryUtils.js";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { not } from "firebase/firestore/pipelines";
 
 export const MyUserContext = createContext();
 
@@ -63,36 +64,38 @@ const signUpUser = async (email, displayName, password) => {
     });
 
     setMsg(prev => ({...prev}, { signUp: "Kattints az email címben küldött linkre!" }));
+    notify.success("Kattints az email címben küldött linkre!")
     logoutUser();
   } catch (error) {
     console.log(error);
+    notify.error("Hiba történt a regisztrációnál " + error)
     setMsg({ err: error.message });
   }
 };
 
   const logoutUser = async () => {
     await signOut(auth);
+    notify.success("Sikeres kijelentkezés!")
     setMsg({ signIn: false });
   };
 
-  const signInUser = async (email, password) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      const currentUser = auth.currentUser;
-      if (!currentUser.emailVerified) {
-        setMsg({
-          signUp: "Kérlek kattints a az aktiváló linkre!",
-          info: "Kérlek kattints a az aktiváló linkre!",
-        });
-        logoutUser();
-        return;
-      }
-      setMsg({ signIn: true });
-    } catch (error) {
-      console.log(error);
-      setMsg({ err: error.message });
+const signInUser = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    const currentUser = auth.currentUser;
+    if (!currentUser.emailVerified) {
+      notify.warning("Kérlek erősítsd meg az email címed!");
+      logoutUser();
+      return;
     }
-  };
+    notify.success("Sikeres bejelentkezés!");
+    setMsg({ signIn: true }); // ezt megtartod ha máshol még figyeled
+    navigate("/")
+  } catch (error) {
+    console.log(error);
+    notify.error("Hibás email vagy jelszó!");
+  }
+};
 
   const resetPassword = async (email) => {
     try {
@@ -118,9 +121,11 @@ const signUpUser = async (email, displayName, password) => {
         // 3. Helyi állapot frissítése
         await auth.currentUser.reload();
         setUser({ ...auth.currentUser });
+        notify.success("Sikeres mentés!")
         setMsg({ updateProfile: "Sikeres mentés!" });
       }
     } catch (error) {
+      notify.error("Hiba történt a profilkép firrítésekor!")
       setMsg({ err: "Hiba történt a profilkép frissítésekor!" });
     }
   };
@@ -133,12 +138,16 @@ const signUpUser = async (email, displayName, password) => {
       );
       await reauthenticateWithCredential(auth.currentUser, credential);
       await deleteUser(auth.currentUser);
+      notify.success("Fiók sikeresen törölve!")
       setMsg(null);
       setMsg({ serverMsg: "Felhasználói fiók törölve!" });
     } catch (error) {
       console.log(error);
       if (error.code == "auth/wrong-password") setMsg({ err: "Hibás jelszó!" });
-      else setMsg({ err: "Hiba történt a fiók törlésekor!" });
+      else{
+        notify.error("Hiba történt a fiók törlésekor!")
+        setMsg({ err: "Hiba történt a fiók törlésekor!" });
+      }
     }
   };
 

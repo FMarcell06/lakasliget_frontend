@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
-import { addHome, uploadToImgBB, readHome, updateHome, deleteGalleryImage } from "../myBackend";
+import { addHome, uploadToImgBB, readHome, updateHome, deleteGalleryImage, notify } from "../myBackend";
 import { MyUserContext } from "../context/MyUserProvider";
 import { Header } from "../components/Header";
 import { doc, getDoc } from "firebase/firestore";
@@ -40,7 +40,7 @@ const DEFAULT_EXTRA_FIELDS = {
 };
 
 export const ApForm = () => {
-  const { user } = useContext(MyUserContext);
+  const { user, isAdmin } = useContext(MyUserContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -166,23 +166,25 @@ export const ApForm = () => {
         finalExtraFields[key] = extraFields[key] === "" ? "Nincs megadva" : extraFields[key];
       });
 
-      const apartmentData = {
-        title, address,
-        lat: coords.lat, lon: coords.lon, fullAddress: coords.display,
-        price: Number(price), area: Number(area), rooms: Number(rooms),
-        description, category,
-        ...finalExtraFields,
-        ...contactData,
-        thumbnail: home?.thumbnail || null,
-        uid: user.uid,
-      };
+const isAdminEditingOther = isAdmin && id && home?.uid !== user.uid;
 
+
+const apartmentData = {
+  title, address,
+  lat: coords.lat, lon: coords.lon, fullAddress: coords.display,
+  price: Number(price), area: Number(area), rooms: Number(rooms),
+  description, category,
+  ...finalExtraFields,
+  thumbnail: home?.thumbnail || null,  // ← ide
+  ...(!isAdminEditingOther && { ...contactData, uid: user.uid }),
+};
       if (id) {
         await updateHome(
           id,
           { ...apartmentData, images: home?.images || [] },
           thumbnailImg,
-          files
+          files,
+          isAdmin && home?.uid !== user.uid  // ← csak ha admin ÉS nem a saját hirdetése
         );
       } else {
         let finalThumbnail = null;
@@ -196,12 +198,12 @@ export const ApForm = () => {
 
         await addHome({ ...apartmentData, thumbnail: finalThumbnail }, newGalleryImages);
       }
-
+      notify.success("Sikeres mentés!")
       navigate("/listings");
 
     } catch (error) {
       console.error(error);
-      alert("Hiba történt a mentés során!");
+      notify.error("Hiba történt a feltöltés során!")
     } finally {
       setLoading(false);
     }

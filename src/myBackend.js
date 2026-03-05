@@ -2,6 +2,7 @@ import axios from "axios";
 import { db } from "./firebaseApp";
 import { addDoc, collection, doc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, getDoc, deleteDoc, setDoc, getDocs } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
+import { toast } from "react-toastify";
 
 const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
 const imgbbUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
@@ -73,6 +74,13 @@ export const readHomes = async () => {
     }
 };
 
+export const notify = {
+  success: (msg) => toast.success(msg),
+  error: (msg) => toast.error(msg),
+  info: (msg) => toast.info(msg),
+  warning: (msg) => toast.warning(msg),
+}
+
 // 5. Avatar frissítése - avatarUrl-t is elmenti
 export const updateAvatar = async (uid, public_id, avatarUrl = null) => {
     let oldPublicId = null;
@@ -121,7 +129,7 @@ export const deleteHome = async (id, thumbnailDeleteUrl, imagesArray = []) => {
 };
 
 // Ingatlan frissítése képkezeléssel
-export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFiles = []) => {
+export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFiles = [], isAdminEdit = false) => {
     try {
         let thumbnail = updatedData.thumbnail;
         let images = updatedData.images || [];
@@ -138,12 +146,17 @@ export const updateHome = async (id, updatedData, newThumbnailFile, newImagesFil
             }
         }
 
+        // uid és timestamp kivétele — admin esetén az eredeti marad
+        const { uid, timestamp, ...safeData } = updatedData;
+
         const docRef = doc(db, "apartments", id);
         await updateDoc(docRef, {
-            ...updatedData,
+            ...safeData,
             thumbnail,
             images,
-            lastModified: serverTimestamp()
+            lastModified: serverTimestamp(),
+            // Ha nem admin szerkeszti, visszaírjuk az eredeti uid-ot
+            ...(!isAdminEdit && { uid }),
         });
         return true;
     } catch (error) {

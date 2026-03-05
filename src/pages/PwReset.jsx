@@ -3,6 +3,7 @@ import { MyUserContext } from '../context/MyUserProvider';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaRegEnvelope, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './SignIn.css';
+import { notify } from '../myBackend';
 
 const images = [
   "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?auto=format&fit=crop&q=80",
@@ -30,18 +31,20 @@ export const PwReset = () => {
   const nextSlide = () => setCurrentImg((prev) => (prev + 1) % images.length);
   const prevSlide = () => setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    const data = new FormData(event.currentTarget);
-    try {
-      await resetPassword(data.get('email'));
-    } catch (error) {
-      console.error("Hiba:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  setLoading(true);
+  const data = new FormData(event.currentTarget);
+  try {
+    await resetPassword(data.get('email'));
+    notify.success("Jelszó-visszaállító email elküldve!");
+    navigate("/signin");
+  } catch (error) {
+    notify.error("Hiba történt, ellenőrizd az email címet!");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="signin-container">
