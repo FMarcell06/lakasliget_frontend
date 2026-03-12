@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { IoClose } from 'react-icons/io5';
-import { FaPhone, FaEnvelope, FaUser, FaBuilding } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaUser, FaBuilding, FaTrash, FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { MyUserContext } from '../context/MyUserProvider';
 import { Header } from '../components/Header';
-import { notify, readHomes } from '../myBackend';
+import { deleteAvatar, notify, readHomes } from '../myBackend';
 import { ApartCard } from '../components/ApartCard';
 import { useFavourites } from '../useFavourites';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -12,7 +12,7 @@ import { db } from '../firebaseApp';
 import './UserProfile.css';
 
 export const UserProfile = () => {
-  const { user, photoUpdate, deleteAccount, deleteAvatar } = useContext(MyUserContext);
+  const { user, photoUpdate, deleteAccount } = useContext(MyUserContext);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,6 +30,12 @@ export const UserProfile = () => {
   });
   const [contactSaved, setContactSaved] = useState(false);
 
+  // Fiók törlés modal
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showDeletePw, setShowDeletePw] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   useEffect(() => {
     if (user) {
       const load = async () => {
@@ -39,7 +45,6 @@ export const UserProfile = () => {
       };
       load();
 
-      // Kontakt adatok betöltése Firestore-ból
       const loadContact = async () => {
         try {
           const docRef = doc(db, "users", user.uid);
@@ -88,23 +93,21 @@ export const UserProfile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // 1. User profil mentése
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
       const existing = docSnap.exists() ? docSnap.data() : {};
       await setDoc(docRef, { ...existing, ...contact });
 
-      // 2. Összes saját hirdetés frissítése
       for (const home of myHomes) {
         const homeRef = doc(db, "apartments", home.id);
         await updateDoc(homeRef, { ...contact });
       }
 
-      notify.success("Sikeres mentés!")
+      notify.success("Sikeres mentés!");
       setContactSaved(true);
       setTimeout(() => setContactSaved(false), 3000);
     } catch (err) {
-      notify.error("Hiba történt mentéskor!")
+      notify.error("Hiba történt mentéskor!");
       console.error("Kontakt mentési hiba:", err);
     } finally {
       setLoading(false);
@@ -119,21 +122,19 @@ export const UserProfile = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Biztos törölni szeretné a fiókját? Minden hirdetése elvész!")) {
-      const pw = prompt("Add meg a jelszavad a fiók törléséhez!");
-      if (pw) {
-        setLoading(true);
-        try {
-          await deleteAvatar(user.uid);
-          await deleteAccount(pw);
-          navigate("/");
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      }
+  const handleDeleteConfirm = async () => {
+    if (!deletePassword) return;
+    setDeleteLoading(true);
+    try {
+      await deleteAvatar(user.uid);
+      await deleteAccount(deletePassword);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleteLoading(false);
+      setDeleteModal(false);
+      setDeletePassword("");
     }
   };
 
@@ -145,10 +146,9 @@ export const UserProfile = () => {
       <h1 className="form-title">Profil Beállítások</h1>
 
       <div className="profile-layout">
-        {/* BAL OLDAL: Profil adatok */}
+        {/* BAL OLDAL */}
         <div className="profile-sidebar">
 
-          {/* Profilkép kártya */}
           <form className="recipe-card" onSubmit={handleSubmit}>
             <div className="user-info">
               <h3>{user?.displayName || "Felhasználó"}</h3>
@@ -173,7 +173,6 @@ export const UserProfile = () => {
             </button>
           </form>
 
-          {/* Kontakt adatok kártya */}
           <form className="recipe-card contact-card-form" onSubmit={handleContactSave}>
             <h3 className="contact-form-title">
               <FaUser style={{ color: "#e68900" }} /> Elérhetőségeim
@@ -182,40 +181,19 @@ export const UserProfile = () => {
 
             <div className="contact-form-field">
               <label><FaUser className="cff-icon" /> Neve</label>
-              <input
-                type="text"
-                value={contact.contactName}
-                onChange={e => setContact(p => ({ ...p, contactName: e.target.value }))}
-                placeholder="pl. Kiss János"
-              />
+              <input type="text" value={contact.contactName} onChange={e => setContact(p => ({ ...p, contactName: e.target.value }))} placeholder="pl. Kiss János" />
             </div>
-
             <div className="contact-form-field">
               <label><FaPhone className="cff-icon" /> Telefonszám</label>
-              <input
-                type="tel"
-                value={contact.contactPhone}
-                onChange={e => setContact(p => ({ ...p, contactPhone: e.target.value }))}
-                placeholder="pl. +36 30 123 4567"
-              />
+              <input type="tel" value={contact.contactPhone} onChange={e => setContact(p => ({ ...p, contactPhone: e.target.value }))} placeholder="pl. +36 30 123 4567" />
             </div>
-
             <div className="contact-form-field">
               <label><FaEnvelope className="cff-icon" /> Email cím</label>
-              <input
-                type="email"
-                value={contact.contactEmail}
-                onChange={e => setContact(p => ({ ...p, contactEmail: e.target.value }))}
-                placeholder="pl. kiss.janos@email.hu"
-              />
+              <input type="email" value={contact.contactEmail} onChange={e => setContact(p => ({ ...p, contactEmail: e.target.value }))} placeholder="pl. kiss.janos@email.hu" />
             </div>
-
             <div className="contact-form-field">
               <label><FaBuilding className="cff-icon" /> Hirdető típusa</label>
-              <select
-                value={contact.contactType}
-                onChange={e => setContact(p => ({ ...p, contactType: e.target.value }))}
-              >
+              <select value={contact.contactType} onChange={e => setContact(p => ({ ...p, contactType: e.target.value }))}>
                 <option value="Magánszemély">Magánszemély</option>
                 <option value="Tulajdonos">Tulajdonos</option>
                 <option value="Ingatlaniroda">Ingatlaniroda</option>
@@ -227,24 +205,19 @@ export const UserProfile = () => {
             </button>
           </form>
 
-          <button className='accDelBtn' onClick={handleDelete} disabled={loading}>
-            Fiók törlése
+          {/* Fiók törlése gomb */}
+          <button className="accDelBtn" onClick={() => setDeleteModal(true)} disabled={loading}>
+            <FaTrash /> Fiók törlése
           </button>
         </div>
 
-        {/* JOBB OLDAL: Hirdetések */}
+        {/* JOBB OLDAL */}
         <div className="my-listings-section">
           <div className="listings-tabs">
-            <button
-              className={`tab-btn ${activeTab === "own" ? "active" : ""}`}
-              onClick={() => setActiveTab("own")}
-            >
+            <button className={`tab-btn ${activeTab === "own" ? "active" : ""}`} onClick={() => setActiveTab("own")}>
               Saját hirdetéseim ({myHomes.length})
             </button>
-            <button
-              className={`tab-btn ${activeTab === "favs" ? "active" : ""}`}
-              onClick={() => setActiveTab("favs")}
-            >
+            <button className={`tab-btn ${activeTab === "favs" ? "active" : ""}`} onClick={() => setActiveTab("favs")}>
               Kedvenceim ({favHomes.length})
             </button>
           </div>
@@ -284,6 +257,48 @@ export const UserProfile = () => {
           )}
         </div>
       </div>
+
+      {/* FIÓK TÖRLÉS MODAL */}
+      {deleteModal && (
+        <div className="delete-modal-overlay" onClick={() => setDeleteModal(false)}>
+          <div className="delete-modal" onClick={e => e.stopPropagation()}>
+            <div className="delete-modal-icon">
+              <FaExclamationTriangle />
+            </div>
+            <h2>Fiók törlése</h2>
+            <p className="delete-modal-desc">
+              Biztosan törölni szeretné fiókját? Ez a művelet <strong>visszafordíthatatlan</strong>
+            </p>
+
+            <div className="delete-pw-field">
+              <label>Jelszó megerősítése</label>
+              <div className="delete-pw-wrapper">
+                <input
+                  type={showDeletePw ? "text" : "password"}
+                  value={deletePassword}
+                  onChange={e => setDeletePassword(e.target.value)}
+                  placeholder="Add meg a jelszavad"
+                  autoFocus
+                />
+                <button type="button" className="delete-pw-eye" onClick={() => setShowDeletePw(p => !p)}>
+                  {showDeletePw ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            <div className="delete-modal-actions">
+
+              <button
+                className="delete-confirm-btn"
+                onClick={handleDeleteConfirm}
+                disabled={!deletePassword || deleteLoading}
+              >
+                {deleteLoading ? "Törlés..." : "Fiók  törlése"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading && <div className="loading-overlay"><div className="custom-spinner"></div></div>}
     </div>

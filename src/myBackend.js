@@ -102,19 +102,18 @@ export const updateAvatar = async (uid, public_id, avatarUrl = null) => {
 };
 
 export const deleteAvatar = async (uid) => {
-    let publicId = null;
-    try {
-        const docRef = doc(db, "users", uid);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return;
-        else {
-            publicId = docSnap.data().public_id;
-            await deleteImage(publicId);
-            await deleteDoc(docRef);
-        }
-    } catch (error) {
-        console.log("Avatár törlési hiba!");
-    }
+  try {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return;
+
+    const publicId = docSnap.data().public_id;
+    if (publicId) await deleteImage(publicId);
+
+    await updateDoc(docRef, { public_id: null, avatarUrl: null });
+  } catch (error) {
+    console.log("Avatár törlési hiba!", error);
+  }
 };
 
 export const deleteHome = async (id, thumbnailDeleteUrl, imagesArray = []) => {

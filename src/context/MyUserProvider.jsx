@@ -18,9 +18,8 @@ import { auth, db } from "../firebaseApp.js";
 import { useNavigate } from "react-router-dom";
 import { notify, updateAvatar } from "../myBackend.js";
 import { uploadImage } from "../cloudinaryUtils.js";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { not } from "firebase/firestore/pipelines";
-
+import { collection, query, where, getDocs, deleteDoc, getDoc, doc, setDoc } from "firebase/firestore";
+import axios from "axios";
 export const MyUserContext = createContext();
 
 export const MyUserProvider = ({ children }) => {
@@ -47,11 +46,12 @@ export const MyUserProvider = ({ children }) => {
 const signUpUser = async (email, displayName, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const newUser = userCredential.user; // ← ezt használd auth.currentUser helyett
+    const newUser = userCredential.user;
 
     await updateProfile(newUser, { displayName });
     await sendEmailVerification(newUser);
 
+    // Előbb setDoc, AZTÁN logout
     await setDoc(doc(db, "users", newUser.uid), {
       uid: newUser.uid,
       contactName: displayName,
@@ -63,19 +63,19 @@ const signUpUser = async (email, displayName, password) => {
       isAdmin: false,
     });
 
-    setMsg(prev => ({...prev}, { signUp: "Kattints az email címben küldött linkre!" }));
-    notify.success("Kattints az email címben küldött linkre!")
-    logoutUser();
+    await signOut(auth); // logoutUser helyett közvetlenül, hogy ne fusson notify
+    notify.success("Kattints az email címben küldött linkre!");
+    navigate("/signin");
+
   } catch (error) {
     console.log(error);
-    notify.error("Hiba történt a regisztrációnál " + error)
+    notify.error("Hiba történt a regisztrációnál: " + error.message);
     setMsg({ err: error.message });
   }
 };
 
   const logoutUser = async () => {
     await signOut(auth);
-    notify.success("Sikeres kijelentkezés!")
     setMsg({ signIn: false });
   };
 
@@ -130,26 +130,55 @@ const signInUser = async (email, password) => {
     }
   };
 
-  const deleteAccount = async (password) => {
-    try {
-      const credential = EmailAuthProvider.credential(
-        auth.currentUser.email,
-        password,
-      );
-      await reauthenticateWithCredential(auth.currentUser, credential);
-      await deleteUser(auth.currentUser);
-      notify.success("Fiók sikeresen törölve!")
-      setMsg(null);
-      setMsg({ serverMsg: "Felhasználói fiók törölve!" });
-    } catch (error) {
-      console.log(error);
-      if (error.code == "auth/wrong-password") setMsg({ err: "Hibás jelszó!" });
-      else{
-        notify.error("Hiba történt a fiók törlésekor!")
-        setMsg({ err: "Hiba történt a fiók törlésekor!" });
+const deleteAccount = async (password) => {
+  try {
+    // 1. Re-auth
+    const credential = EmailAuthProvider.credential(
+      auth.currentUser.email,
+      password,
+    );
+    await reauthenticateWithCredential(auth.currentUser, credential);
+
+    const uid = auth.currentUser.uid;
+
+    // 2. Összes hirdetés törlése képekkel együtt
+    const q = query(collection(db, "apartments"), where("uid", "==", uid));
+    const snapshot = await getDocs(q);
+    for (const apartmentDoc of snapshot.docs) {
+      const data = apartmentDoc.data();
+      if (data.thumbnail?.delete_url) await axios.get(data.thumbnail.delete_url).catch(() => {});
+      if (data.images?.length > 0) {
+        for (const img of data.images) {
+          if (img.delete_url) await axios.get(img.delete_url).catch(() => {});
+        }
       }
+      await deleteDoc(doc(db, "apartments", apartmentDoc.id));
     }
-  };
+
+    // 3. Profilkép törlése ha van
+    const userSnap = await getDoc(doc(db, "users", uid));
+    if (userSnap.exists() && userSnap.data().public_id) {
+      await deleteImage(userSnap.data().public_id).catch(() => {});
+    }
+
+    // 4. Kedvencek törlése
+    await deleteDoc(doc(db, "favourites", uid)).catch(() => {});
+
+    // 5. User doc törlése
+    await deleteDoc(doc(db, "users", uid));
+
+    // 6. Auth user törlése
+    await deleteUser(auth.currentUser);
+
+    notify.success("Fiók sikeresen törölve!");
+    setMsg(null);
+
+  } catch (error) {
+    console.log(error);
+    if (error.code === "auth/wrong-password") setMsg({ err: "Hibás jelszó!" });
+    else notify.error("Hiba történt a fiók törlésekor!");
+  }
+};
 
   return (
     <MyUserContext.Provider
