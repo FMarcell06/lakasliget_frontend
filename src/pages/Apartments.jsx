@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { MdTune, MdSearch, MdSwapVert } from "react-icons/md";
+import { MdTune, MdSearch, MdSwapVert, MdArrowUpward, MdArrowDownward } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { Header } from "../components/Header";
@@ -7,12 +7,23 @@ import { MyUserContext } from "../context/MyUserProvider";
 import { ApartCard } from "../components/ApartCard";
 import { readHomes } from "../myBackend";
 import "./Apartments.css";
+import { useRef } from "react";
+
+const SORT_OPTIONS = [
+  { value: "timestamp", label: "Legújabb" },
+  { value: "price", label: "Ár" },
+  { value: "area", label: "Terület" },
+  { value: "rooms", label: "Szobák" },
+];
 
 export const Apartments = () => {
   const { user } = useContext(MyUserContext);
   const [homes, setHomes] = useState([]);
   const [filteredHomes, setFilteredHomes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("timestamp");
+  const [sortAsc, setSortAsc] = useState(false);
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   const [filters, setFilters] = useState({
     title: "",
@@ -27,9 +38,13 @@ export const Apartments = () => {
     lift: ""
   });
 
+const PAGE_SIZE = 10;
+const [page, setPage] = useState(1);
+const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
+
   const navigate = useNavigate();
 
-useEffect(() => {
+  useEffect(() => {
     const load = async () => {
       const data = await readHomes();
       setHomes(data);
@@ -39,6 +54,21 @@ useEffect(() => {
     load();
   }, []);
 
+  // Rendezés alkalmazása
+  const applySort = (list, field, asc) => {
+    return [...list].sort((a, b) => {
+      let valA, valB;
+      if (field === "timestamp") {
+        valA = a.timestamp?.seconds || 0;
+        valB = b.timestamp?.seconds || 0;
+      } else {
+        valA = Number(a[field]) || 0;
+        valB = Number(b[field]) || 0;
+      }
+      return asc ? valA - valB : valB - valA;
+    });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -46,60 +76,67 @@ useEffect(() => {
 
   const resetFilters = () => {
     const defaultFilters = {
-      title: "",
-      minPrice: "",
-      maxPrice: "",
-      minSize: "",
-      rooms: "",
-      category: "",
-      furnished: "",
-      pets: "",
-      airConditioner: "",
-      lift: ""
+      title: "", minPrice: "", maxPrice: "", minSize: "",
+      rooms: "", category: "", furnished: "", pets: "",
+      airConditioner: "", lift: ""
     };
     setFilters(defaultFilters);
-    setFilteredHomes(homes);
+    setFilteredHomes(applySort(homes, sortBy, sortAsc));
   };
 
   const handleSearch = (e) => {
-    // Ha form submit hívta meg, megakadályozzuk az oldal újratöltését
     if (e) e.preventDefault();
-
     const result = homes.filter((home) => {
       const searchTerm = filters.title.toLowerCase();
-      const matchesTitle = 
-        !searchTerm || 
-        home.title?.toLowerCase().includes(searchTerm) || 
-        home.address?.toLowerCase().includes(searchTerm);
-
+      const matchesTitle = !searchTerm || home.title?.toLowerCase().includes(searchTerm) || home.address?.toLowerCase().includes(searchTerm);
       const homePrice = Number(home.price);
       const matchesMinPrice = filters.minPrice === "" || homePrice >= Number(filters.minPrice);
       const matchesMaxPrice = filters.maxPrice === "" || homePrice <= Number(filters.maxPrice);
-
       const matchesSize = filters.minSize === "" || Number(home.area) >= Number(filters.minSize);
       const matchesRooms = filters.rooms === "" || Number(home.rooms) >= Number(filters.rooms);
-
       const matchesCategory = filters.category === "" || home.category === filters.category;
       const matchesFurnished = filters.furnished === "" || home.furnished === filters.furnished;
       const matchesPets = filters.pets === "" || home.pets === filters.pets;
       const matchesAC = filters.airConditioner === "" || home.airConditioner === filters.airConditioner;
       const matchesLift = filters.lift === "" || home.lift === filters.lift;
-
-      return (
-        matchesTitle && 
-        matchesMinPrice && 
-        matchesMaxPrice && 
-        matchesSize && 
-        matchesRooms && 
-        matchesCategory && 
-        matchesFurnished && 
-        matchesPets && 
-        matchesAC && 
-        matchesLift
-      );
+      return matchesTitle && matchesMinPrice && matchesMaxPrice && matchesSize && matchesRooms && matchesCategory && matchesFurnished && matchesPets && matchesAC && matchesLift;
     });
-    setFilteredHomes(result);
+    setFilteredHomes(applySort(result, sortBy, sortAsc));
   };
+
+  const handleSortChange = (field) => {
+    if (field === sortBy) {
+      // Ugyanaz a mező — megfordítjuk
+      const newAsc = !sortAsc;
+      setSortAsc(newAsc);
+      setFilteredHomes(prev => applySort(prev, field, newAsc));
+    } else {
+      // Új mező
+      setSortBy(field);
+      setSortAsc(field === "timestamp" ? false : true);
+      setFilteredHomes(prev => applySort(prev, field, field === "timestamp" ? false : true));
+    }
+    setSortMenuOpen(false);
+  };
+
+const observerRef = useRef(null);
+const bottomRef = useRef(null);
+
+// Page reset ha változik a szűrés
+useEffect(() => { setPage(1); }, [filteredHomes]);
+
+useEffect(() => {
+  if (observerRef.current) observerRef.current.disconnect();
+  observerRef.current = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && visibleHomes.length < filteredHomes.length) {
+      setPage(p => p + 1);
+    }
+  }, { threshold: 0.1 });
+  if (bottomRef.current) observerRef.current.observe(bottomRef.current);
+  return () => observerRef.current?.disconnect();
+}, [visibleHomes.length, filteredHomes.length]);
+
+  const currentSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label;
 
   return (
     <div className="apartments-page">
@@ -120,47 +157,24 @@ useEffect(() => {
           <aside className="filter-column">
             <div className="filter-container">
               <div className="filter-title">
-<MdTune className="icon-orange" />
-
+                <MdTune className="icon-orange" />
                 <span>Szűrés</span>
               </div>
 
-              {/* FORM HOZZÁADÁSA: Ez teszi lehetővé az Enter-es keresést */}
               <form className="filter-inputs" onSubmit={handleSearch}>
                 <div className="input-field">
                   <label>Keresés</label>
                   <div className="search-wrapper">
-<MdSearch className="search-icon" />
-
-                    <input
-                      type="text"
-                      name="title"
-                      placeholder="Város, utca vagy cím..."
-                      value={filters.title}
-                      onChange={handleChange}
-                    />
+                    <MdSearch className="search-icon" />
+                    <input type="text" name="title" placeholder="Város, utca vagy cím..." value={filters.title} onChange={handleChange} />
                   </div>
                 </div>
 
                 <div className="input-field">
                   <label>Bérleti díj (Ft)</label>
                   <div className="input-row">
-                    <input
-                      type="number"
-                      name="minPrice"
-                      placeholder="Min"
-                      value={filters.minPrice}
-                      onChange={handleChange}
-                      className="price-input"
-                    />
-                    <input
-                      type="number"
-                      name="maxPrice"
-                      placeholder="Max"
-                      value={filters.maxPrice}
-                      onChange={handleChange}
-                      className="price-input"
-                    />
+                    <input type="number" name="minPrice" placeholder="Min" value={filters.minPrice} onChange={handleChange} className="price-input" />
+                    <input type="number" name="maxPrice" placeholder="Max" value={filters.maxPrice} onChange={handleChange} className="price-input" />
                   </div>
                 </div>
 
@@ -169,21 +183,12 @@ useEffect(() => {
                     <label>Szobák</label>
                     <select name="rooms" value={filters.rooms} onChange={handleChange}>
                       <option value="">Mind</option>
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <option key={n} value={n}>{n}+</option>
-                      ))}
+                      {[1, 2, 3, 4, 5].map((n) => (<option key={n} value={n}>{n}+</option>))}
                     </select>
                   </div>
                   <div className="input-field">
                     <label>Min. m²</label>
-                    <input
-                      type="number"
-                      name="minSize"
-                      placeholder="m²"
-                      value={filters.minSize}
-                      onChange={handleChange}
-                      className="no-icon-input"
-                    />
+                    <input type="number" name="minSize" placeholder="m²" value={filters.minSize} onChange={handleChange} className="no-icon-input" />
                   </div>
                 </div>
 
@@ -235,18 +240,8 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Submit típusúra váltva */}
-                <button type="submit" className="apply-btn">
-                  Találatok mutatása
-                </button>
-                
-                {/* Fontos: A törlés gomb maradjon type="button", különben ez is beküldi a formot */}
-                <button 
-                  type="button" 
-                  className="sort-btn" 
-                  onClick={resetFilters} 
-                  style={{width: '100%', marginTop: '10px', justifyContent: 'center'}}
-                >
+                <button type="submit" className="apply-btn">Találatok mutatása</button>
+                <button type="button" className="sort-btn" onClick={resetFilters} style={{ width: '100%', marginTop: '10px', justifyContent: 'center' }}>
                   Szűrők törlése
                 </button>
               </form>
@@ -262,12 +257,29 @@ useEffect(() => {
                   A lista fizetett rangsorolást is tartalmaz. <a href="#">Bővebben</a>
                 </span>
               </div>
-              <div className="meta-right">
-                <button className="sort-btn">
-                <MdSwapVert />
-
-                  Rendezés
+              <div className="meta-right" style={{ position: "relative" }}>
+                <button className="sort-btn" onClick={() => setSortMenuOpen(p => !p)}>
+                  <MdSwapVert />
+                  {currentSortLabel}
+                  {sortAsc ? <MdArrowUpward size={14} /> : <MdArrowDownward size={14} />}
                 </button>
+
+                {sortMenuOpen && (
+                  <div className="sort-dropdown">
+                    {SORT_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        className={`sort-dropdown-item ${sortBy === opt.value ? "active" : ""}`}
+                        onClick={() => handleSortChange(opt.value)}
+                      >
+                        {opt.label}
+                        {sortBy === opt.value && (
+                          sortAsc ? <MdArrowUpward size={14} /> : <MdArrowDownward size={14} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -277,24 +289,14 @@ useEffect(() => {
                 <p>Ingatlanok betöltése...</p>
               </div>
             ) : (
-              <div className="apartments-list">
-                {filteredHomes.length > 0 ? (
-                  filteredHomes.map((home) => (
-                    <div
-                      key={home.id}
-                      onClick={() => navigate("/listing/" + home.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <ApartCard apartment={home} />
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-results">
-                    <p>Nincs a szűrésnek megfelelő ingatlan.</p>
-                    <button type="button" onClick={resetFilters} className="sort-btn" style={{margin: '0 auto'}}>Összes mutatása</button>
-                  </div>
-                )}
-              </div>
+<div className="apartments-list">
+  {visibleHomes.map((home) => (
+    <div key={home.id} onClick={() => navigate("/listing/" + home.id)} style={{ cursor: 'pointer' }}>
+      <ApartCard apartment={home} />
+    </div>
+  ))}
+  <div ref={bottomRef} style={{ height: "40px" }} />  {/* ← ide */}
+</div>
             )}
           </section>
         </div>
