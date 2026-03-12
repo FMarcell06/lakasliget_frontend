@@ -6,6 +6,7 @@ import { RxAvatar } from 'react-icons/rx';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import { MdClose } from 'react-icons/md';
 import './Header.css';
+import { notify } from '../myBackend';
 
 export const Header = () => {
   const { user, isAdmin, logoutUser } = useContext(MyUserContext)
@@ -76,6 +77,11 @@ export const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const logOut = () => {
+    logoutUser()
+    notify.success("Sikeres kijelentkezés!")
+  }
+
   const goTo = (path) => {
     navigate(path)
     setMenuOpen(false)
@@ -105,7 +111,7 @@ export const Header = () => {
               }
             </span>
             <h3 className='username'>{user.displayName}</h3>
-            <button className='headerBtn' onClick={() => logoutUser()}>Kijelentkezés</button>
+            <button className='headerBtn' onClick={() => logOut()}>Kijelentkezés</button>
           </div>
         ) : (
           <div className="auth-buttons">
@@ -138,7 +144,7 @@ export const Header = () => {
                 }
                 <span>{user.displayName}</span>
               </div>
-              <button className="mobile-nav-btn mobile-logout" onClick={() => { logoutUser(); setMenuOpen(false) }}>
+              <button className="mobile-nav-btn mobile-logout" onClick={() => { logOut(); setMenuOpen(false) }}>
                 Kijelentkezés
               </button>
             </>
