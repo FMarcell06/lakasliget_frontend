@@ -253,7 +253,10 @@
 }
 
   .filter-title {
+    display: flex;
+    align-items: center;
     padding: 20px 20px 10px 20px;
+    gap: 2px;
     background: white;
     border-bottom: 1px solid #eee;
     border-radius: 8px 8px 0 0;
@@ -329,6 +332,50 @@
   .icon-orange {
     color: #e68900;
   }
+}
+
+/* ===== RENDEZÉS DROPDOWN ===== */
+.sort-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #e0e4e8;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  z-index: 100;
+  min-width: 160px;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+.sort-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: none;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 8px;
+}
+
+.sort-dropdown-item:hover {
+  background: #fff8f0 !important;
+  color: #d58224;
+}
+
+.sort-dropdown-item.active {
+  background: #fff3e0 !important;
+  color: #d58224;
+  font-weight: 700;
 }
 
 @media (min-width: 1025px) {
