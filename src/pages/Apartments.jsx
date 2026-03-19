@@ -144,12 +144,11 @@ useEffect(() => {
       <main className="apartments-main">
         <div className="info-banner">
           <div className="info-banner-content">
-            <span className="fix-icon">fix 3%</span>
-            <p>
-              Keresd a <strong>FIX 3%</strong> emblémás hirdetéseket. Ezek
-              megfelelhetnek a FIX 3%-os hitel feltételeinek.{" "}
-              <span className="info-i">i</span>
-            </p>
+            <span className="fix-icon">0%</span>
+<p>
+  Adj fel hirdetést <strong>ingyen</strong>, percek alatt regisztrálj és kezdj el bérlőt keresni még ma!{" "}
+  <span className="info-link" onClick={() => navigate("/add")}>Hirdetés feladása →</span>
+</p>
           </div>
         </div>
 

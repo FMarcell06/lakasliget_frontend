@@ -252,6 +252,13 @@
   overflow: hidden; /* ← ez kell */
 }
 
+.info-link {
+  color: #d58224;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
   .filter-title {
     display: flex;
     align-items: center;
