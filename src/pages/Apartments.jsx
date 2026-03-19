@@ -144,10 +144,9 @@ useEffect(() => {
       <main className="apartments-main">
         <div className="info-banner">
           <div className="info-banner-content">
-            <span className="fix-icon">0%</span>
 <p>
   Adj fel hirdetést <strong>ingyen</strong>, percek alatt regisztrálj és kezdj el bérlőt keresni még ma!{" "}
-  <span className="info-link" onClick={() => navigate("/add")}>Hirdetés feladása →</span>
+  <span className="info-link" onClick={() => navigate("/addnew")}>Hirdetés feladása →</span>
 </p>
           </div>
         </div>

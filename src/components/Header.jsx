@@ -3,8 +3,8 @@ import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'
 import { MyUserContext } from '../context/MyUserProvider';
 import { RxAvatar } from 'react-icons/rx';
-import { RxHamburgerMenu } from 'react-icons/rx';
 import { MdClose } from 'react-icons/md';
+import { RxHamburgerMenu } from 'react-icons/rx';
 import './Header.css';
 import { notify } from '../myBackend';
 
@@ -16,7 +16,6 @@ export const Header = () => {
   const menuRef = useRef(null)
   const lastScrollY = useRef(0)
   const location = useLocation();
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -37,6 +36,10 @@ export const Header = () => {
   }, []);
 
   useEffect(() => {
+    setMenuOpen(false);
+  }, [location]);
+
+  useEffect(() => {
     const HIDE_THRESHOLD = 80;
     const SHOW_THRESHOLD = 60;
     let scrolledDown = 0;
@@ -47,12 +50,10 @@ export const Header = () => {
       const diff = currentScrollY - lastScrollY.current;
 
       if (currentScrollY < 10) {
-        // Oldal tetején mindig látszik
         setVisible(true);
         scrolledDown = 0;
         scrolledUp = 0;
       } else if (diff > 0) {
-        // Lefelé görgetés
         scrolledDown += diff;
         scrolledUp = 0;
         if (scrolledDown > HIDE_THRESHOLD) {
@@ -61,7 +62,6 @@ export const Header = () => {
           scrolledDown = 0;
         }
       } else {
-        // Felfelé görgetés
         scrolledUp += Math.abs(diff);
         scrolledDown = 0;
         if (scrolledUp > SHOW_THRESHOLD) {
@@ -69,7 +69,6 @@ export const Header = () => {
           scrolledUp = 0;
         }
       }
-
       lastScrollY.current = currentScrollY;
     };
 
@@ -79,7 +78,6 @@ export const Header = () => {
 
   const logOut = () => {
     logoutUser()
-    notify.success("Sikeres kijelentkezés!")
   }
 
   const goTo = (path) => {
@@ -87,75 +85,113 @@ export const Header = () => {
     setMenuOpen(false)
   }
 
-  return (
-    <div className={`header ${visible ? 'header--visible' : 'header--hidden'}`} ref={menuRef}>
-      <nav className="navbar">
-        <div className="logo"></div>
+  const isActive = (path) => location.pathname === path;
 
-        {/* Eredeti nav linkek — nagy képernyőn */}
-        <div className="nav-links">
-          <button className='home' onClick={() => navigate("/")}>Főoldal</button>
-          <button className='about' onClick={() => navigate("/listings")}>Hirdetések</button>
-          <button disabled={!user} className='about' onClick={() => navigate("/addnew")}>Feltöltés</button>
-          <button className='about' onClick={() => navigate("/about")}>Rólunk</button>
-          {isAdmin && <button className='about adminBtn' onClick={() => navigate("/admin")}>Admin</button>}
+  return (
+    <header className={`header ${visible ? 'header--visible' : 'header--hidden'}`} ref={menuRef}>
+      <nav className="navbar">
+
+        {/* Logo */}
+        <div className="nav-logo" onClick={() => navigate("/")}>
+          Lakás<span>Liget</span>
         </div>
 
-        {/* Eredeti auth / profil — nagy képernyőn */}
-        {user ? (
-          <div className='headerBtn-container'>
-            <span onClick={() => navigate("/profile")}>
-              {user?.photoURL
-                ? <img src={user.photoURL} className="profileIcon" style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} alt="előnézet" />
-                : <RxAvatar className='noProfileIcon' size={50} />
-              }
-            </span>
-            <h3 className='username'>{user.displayName}</h3>
-            <button className='headerBtn' onClick={() => logOut()}>Kijelentkezés</button>
-          </div>
-        ) : (
-          <div className="auth-buttons">
-            <button className="btn-signin" onClick={() => navigate("/signin")}>Sign In</button>
-            <button className="btn-signup" onClick={() => navigate("/signup")}>Sign Up</button>
-          </div>
-        )}
+        {/* Nav linkek */}
+        <div className="nav-links">
+          {[
+            { label: "Főoldal", path: "/" },
+            { label: "Hirdetések", path: "/listings" },
+            { label: "Feltöltés", path: "/addnew", disabled: !user },
+            { label: "Rólunk", path: "/about" },
+          ].map(({ label, path, disabled }) => (
+            <button
+              key={path}
+              className={`nav-link ${isActive(path) ? "nav-link--active" : ""}`}
+              onClick={() => !disabled && goTo(path)}
+              disabled={disabled}
+            >
+              {label}
+            </button>
+          ))}
+          {isAdmin && (
+            <button className="nav-link nav-link--admin" onClick={() => goTo("/admin")}>
+              Admin
+            </button>
+          )}
+        </div>
 
-        {/* Hamburger gomb — csak mobilon látszik */}
+        {/* Auth / Profil */}
+        <div className="nav-auth">
+          {user ? (
+            <>
+              <div className="nav-avatar" onClick={() => navigate("/profile")}>
+                {user?.photoURL
+                  ? <img src={user.photoURL} alt="profil" className="nav-avatar-img" />
+                  : <RxAvatar size={32} className="nav-avatar-icon" />
+                }
+                <span className="nav-username">{user.displayName}</span>
+              </div>
+              <button className="nav-btn-outline" onClick={logOut}>Kijelentkezés</button>
+            </>
+          ) : (
+            <>
+              <button className="nav-btn-ghost" onClick={() => navigate("/signin")}>Bejelentkezés</button>
+              <button className="nav-btn-fill" onClick={() => navigate("/signup")}>Regisztráció</button>
+            </>
+          )}
+        </div>
+
+        {/* Hamburger */}
         <button className="hamburger-btn" onClick={() => setMenuOpen(prev => !prev)}>
-          {menuOpen ? <MdClose size={26} /> : <RxHamburgerMenu size={26} />}
+          {menuOpen ? <MdClose size={24} /> : <RxHamburgerMenu size={24} />}
         </button>
       </nav>
 
-      {/* Mobil legördülő menü */}
+      {/* Mobil menü */}
       {menuOpen && (
         <div className="mobile-menu">
-          <button className="mobile-nav-btn" onClick={() => goTo("/")}>Főoldal</button>
-          <button className="mobile-nav-btn" onClick={() => goTo("/listings")}>Hirdetések</button>
-          <button className="mobile-nav-btn" disabled={!user} onClick={() => goTo("/addnew")}>Feltöltés</button>
-          <button className="mobile-nav-btn" onClick={() => goTo("/about")}>Rólunk</button>
-          {isAdmin && <button className="mobile-nav-btn adminBtn" onClick={() => goTo("/admin")}>Admin</button>}
+          {[
+            { label: "Főoldal", path: "/" },
+            { label: "Hirdetések", path: "/listings" },
+            { label: "Feltöltés", path: "/addnew", disabled: !user },
+            { label: "Rólunk", path: "/about" },
+          ].map(({ label, path, disabled }) => (
+            <button
+              key={path}
+              className={`mobile-nav-btn ${isActive(path) ? "mobile-nav-btn--active" : ""}`}
+              onClick={() => !disabled && goTo(path)}
+              disabled={disabled}
+            >
+              {label}
+            </button>
+          ))}
+          {isAdmin && (
+            <button className="mobile-nav-btn mobile-nav-btn--admin" onClick={() => goTo("/admin")}>
+              Admin
+            </button>
+          )}
           <div className="mobile-divider" />
           {user ? (
             <>
               <div className="mobile-user-row" onClick={() => goTo("/profile")}>
                 {user?.photoURL
-                  ? <img src={user.photoURL} style={{ width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover" }} alt="profil" />
+                  ? <img src={user.photoURL} style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover" }} alt="profil" />
                   : <RxAvatar size={34} />
                 }
                 <span>{user.displayName}</span>
               </div>
-              <button className="mobile-nav-btn mobile-logout" onClick={() => { logOut(); setMenuOpen(false) }}>
+              <button className="mobile-nav-btn mobile-logout" onClick={() => { logOut(); setMenuOpen(false); }}>
                 Kijelentkezés
               </button>
             </>
           ) : (
             <div className="mobile-auth-row">
-              <button className="mobile-nav-btn" onClick={() => goTo("/signin")}>Sign In</button>
-              <button className="mobile-nav-btn" onClick={() => goTo("/signup")}>Sign Up</button>
+              <button className="mobile-nav-btn" onClick={() => goTo("/signin")}>Bejelentkezés</button>
+              <button className="mobile-nav-btn mobile-nav-btn--fill" onClick={() => goTo("/signup")}>Regisztráció</button>
             </div>
           )}
         </div>
       )}
-    </div>
+    </header>
   )
 }

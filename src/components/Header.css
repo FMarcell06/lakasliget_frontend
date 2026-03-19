@@ -1,169 +1,248 @@
-/* ===== EREDETI CSS — VÁLTOZATLAN ===== */
+/* ===== HEADER ===== */
 .header {
-  box-shadow: 0px 5px 5px lightgray;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f599;
-  padding-top: 35px;
-  padding-bottom: 35px;
-  height: 5vh;
   width: 100vw;
-
-  /* Görgetés animáció */
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  transition: transform 0.35s ease, opacity 0.35s ease;
 }
 
-.header--visible {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.header--hidden {
-  transform: translateY(-100%);
-  opacity: 0;
-}
+.header--visible { transform: translateY(0); opacity: 1; }
+.header--hidden  { transform: translateY(-100%); opacity: 0; }
 
 .navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 6%;
-  width: 100vw;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 64px;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+/* ===== LOGO ===== */
+.nav-logo {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a1a;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-logo span {
+  color: #d58224;
+}
+
+/* ===== NAV LINKS ===== */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 4px;
   position: absolute;
-  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }
-.search-container input:focus {
-  width: 220px;
-  border-color: #d58224;
-}
-.auth-buttons {
-  display: flex;
-  gap: 15px;
-}
-.btn-signin {
+
+.nav-link {
+  position: relative;
   background: none;
   border: none;
-  color: #d58224;
-  font-weight: bold;
+  box-shadow: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
   cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.2s;
+  white-space: nowrap;
 }
-.btn-signup {
+
+/* Csúszó underline animáció */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
   background: #d58224;
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+.nav-link:hover {
+  color: #d58224;
+  background: none;
+}
+
+.nav-link:hover::after,
+.nav-link--active::after {
+  width: calc(100% - 24px);
+}
+
+.nav-link--active {
+  color: #d58224;
+  font-weight: 700;
+  background: none;
+}
+
+.nav-link:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.nav-link--admin {
+  color: #d58224;
+  border: 1.5px solid #d58224 !important;
+  border-radius: 20px !important;
+  padding: 4px 14px !important;
+  font-weight: 700;
+}
+
+.nav-link--admin:hover {
+  background: #d58224 !important;
   color: white;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 25px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.3s;
 }
-.btn-signup:hover {
-  opacity: 0.85;
-}
-.header button {
-  background-color: #d58224;
-  padding: 10px 22px;
-  border-radius: 25px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  cursor: pointer;
-  border: none;
-  color:white;
-}
-.headerBtn-container {
+
+.nav-link--admin::after { display: none; }
+
+/* ===== AUTH ===== */
+.nav-auth {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
-  height: 100%;
-  top: 0;
-  right: 0;
+  gap: 10px;
+  flex-shrink: 0;
 }
-.header button:hover{
-  background-color: #b86d1c;
-  transition: 0.05s;
-}
-.profileIcon{
+
+.nav-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08)
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
-.noProfileIcon{
+
+.nav-avatar:hover { background: #f5f5f5; }
+
+.nav-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav-avatar-icon { color: #888; }
+
+.nav-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-btn-ghost {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #555 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
   cursor: pointer;
+  transition: color 0.2s, background 0.2s !important;
 }
-.adminBtn{
-  border: 3px solid #d58224 !important;
+
+.nav-btn-ghost:hover {
   color: #d58224 !important;
-  background-color: whitesmoke !important;
-  transition: 0.25s;
+  background: #fff8f0 !important;
 }
-.adminBtn:hover{
-  background-color: #d58224 !important;
+
+.nav-btn-fill {
+  background: #d58224 !important;
   color: white !important;
-}
-@media (max-width: 920px) {
-  .username {
-    display: none;
-  }
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  border: none !important;
+  padding: 8px 18px !important;
+  border-radius: 20px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(213, 130, 36, 0.3) !important;
+  transition: background 0.2s, box-shadow 0.2s !important;
 }
 
-/* ===== HAMBURGER MENÜ — CSAK MOBIL ===== */
+.nav-btn-fill:hover {
+  background: #b86d1c !important;
+  box-shadow: 0 4px 12px rgba(213, 130, 36, 0.4) !important;
+}
 
+.nav-btn-outline {
+  background: none !important;
+  border: 1.5px solid #e0e0e0 !important;
+  color: #555 !important;
+  padding: 7px 16px !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: border-color 0.2s, color 0.2s !important;
+}
+
+.nav-btn-outline:hover {
+  border-color: #d58224 !important;
+  color: #d58224 !important;
+  background: none !important;
+}
+
+/* ===== HAMBURGER ===== */
 .hamburger-btn {
   display: none !important;
   background: none !important;
   border: none !important;
   box-shadow: none !important;
   padding: 6px !important;
-  color: #d58224 !important;
+  color: #444 !important;
   cursor: pointer !important;
 }
 
-@media (max-width: 768px) {
-  /* Nagy képernyős elemek elrejtése */
-  .nav-links { display: none !important; }
-  .headerBtn-container { display: none !important; }
-  .auth-buttons { display: none !important; }
+/* ===== MOBIL ===== */
+@media (max-width: 970px) {
+  .nav-links,
+  .nav-auth { display: none !important; }
 
-  /* Hamburger megjelenítése */
   .hamburger-btn { display: flex !important; }
 
-  /* Header legyen flex-column hogy a menü alá nyíljon */
-  .header {
-    flex-direction: column !important;
-    height: auto !important;
-    padding: 0 !important;
-    align-items: stretch !important;
-  }
+  .header { height: auto; }
 
   .navbar {
-    padding: 14px 5% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    padding: 0 20px;
+    height: 56px;
   }
 }
 
 .mobile-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   padding: 10px 16px 16px;
-  background: white;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   animation: slideDown 0.2s ease;
 }
 
@@ -172,27 +251,50 @@
   text-align: left !important;
   padding: 11px 16px !important;
   border-radius: 10px !important;
-  background-color: #d58224 !important;
-  color: white !important;
+  background: none !important;
+  color: #333 !important;
   font-size: 15px !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   border: none !important;
   cursor: pointer !important;
   box-shadow: none !important;
+  transition: background 0.15s, color 0.15s !important;
 }
 
 .mobile-nav-btn:hover {
-  background-color: #b86d1c !important;
+  background: #fff8f0 !important;
+  color: #d58224 !important;
+}
+
+.mobile-nav-btn--active {
+  color: #d58224 !important;
+  font-weight: 700 !important;
+  background: #fff8f0 !important;
+}
+
+.mobile-nav-btn--admin {
+  color: #d58224 !important;
+  font-weight: 700 !important;
+}
+
+.mobile-nav-btn--fill {
+  background: #d58224 !important;
+  color: white !important;
+}
+
+.mobile-nav-btn--fill:hover {
+  background: #b86d1c !important;
+  color: white !important;
 }
 
 .mobile-nav-btn:disabled {
-  opacity: 0.4 !important;
+  opacity: 0.35 !important;
   cursor: not-allowed !important;
 }
 
 .mobile-divider {
   height: 1px;
-  background: #eee;
+  background: #f0f0f0;
   margin: 4px 0;
 }
 
@@ -200,29 +302,37 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 4px;
+  padding: 10px 16px;
   cursor: pointer;
   font-weight: 600;
   color: #333;
   font-size: 15px;
+  border-radius: 10px;
+  transition: background 0.15s;
 }
 
+.mobile-user-row:hover { background: #f5f5f5; }
+
 .mobile-logout {
-  background-color: #d58224 !important;
-  color: white !important;
+  color: #e53935 !important;
 }
 
 .mobile-logout:hover {
-  background-color: #b86d1c !important;
-  color: white !important;
+  background: #fff5f5 !important;
+  color: #e53935 !important;
 }
 
 .mobile-auth-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
