@@ -164,14 +164,22 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   padding: 8px 14px !important;
-  border-radius: 8px !important;
   cursor: pointer;
+  color: white;
+  border: 1.5px solid rgba(146, 143, 143, 0.919) !important;
+  padding: 14px 28px;
+  border-radius: 100px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(125, 125, 124, 0.3) !important;
   transition: color 0.2s, background 0.2s !important;
 }
 
 .nav-btn-ghost:hover {
-  color: #d58224 !important;
-  background: #fff8f0 !important;
+  background: rgba(255,255,255,0.25) !important;
+  border-color: rgba(128, 128, 128, 0.72) !important;
+  box-shadow: 0 4px 12px lightgray !important;
+  color: rgb(39, 39, 39) !important;
+  background-color: lightgray;
 }
 
 .nav-btn-fill {

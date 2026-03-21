@@ -190,6 +190,13 @@
   background: #fff5eb;
 }
 
+.info-link {
+  color: #d58224;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 /* Betöltő animáció */
 .loader-wrapper {
   text-align: center;
@@ -250,13 +257,6 @@
   flex-direction: column;
   max-height: 100%;
   overflow: hidden; /* ← ez kell */
-}
-
-.info-link {
-  color: #d58224;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
 }
 
   .filter-title {
