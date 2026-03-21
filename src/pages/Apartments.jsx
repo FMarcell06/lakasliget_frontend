@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { MyUserContext } from "../context/MyUserProvider";
 import { ApartCard } from "../components/ApartCard";
-import { readHomes } from "../myBackend";
+import { notify, readHomes } from "../myBackend";
 import "./Apartments.css";
 import { useRef } from "react";
 
@@ -84,6 +84,13 @@ const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
     setFilteredHomes(applySort(homes, sortBy, sortAsc));
   };
 
+  const handleBegin = () => {
+      if(!user){ 
+        navigate("/signin")
+        notify.warning("Jelentkezz be az ingatlan meghirdetéséhez!")
+      }else navigate("/addnew")
+  }
+
   const handleSearch = (e) => {
     if (e) e.preventDefault();
     const result = homes.filter((home) => {
@@ -146,7 +153,7 @@ useEffect(() => {
           <div className="info-banner-content">
 <p>
   Adj fel hirdetést <strong>ingyen</strong>, percek alatt regisztrálj és kezdj el bérlőt keresni még ma!{" "}
-  <span className="info-link" onClick={() => navigate("/addnew")}>Hirdetés feladása →</span>
+  <span className="info-link" onClick={() => handleBegin()}>Hirdetés feladása →</span>
 </p>
           </div>
         </div>
@@ -252,7 +259,7 @@ useEffect(() => {
                 <h1>Kiadó ingatlanok</h1>
                 <p>{filteredHomes.length} találat</p>
                 <span className="sponsored-label">
-                  A lista fizetett rangsorolást is tartalmaz. <a href="#">Bővebben</a>
+                  Az hirdetések a keresési feltételek alapján jelennek meg
                 </span>
               </div>
               <div className="meta-right" style={{ position: "relative" }}>

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { readHomes } from "../myBackend";
+import { notify, readHomes } from "../myBackend";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Home.css";
@@ -61,6 +61,12 @@ export const Home = () => {
   const [mapRef, mapVisible] = useScrollReveal();
   const [statsRef, statsVisible] = useScrollReveal();
 
+  const handleBegin = () => {
+      if(!user){ 
+        navigate("/signin")
+        notify.warning("Jelentkezz be az ingatlan meghirdetéséhez!")
+      }else navigate("/addnew")
+  }
   
   useEffect(() => {
     const load = async () => {
@@ -292,7 +298,7 @@ export const Home = () => {
             <div className="footer-btn">
               <button
                 className="home-button"
-                onClick={() => {!user? navigate("/signin"):  navigate("/addnew")}}
+                onClick={() =>handleBegin()}
               >
                 Kezdés most →
               </button>
