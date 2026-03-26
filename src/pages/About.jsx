@@ -1,17 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import './About.css';
 
 export const About = () => {
+    const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   return (
     <div className="about-page">
       <Header />
       
         <div  className='about-container'>
             <section className="about-header">
-                <div className="blur">
-                    <h1 className="about-title">Rólunk</h1>
-                </div>
+            <div
+                className="about-hero-bg"
+                style={{ transform: `translateY(${scrollY * 0.35}px)` }}
+            />
+            <div className="blur">
+                <h1 className="about-title">Rólunk</h1>
+            </div>
             </section>
 
             <main className="about-main">
