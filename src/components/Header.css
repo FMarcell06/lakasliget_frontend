@@ -219,6 +219,15 @@
   background: none !important;
 }
 
+.logout {
+  color: #e53935 !important;
+}
+
+.logout:hover {
+  color: #e53935 !important;
+  border-color:#e53935 !important;
+}
+
 /* ===== HAMBURGER ===== */
 .hamburger-btn {
   display: none !important;

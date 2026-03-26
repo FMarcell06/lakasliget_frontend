@@ -131,7 +131,7 @@ export const Header = () => {
                 }
                 <span className="nav-username">{user.displayName}</span>
               </div>
-              <button className="nav-btn-outline" onClick={logOut}>Kijelentkezés</button>
+              <button className="nav-btn-outline logout" onClick={logOut}>Kijelentkezés</button>
             </>
           ) : (
             <>
