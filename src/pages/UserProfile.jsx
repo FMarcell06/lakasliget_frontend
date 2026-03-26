@@ -141,7 +141,6 @@ export const UserProfile = () => {
   return (
     <div className="recipe-form-container">
       <Header />
-      <IoClose onClick={() => navigate("/")} className="close-icon" title="Vissza" />
       
       <h1 className="form-title">Profil Beállítások</h1>
 
@@ -206,9 +205,11 @@ export const UserProfile = () => {
           </form>
 
           {/* Fiók törlése gomb */}
-          <button className="accDelBtn" onClick={() => setDeleteModal(true)} disabled={loading}>
-            <FaTrash /> Fiók törlése
-          </button>
+          <div className='accDelDiv'>
+            <button className="accDelBtn" onClick={() => setDeleteModal(true)} disabled={loading}>
+              <FaTrash /> Fiók törlése
+            </button>
+          </div>
         </div>
 
         {/* JOBB OLDAL */}

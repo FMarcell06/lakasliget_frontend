@@ -319,6 +319,12 @@
   box-shadow: 0 0 0 3px rgba(230, 137, 0, 0.1);
 }
 
+.accDelDiv{
+  display: flex;
+  align-items: center;
+  padding-top: 15px;
+}
+
 /* ===== FIÓK TÖRLÉS MODAL ===== */
 .delete-modal-overlay {
   position: fixed;
@@ -507,5 +513,15 @@
 
   .my-listings-grid {
     overflow-y: visible;
+  }
+}
+
+@media (max-width: 600px) {
+  .accDelDiv{
+    align-items: center;
+    justify-content: center;
+  }
+  .accDelBtn{
+    width: 80%;
   }
 }
