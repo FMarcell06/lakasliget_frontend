@@ -42,7 +42,7 @@ export const PublicProfile = () => {
   return (
     <div className="recipe-form-container">
       <Header />
-      <IoClose onClick={() => navigate(-1)} className="close-icon" title="Vissza" />
+      <IoClose onClick={() => navigate(-1)} className="pub-close-icon" title="Vissza" />
       
       <h1 className="form-title">Hirdető profilja</h1>
 

@@ -303,6 +303,12 @@ useEffect(() => {
   <div ref={bottomRef} style={{ height: "40px" }} />  {/* ← ide */}
 </div>
             )}
+              <button 
+    className="scroll-top-btn"
+    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+  >
+    ↑
+  </button>
           </section>
         </div>
       </main>
