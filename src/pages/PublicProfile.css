@@ -156,7 +156,7 @@
 
 .pub-close-icon {
   position: absolute;
-  top: 90px;
+  top: 80px;
   right: 40px;
   font-size: 30px;
   color: #999;
@@ -185,6 +185,11 @@
   }
 }
 
+@media (max-width: 350px) {
+  .pub-close-icon{
+    right: 20px;
+  }
+}
 .placeholder-container {
   display: flex;
   align-items: center;

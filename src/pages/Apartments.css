@@ -385,6 +385,36 @@
   font-weight: 700;
 }
 
+.scroll-top-btn {
+  display: none;
+}
+
+@media (max-width: 970px) {
+  .scroll-top-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    width: 50px;
+    height: 50px;
+    border: 1.5px solid #e68900;
+    background-color: #fff;
+    border-radius: 50%;
+    color: #e68900;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: fixed;
+    bottom:  40px;
+    right: 25px;
+  }
+
+  .scroll-top-btn:hover {
+    background: #fff8f0 !important;
+  }
+}
+
 @media (min-width: 1025px) {
   .apartments-layout {
     display: grid;
