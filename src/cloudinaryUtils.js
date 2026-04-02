@@ -1,8 +1,9 @@
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 
+const API_URL = "https://lakasliget-backend.vercel.app/api/"
 
-const API_URL = "http://localhost:5050/api/"
+//const API_URL = "http://localhost:5050/api/"
 
 //const API_URL="https://fm06-recipe-backend.vercel.app/api/"
 
