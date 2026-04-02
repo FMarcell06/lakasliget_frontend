@@ -81,6 +81,14 @@ export const notify = {
   warning: (msg) => toast.warning(msg),
 }
 
+const deleteImage = async (public_id) => {
+    try {
+        await axios.post("https://lakasliget-backend.vercel.app/api/deleteImage", { public_id });
+    } catch (error) {
+        console.error("Kép törlési hiba:", error);
+    }
+};
+
 // 5. Avatar frissítése - avatarUrl-t is elmenti
 export const updateAvatar = async (uid, public_id, avatarUrl = null) => {
     let oldPublicId = null;
