@@ -136,6 +136,7 @@ export const SignIn = () => {
                   <button
                     type="button"
                     className="icon-btn"
+                    data-testid="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}

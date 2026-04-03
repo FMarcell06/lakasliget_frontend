@@ -31,16 +31,54 @@ const ICONS = {
   gym: createColorIcon("#e68900", "💪"),
 };
 
+// Több Overpass mirror a fallback-hez
+const OVERPASS_MIRRORS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+];
+
+const fetchWithRetry = async (query, retries = 3, delayMs = 1000) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const mirror = OVERPASS_MIRRORS[attempt % OVERPASS_MIRRORS.length];
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000); // 12mp kliens timeout
+
+      const resp = await fetch(mirror, {
+        method: "POST",
+        body: query,
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+      const text = await resp.text(); // előbb text, hogy ne crasheljen JSON parse
+      const data = JSON.parse(text);
+      return data;
+    } catch (err) {
+      console.warn(`Overpass kísérlet ${attempt + 1} sikertelen (${mirror}):`, err.message);
+      if (attempt < retries - 1) {
+        await new Promise(r => setTimeout(r, delayMs * (attempt + 1))); // exponenciális várakozás
+      }
+    }
+  }
+  throw new Error("Minden Overpass szerver elérhetetlen");
+};
+
 const fetchPlaces = async (lat, lon, type) => {
   const queries = {
     university: `node["amenity"="university"](around:1500,${lat},${lon});way["amenity"="university"](around:1500,${lat},${lon});`,
     supermarket: `node["shop"="supermarket"](around:1000,${lat},${lon});node["shop"="convenience"](around:800,${lat},${lon});`,
     gym: `node["leisure"="fitness_centre"](around:1200,${lat},${lon});node["amenity"="gym"](around:1200,${lat},${lon});`,
   };
-  const query = `[out:json][timeout:10];(${queries[type]});out center;`;
+
+  // timeout:25 a szerveren, hogy legyen ideje válaszolni
+  const query = `[out:json][timeout:25];(${queries[type]});out center;`;
+
   try {
-    const resp = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: query });
-    const data = await resp.json();
+    const data = await fetchWithRetry(query);
     return data.elements.map(el => ({
       id: el.id,
       lat: el.lat || el.center?.lat,
@@ -48,7 +86,7 @@ const fetchPlaces = async (lat, lon, type) => {
       name: el.tags?.name || "Névtelen",
     })).filter(p => p.lat && p.lon);
   } catch (err) {
-    console.error("Overpass hiba:", err);
+    console.error("Overpass véglegesen sikertelen:", err);
     return [];
   }
 };
