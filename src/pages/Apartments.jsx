@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { MdTune, MdSearch, MdSwapVert, MdArrowUpward, MdArrowDownward } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +7,6 @@ import { MyUserContext } from "../context/MyUserProvider";
 import { ApartCard } from "../components/ApartCard";
 import { notify, readHomes } from "../myBackend";
 import "./Apartments.css";
-import { useRef } from "react";
 
 const SORT_OPTIONS = [
   { value: "timestamp", label: "Legújabb" },
@@ -24,6 +23,7 @@ export const Apartments = () => {
   const [sortBy, setSortBy] = useState("timestamp");
   const [sortAsc, setSortAsc] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const [filters, setFilters] = useState({
     title: "",
@@ -38,11 +38,13 @@ export const Apartments = () => {
     lift: ""
   });
 
-const PAGE_SIZE = 10;
-const [page, setPage] = useState(1);
-const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
 
   const navigate = useNavigate();
+  const observerRef = useRef(null);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     const load = async () => {
@@ -54,7 +56,6 @@ const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
     load();
   }, []);
 
-  // Rendezés alkalmazása
   const applySort = (list, field, asc) => {
     return [...list].sort((a, b) => {
       let valA, valB;
@@ -85,11 +86,11 @@ const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
   };
 
   const handleBegin = () => {
-      if(!user){ 
-        navigate("/signin")
-        notify.warning("Jelentkezz be az ingatlan meghirdetéséhez!")
-      }else navigate("/addnew")
-  }
+    if (!user) {
+      navigate("/signin");
+      notify.warning("Jelentkezz be az ingatlan meghirdetéséhez!");
+    } else navigate("/addnew");
+  };
 
   const handleSearch = (e) => {
     if (e) e.preventDefault();
@@ -113,12 +114,10 @@ const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
 
   const handleSortChange = (field) => {
     if (field === sortBy) {
-      // Ugyanaz a mező — megfordítjuk
       const newAsc = !sortAsc;
       setSortAsc(newAsc);
       setFilteredHomes(prev => applySort(prev, field, newAsc));
     } else {
-      // Új mező
       setSortBy(field);
       setSortAsc(field === "timestamp" ? false : true);
       setFilteredHomes(prev => applySort(prev, field, field === "timestamp" ? false : true));
@@ -126,22 +125,23 @@ const visibleHomes = filteredHomes.slice(0, page * PAGE_SIZE);
     setSortMenuOpen(false);
   };
 
-const observerRef = useRef(null);
-const bottomRef = useRef(null);
+  // Page reset ha változik a szűrés
+  useEffect(() => { setPage(1); }, [filteredHomes]);
 
-// Page reset ha változik a szűrés
-useEffect(() => { setPage(1); }, [filteredHomes]);
-
-useEffect(() => {
-  if (observerRef.current) observerRef.current.disconnect();
-  observerRef.current = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && visibleHomes.length < filteredHomes.length) {
-      setPage(p => p + 1);
-    }
-  }, { threshold: 0.1 });
-  if (bottomRef.current) observerRef.current.observe(bottomRef.current);
-  return () => observerRef.current?.disconnect();
-}, [visibleHomes.length, filteredHomes.length]);
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && visibleHomes.length < filteredHomes.length) {
+        setLoadingMore(true);
+        setTimeout(() => {
+          setPage(p => p + 1);
+          setLoadingMore(false);
+        }, 250);
+      }
+    }, { threshold: 0.1 });
+    if (bottomRef.current) observerRef.current.observe(bottomRef.current);
+    return () => observerRef.current?.disconnect();
+  }, [visibleHomes.length, filteredHomes.length]);
 
   const currentSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label;
 
@@ -151,10 +151,10 @@ useEffect(() => {
       <main className="apartments-main">
         <div className="info-banner">
           <div className="info-banner-content">
-<p>
-  Adj fel hirdetést <strong>ingyen</strong>, percek alatt regisztrálj és kezdj el bérlőt keresni még ma!{" "}
-  <span className="info-link" onClick={() => handleBegin()}>Hirdetés feladása →</span>
-</p>
+            <p>
+              Adj fel hirdetést <strong>ingyen</strong>, percek alatt regisztrálj és kezdj el bérlőt keresni még ma!{" "}
+              <span className="info-link" onClick={() => handleBegin()}>Hirdetés feladása →</span>
+            </p>
           </div>
         </div>
 
@@ -294,21 +294,29 @@ useEffect(() => {
                 <p>Ingatlanok betöltése...</p>
               </div>
             ) : (
-<div className="apartments-list">
-  {visibleHomes.map((home) => (
-    <div key={home.id} onClick={() => navigate("/listing/" + home.id)} style={{ cursor: 'pointer' }}>
-      <ApartCard apartment={home} />
-    </div>
-  ))}
-  <div ref={bottomRef} style={{ height: "40px" }} />  {/* ← ide */}
-</div>
+              <div className="apartments-list">
+                {visibleHomes.map((home) => (
+                  <div key={home.id} onClick={() => navigate("/listing/" + home.id)} style={{ cursor: 'pointer' }}>
+                    <ApartCard apartment={home} />
+                  </div>
+                ))}
+
+                {loadingMore && (
+                  <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>
+                    <div className="custom-spinner"></div>
+                  </div>
+                )}
+
+                <div ref={bottomRef} style={{ height: "40px" }} />
+              </div>
             )}
-              <button 
-    className="scroll-top-btn"
-    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-  >
-    ↑
-  </button>
+
+            <button
+              className="scroll-top-btn"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              ↑
+            </button>
           </section>
         </div>
       </main>
