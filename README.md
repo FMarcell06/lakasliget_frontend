@@ -16,9 +16,9 @@ Az alkalmazás ingyenesen használható, regisztrációhoz kötött hirdetésfel
 
 A főoldal bemutatja az alkalmazást, kiemelt hirdetéseket jelenít meg, és interaktív térképen mutatja az elérhető ingatlanokat.
 
-![Főoldal - banner](./src/screenshots/home1.png)
-![Főoldal - kiemelt lakások](./src/screenshots/home2.png)
-![Főoldal - térkép](./src/screenshots/home3.png)
+![Főoldal - banner](https://res.cloudinary.com/fmenv2025/image/upload/v1776361954/home1_wmlmxe.png)
+![Főoldal - kiemelt lakások](https://res.cloudinary.com/fmenv2025/image/upload/v1776361959/home2_ybeida.png)
+![Főoldal - térkép](https://res.cloudinary.com/fmenv2025/image/upload/v1776361969/home3_nfy8t0.png)
 
 
 
@@ -26,8 +26,8 @@ A főoldal bemutatja az alkalmazást, kiemelt hirdetéseket jelenít meg, és in
 
 Az összes aktív hirdetés listázása. Szűrési lehetőségek: ár, alapterület, szobaszám, kategória, bútorozott, kisállat, légkondicionáló, lift. Rendezés: legújabb, ár, terület, szobák szerint — növekvő/csökkenő sorrendben. Automatikus lazy loading görgetéskor.
 
-![Hirdetések - összes hirdetés](./src/screenshots/apartments1.png)
-![Hirdetések - találatok](./src/screenshots/apartments2.png)
+![Hirdetések - összes hirdetés](https://res.cloudinary.com/fmenv2025/image/upload/v1776361697/apartments1_agbfpt.png)
+![Hirdetések - találatok](https://res.cloudinary.com/fmenv2025/image/upload/v1776361698/apartments2_gug5pb.png)
 
 
 
@@ -35,10 +35,10 @@ Az összes aktív hirdetés listázása. Szűrési lehetőségek: ár, alapterü
 
 Egy adott ingatlan részletes adatlapja: képgaléria, műszaki jellemzők, leírás, hirdető adatai, interaktív térkép közeli egyetemekkel, boltokkal és edzőtermekkel.
 
-![Hirdetés - képek](./src/screenshots/listing1.png)
-![Hirdetés - adatok](./src/screenshots/listing2.png)
-![Hirdetés - hirdető](./src/screenshots/listing3.png)
-![Hirdetés - térkép](./src/screenshots/listing4.png)
+![Hirdetés - képek](https://res.cloudinary.com/fmenv2025/image/upload/v1776361998/listing1_jtrqve.png)
+![Hirdetés - adatok](https://res.cloudinary.com/fmenv2025/image/upload/v1776362004/listing2_tk0wpw.png)
+![Hirdetés - hirdető](https://res.cloudinary.com/fmenv2025/image/upload/v1776362008/listing3_nom7s7.png)
+![Hirdetés - térkép](https://res.cloudinary.com/fmenv2025/image/upload/v1776362008/listing4_yc6wgu.png)
 
 
 
@@ -46,11 +46,11 @@ Egy adott ingatlan részletes adatlapja: képgaléria, műszaki jellemzők, leí
 
 Bejelentkezett felhasználók hirdetést adhatnak fel. Cím megadható térképen kattintva, automatikus geocodinggal, vagy manuálisan. Képek feltölthetők borítóképként és galériába.
 
-![Form - általános](./src/screenshots/form1.png)
-![Form - térkép](./src/screenshots/form2.png)
-![Form - műszaki](./src/screenshots/form3.png)
-![Form - komfort](./src/screenshots/form4.png)
-![Form - feladás](./src/screenshots/form5.png)
+![Form - általános](https://res.cloudinary.com/fmenv2025/image/upload/v1776361879/form3_g7f93w.png)
+![Form - térkép](https://res.cloudinary.com/fmenv2025/image/upload/v1776361880/form2_ji57qr.png)
+![Form - műszaki](https://res.cloudinary.com/fmenv2025/image/upload/v1776361879/form3_g7f93w.png)
+![Form - komfort](https://res.cloudinary.com/fmenv2025/image/upload/v1776361882/form4_o3mgoi.png)
+![Form - feladás](https://res.cloudinary.com/fmenv2025/image/upload/v1776361880/form5_imb7t9.png)
 
 
 
@@ -59,10 +59,10 @@ Bejelentkezett felhasználók hirdetést adhatnak fel. Cím megadható térképe
 
 Saját hirdetések szerkesztése. Admin felhasználók bármely hirdetést módosíthatják.
 
-![Edit - általános](./src/screenshots/edit1.png)
-![Edit - műszaki](./src/screenshots/edit2.png)
-![Edit - komfort](./src/screenshots/edit3.png)
-![Edit - képek](./src/screenshots/edit4.png)
+![Edit - általános](https://res.cloudinary.com/fmenv2025/image/upload/v1776361809/edit1_zijpim.png)
+![Edit - műszaki](https://res.cloudinary.com/fmenv2025/image/upload/v1776361810/edit2_f4gqrw.png)
+![Edit - komfort](https://res.cloudinary.com/fmenv2025/image/upload/v1776361811/edit3_vocvav.png)
+![Edit - képek](https://res.cloudinary.com/fmenv2025/image/upload/v1776361813/edit4_dr9dnc.png)
 
 
 
@@ -72,9 +72,9 @@ Saját hirdetések szerkesztése. Admin felhasználók bármely hirdetést módo
 
 A felhasználói saját profil kezelése: profilkép feltöltése/módosítása, elérhetőségi adatok szerkesztése (megjelenik a hirdetéseken), saját hirdetések és kedvencek megtekintése, fiók törlése.
 
-![Profil - saját](./src/screenshots/profil1.png)
-![Profil- kedvenc](./src/screenshots/profil2.png)
-![Profil- kedvenc](./src/screenshots/profil3.png)
+![Profil - saját](https://res.cloudinary.com/fmenv2025/image/upload/v1776362115/profil1_um1cg5.png)
+![Profil- kedvenc](https://res.cloudinary.com/fmenv2025/image/upload/v1776362120/profil2_i8tvht.png)
+![Profil- kedvenc](https://res.cloudinary.com/fmenv2025/image/upload/v1776362120/profil3_zxivze.png)
 
 
 
@@ -82,14 +82,14 @@ A felhasználói saját profil kezelése: profilkép feltöltése/módosítása,
 
 A felhasználó nyilvános profilja, ahol más felhasználók láthatják a hirdetéseit és elérhetőségeit.
 
-![Publicprofil](./src/screenshots/publicprofil1.png)
+![Publicprofil](https://res.cloudinary.com/fmenv2025/image/upload/v1776362162/publicprofil1_h7t4qc.png)
 
 ### Bejelentkezés / Regisztráció (`/signin`, `/signup`)
 
 Email + jelszó alapú autentikáció Firebase Authentication segítségével. Email-megerősítés szükséges a bejelentkezéshez.
 
-![signIn](./src/screenshots/signIn.png)
-![signUp](./src/screenshots/signUp.png)
+![signIn](https://res.cloudinary.com/fmenv2025/image/upload/v1776362213/signIn_qa3t48.png)
+![signUp](https://res.cloudinary.com/fmenv2025/image/upload/v1776362223/signUp_v2twmy.png)
 
 
 
@@ -97,23 +97,23 @@ Email + jelszó alapú autentikáció Firebase Authentication segítségével. E
 
 Elfelejtett jelszó esetén email alapú visszaállítás.
 
-![pwreset](./src/screenshots/pwreset.png)
+![pwreset](https://res.cloudinary.com/fmenv2025/image/upload/v1776362188/pwreset_o1t6cf.png)
 
 
 ### Admin panel (`/admin`)
 
 Csak admin jogosultságú felhasználóknak elérhető. Hirdetések és felhasználók kezelése: szerkesztés, törlés.
 
-![admin - adminpanel](./src/screenshots/admin1.png)
-![admin - admin felhasználók](./src/screenshots/admin2.png)
-![admin - hirdetések](./src/screenshots/admin3.png)
+![admin - adminpanel](https://res.cloudinary.com/fmenv2025/image/upload/v1776361636/admin1_mwmfbl.png)
+![admin - admin felhasználók](https://res.cloudinary.com/fmenv2025/image/upload/v1776361637/admin2_kjvcvv.png)
+![admin - hirdetések](https://res.cloudinary.com/fmenv2025/image/upload/v1776361638/admin3_jf3reu.png)
 
 
 
 ### Rólunk (`/about`)
 
-![Rólunk - banner](./src/screenshots/about1.png)
-![Rólunk - content](./src/screenshots/about2.png)
+![Rólunk - banner](https://res.cloudinary.com/fmenv2025/image/upload/v1776361531/about1_n6atwn.png)
+![Rólunk - content](https://res.cloudinary.com/fmenv2025/image/upload/v1776361593/about2_yzmpm8.png)
 
 
 
@@ -131,9 +131,9 @@ Az alkalmazás teljesen reszponzív, 320px képernyőszélességig optimalizált
 | Bejelentkezés | Képslider + form egymás mellett | Csak form, logo eltűnik |
 | Főoldal kártyák | 3 oszlopos rács | 1 oszlopos lista |
 
-![Mobil - home](./src/screenshots/mobil1.png)
-![Mobil - home](./src/screenshots/mobil2.png)
-![Mobil - home](./src/screenshots/mobil3.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362055/mobil1_jmli0k.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362056/mobil2_fnikic.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362057/mobil3_d6now6.png)
 
 
 ---
@@ -323,7 +323,7 @@ A frontend tesztek Vitest + `@testing-library/react` segítségével készültek
 pnpm vitest components
 ```
 
-![Mobil - home](./src/screenshots/test1.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362264/test1_d8zvfi.png)
 
 #### `ApartCard`
 
@@ -401,7 +401,7 @@ A backend tesztek szintén Vitest segítségével készültek, Firebase Firestor
 ```bash
 pnpm vitest myBackend
 ```
-![Mobil - home](./src/screenshots/test2.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362265/test2_jbnrjl.png)
 
 
 #### `uploadToImgBB`
@@ -517,7 +517,7 @@ A Cloudinary Express végpontok tesztjei Vitest + Supertest segítségével kés
 pnpm vitest
 ```
 
-![Mobil - home](./src/screenshots/test3.png)
+![Mobil - home](https://res.cloudinary.com/fmenv2025/image/upload/v1776362266/test3_fkd4fr.png)
 
 
 #### `POST /api/uploadImages`
