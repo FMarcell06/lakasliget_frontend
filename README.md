@@ -248,6 +248,8 @@ Toast értesítések megjelenítése.
 
 ### 2. Express + Cloudinary backend (`index.js`)
 
+### Repo LINK: https://github.com/FMarcell06/lakasliget_backend
+
 Express alapú backend, amely a Cloudinary képkezelő műveleteit végzi el. Callback-alapú végpontokat biztosít a frontend számára, mivel a Cloudinary műveletek aszinkron, külső API-hívásokat igényelnek. A backend Vercelre van deployzolva, serverless környezetben fut.
 
 **Szerver:** `Express.js` | **Deployment:** Vercel | **Képtárolás:** Cloudinary
