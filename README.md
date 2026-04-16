@@ -1,6 +1,6 @@
 # Lakás Liget — Ingatlanböngésző Alkalmazás
 
-### LINK: https://testlakasliget.netlify.app
+### LINK: https://lakasliget.netlify.app
 
 ## a) Az alkalmazás célja
 
@@ -101,7 +101,7 @@ Elfelejtett jelszó esetén email alapú visszaállítás.
 
 ### Admin panel (`/admin`)
 
-Csak admin jogosultságú felhasználóknak elérhető. Hirdetések és felhasználók kezelése: szerkesztés, törlés, elrejtés.
+Csak admin jogosultságú felhasználóknak elérhető. Hirdetések és felhasználók kezelése: szerkesztés, törlés.
 
 ![admin - adminpanel](./src/screenshots/admin1.png)
 ![admin - admin felhasználók](./src/screenshots/admin2.png)
