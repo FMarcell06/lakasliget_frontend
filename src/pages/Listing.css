@@ -86,11 +86,12 @@
   background: white;
   border: 1px solid #eee;
   border-radius: 12px;
-  padding: 30px;
+  padding: 20px;
   margin: 30px 0;
+  gap: 10px;
 }
 
-.summary-item { flex: 1; text-align: center; border-right: 1px solid #eee; }
+.summary-item { flex: 1; text-align: center; border-right: 1px solid #eee;padding: 10px; }
 .summary-item:last-child { border-right: none; }
 .summary-label { display: block; color: #888; font-size: 14px; margin-bottom: 5px; }
 .summary-value { font-size: 24px; font-weight: 800; }
