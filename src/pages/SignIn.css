@@ -13,9 +13,9 @@ body {
 
 .signin-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Kép szekció */
@@ -23,10 +23,11 @@ body {
   display: none;
   position: relative;
   overflow: hidden;
-  margin: 12px;
-  margin-left: 70px;
+  margin: 15px;
+  margin-left: 50px;
   border-radius: 24px;
   background-color: #eee;
+  height: calc(100vh - 30px); /* Hogy ne lógjon ki a margó miatt */
 }
 
 @media (min-width: 900px) {
@@ -94,13 +95,11 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 4rem;
-  padding-top: 4rem;
-  justify-content: space-between;
+  padding: 2rem; /* Csökkentett padding */
+  justify-content: center; /* Középre rendezés vertikálisan */
   position: relative;
-  overflow-x: hidden;
+  height: 100vh;
   box-sizing: border-box;
-  min-width: 0;
 }
 
 /* Vissza gomb */
@@ -128,9 +127,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  height: 300px;
-  overflow: hidden;
+  gap: 12px;
+  height: auto; /* Fix 300px helyett auto */
+  margin-bottom: 1.5rem; /* Kisebb távolság */
 }
 
 .logo-icon {
@@ -143,21 +142,19 @@ body {
 }
 
 .logo-text2 {
-  font-size: 4.5rem;
+  font-size: 3.5rem; /* Kicsit kisebb alapméret */
   font-weight: 950;
-  color: white;
+  color: #333; /* Ha fehér volt, de a háttér is világos, érdemes sötétíteni, vagy hagyni ha sötét a mód */
   margin: 0;
-  letter-spacing: -5px;
+  letter-spacing: -3px;
   line-height: 1;
-  text-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  white-space: nowrap;
 }
 
 /* Form */
 .form-wrapper {
-  max-width: 480px;
+  max-width: 400px;
   width: 100%;
-  margin: 2rem auto;
+  margin: 0 auto; /* Kivettem a 2rem margót */
 }
 
 .subtitle {
@@ -167,13 +164,13 @@ body {
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-top: 0;
-  margin-bottom: 2rem;
+  font-size: 2rem; /* Kicsit kisebb, hogy elférjen */
+  margin-bottom: 1.5rem;
 }
 
-.input-group { margin-bottom: 1.5rem; }
+.input-group { 
+  margin-bottom: 1rem; /* Kisebb közök a mezők között */
+}
 
 .input-label {
   display: block;
@@ -254,7 +251,7 @@ body {
 .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 .register-text {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
 }
 
@@ -323,22 +320,15 @@ body {
     font-size: 4rem !important;
   }
 }
+@media (max-height: 700px) {
+  .logo-container { transform: scale(0.8); margin-bottom: 0.5rem; }
+  .title { font-size: 1.5rem; margin-bottom: 1rem; }
+  .form-wrapper { transform: scale(0.95); }
+}
 /* Logo eltűnik 600px alatt */
 @media (max-width: 600px) {
-  .logo-container{
-    height: 30vh;
-  }
-
-  .signin-form-section {
-    padding: 1.5rem;
-    padding-top: 3.5rem;
-    justify-content: flex-start;
-    gap: 1.5rem;
-  }
-
-  .form-wrapper { margin: 0 auto; }
-
-  .title { font-size: 2rem; }
+  .logo-text2 { font-size: 2.5rem !important; }
+  .signin-form-section { padding: 1rem; padding-top: 4rem; }
 }
 @media (max-width: 485px) {
   .logo-text2{
