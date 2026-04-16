@@ -47,9 +47,10 @@ Egy adott ingatlan részletes adatlapja: képgaléria, műszaki jellemzők, leí
 Bejelentkezett felhasználók hirdetést adhatnak fel. Cím megadható térképen kattintva, automatikus geocodinggal, vagy manuálisan. Képek feltölthetők borítóképként és galériába.
 
 ![Form - általános](./src/screenshots/form1.png)
-![Form - műszaki](./src/screenshots/form2.png)
-![Form - komfort](./src/screenshots/form3.png)
-![Form - feladás](./src/screenshots/form4.png)
+![Form - térkép](./src/screenshots/form2.png)
+![Form - műszaki](./src/screenshots/form3.png)
+![Form - komfort](./src/screenshots/form4.png)
+![Form - feladás](./src/screenshots/form5.png)
 
 
 
