@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { MyUserContext } from '../context/MyUserProvider';
-import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaRegEnvelope, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import './SignIn.css';
-import { notify } from '../myBackend';
+import React, { useState, useEffect, useContext } from "react";
+import { MyUserContext } from "../context/MyUserProvider";
+import { useNavigate } from "react-router-dom";
+import {
+  FaArrowLeft,
+  FaRegEnvelope,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
+import "./SignIn.css";
+import { notify } from "../myBackend";
 
 const images = [
   "https://images.unsplash.com/photo-1618221520382-3d68e64f58ff?auto=format&fit=crop&q=80",
@@ -12,7 +17,7 @@ const images = [
   "https://images.unsplash.com/photo-1691036561573-4b76998b60de?auto=format&fit=crop&q=80",
   "https://images.unsplash.com/photo-1721630175454-0ca4517bb530?auto=format&fit=crop&q=80",
   "https://images.unsplash.com/photo-1649511134921-67afc567280c?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80"
+  "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80",
 ];
 
 export const PwReset = () => {
@@ -29,48 +34,84 @@ export const PwReset = () => {
   }, []);
 
   const nextSlide = () => setCurrentImg((prev) => (prev + 1) % images.length);
-  const prevSlide = () => setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
+  const prevSlide = () =>
+    setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  setLoading(true);
-  const data = new FormData(event.currentTarget);
-  try {
-    await resetPassword(data.get('email'));
-    notify.success("Jelszó-visszaállító email elküldve!");
-    navigate("/signin");
-  } catch (error) {
-    notify.error("Hiba történt, ellenőrizd az email címet!");
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    const data = new FormData(event.currentTarget);
+
+    const email = data.get("email")?.trim();
+
+    if (!email) {
+      notify.error("Add meg az email címedet!");
+      setLoading(false);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      notify.error("Érvénytelen email formátum!");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await resetPassword(email);
+      notify.success("Jelszó-visszaállító email elküldve!");
+      navigate("/signin");
+    } catch (error) {
+      notify.error("Hiba történt, próbáld újra!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="signin-container">
-
       {/* Kép szekció */}
       <div className="signin-image-section">
-        <div className="slider-track" style={{ transform: `translateX(-${currentImg * 100}%)` }}>
+        <div
+          className="slider-track"
+          style={{ transform: `translateX(-${currentImg * 100}%)` }}
+        >
           {images.map((img, index) => (
-            <div key={index} className="slide" style={{ backgroundImage: `url(${img})` }} />
+            <div
+              key={index}
+              className="slide"
+              style={{ backgroundImage: `url(${img})` }}
+            />
           ))}
         </div>
         <div className="slider-controls">
-          <button className="slider-arrow" onClick={prevSlide}><FaChevronLeft /></button>
+          <button className="slider-arrow" onClick={prevSlide}>
+            <FaChevronLeft />
+          </button>
           <div className="slider-dots">
             {images.map((_, index) => (
-              <span key={index} className={`dot ${index === currentImg ? 'active' : ''}`} onClick={() => setCurrentImg(index)} />
+              <span
+                key={index}
+                className={`dot ${index === currentImg ? "active" : ""}`}
+                onClick={() => setCurrentImg(index)}
+              />
             ))}
           </div>
-          <button className="slider-arrow" onClick={nextSlide}><FaChevronRight /></button>
+          <button className="slider-arrow" onClick={nextSlide}>
+            <FaChevronRight />
+          </button>
         </div>
       </div>
 
       {/* Jobb oldali form */}
       <div className="signin-form-section">
-
-        <button className="back-btn" onClick={() => { navigate("/signin"); setMsg({}); }}>
+        <button
+          className="back-btn"
+          onClick={() => {
+            navigate("/signin");
+            setMsg({});
+          }}
+        >
           <FaArrowLeft /> Vissza a bejelentkezéshez
         </button>
 
@@ -87,18 +128,27 @@ const handleSubmit = async (event) => {
             <div className="pw-reset-success">
               <div className="pw-reset-icon">✉️</div>
               <p>{msg.resetPw}</p>
-              <button className="submit-btn" onClick={() => { navigate("/signin"); setMsg({}); }}>
+              <button
+                className="submit-btn"
+                onClick={() => {
+                  navigate("/signin");
+                  setMsg({});
+                }}
+              >
                 Vissza a bejelentkezéshez
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate>
               <p className="pw-reset-desc">
-                Adja meg regisztrált e-mail címét, és küldünk egy jelszó-visszaállító linket.
+                Adja meg regisztrált e-mail címét, és küldünk egy
+                jelszó-visszaállító linket.
               </p>
 
               <div className="input-group">
-                <label className="input-label" htmlFor="email">E-mail cím</label>
+                <label className="input-label" htmlFor="email">
+                  E-mail cím
+                </label>
                 <div className="input-wrapper">
                   <input
                     id="email"
@@ -108,7 +158,9 @@ const handleSubmit = async (event) => {
                     placeholder="Adja meg e-mail címét"
                     required
                   />
-                  <span className="input-icon"><FaRegEnvelope /></span>
+                  <span className="input-icon">
+                    <FaRegEnvelope />
+                  </span>
                 </div>
               </div>
 
@@ -122,7 +174,16 @@ const handleSubmit = async (event) => {
         </div>
 
         <p className="register-text">
-          Eszébe jutott? <a onClick={() => { navigate("/signin"); setMsg({}); }} className="register-link">Bejelentkezés</a>
+          Eszébe jutott?{" "}
+          <a
+            onClick={() => {
+              navigate("/signin");
+              setMsg({});
+            }}
+            className="register-link"
+          >
+            Bejelentkezés
+          </a>
         </p>
       </div>
     </div>
