@@ -1,10 +1,10 @@
-# Lakás Liget — Ingatlanböngésző Alkalmazás
+# LakásLiget — Ingatlanböngésző Alkalmazás
 
 ### LINK: https://lakasliget.netlify.app
 
 ## a) Az alkalmazás célja
 
-A Lakás Liget egy modern, webalapú ingatlanböngésző platform, amelynek célja, hogy egyszerűvé és átláthatóvá tegye a lakásbérlési folyamatot Budapesten. A platform lehetővé teszi magánszemélyek és ingatlanközvetítők számára, hogy hirdetéseket adjanak fel, illetve bérlők számára, hogy könnyen megtalálják az igényeiknek megfelelő ingatlant.
+A LakásLiget egy modern, webalapú ingatlanböngésző platform, amelynek célja, hogy egyszerűvé és átláthatóvá tegye a lakásbérlési folyamatot Budapesten. A platform lehetővé teszi magánszemélyek és ingatlanközvetítők számára, hogy hirdetéseket adjanak fel, illetve bérlők számára, hogy könnyen megtalálják az igényeiknek megfelelő ingatlant.
 
 Az alkalmazás ingyenesen használható, regisztrációhoz kötött hirdetésfeladással, interaktív térképes kereséssel és részletes szűrési lehetőségekkel.
 
@@ -86,7 +86,7 @@ A felhasználó nyilvános profilja, ahol más felhasználók láthatják a hird
 
 ### Bejelentkezés / Regisztráció (`/signin`, `/signup`)
 
-Email + jelszó alapú autentikáció Firebase Authentication segítségével. Email-megerősítés szükséges a bejelentkezéshez.
+Email + jelszó alapú autentikáció, email-megerősítés szükséges a fiók létrehozásához.
 
 ![signIn](https://res.cloudinary.com/fmenv2025/image/upload/v1776362213/signIn_qa3t48.png)
 ![signUp](https://res.cloudinary.com/fmenv2025/image/upload/v1776362223/signUp_v2twmy.png)
@@ -121,7 +121,7 @@ Csak admin jogosultságú felhasználóknak elérhető. Hirdetések és felhaszn
 
 ## c) Reszponzív megjelenés mobilon
 
-Az alkalmazás teljesen reszponzív, 320px képernyőszélességig optimalizált.
+Az alkalmazás optimalizált mobilos nézetre is (reszponzív), 320px képernyőszélességig.
 
 | Elem | Asztali nézet | Mobil nézet |
 |---|---|---|
@@ -137,10 +137,45 @@ Az alkalmazás teljesen reszponzív, 320px képernyőszélességig optimalizált
 
 
 ---
+## d) Felhasznált technológiák
 
-## d) Adattárolás
+### ReactJS
 
-Az alkalmazás Firebase Firestore NoSQL adatbázist és Firebase Authentication-t használ.
+A felhasználói felület React könyvtár segítségével készült. A React egy JavaScript alapú, komponens-orientált könyvtár, amelyet a Meta fejlesztett, és amelyet webalkalmazások felhasználói felületeinek építésére használnak.
+
+**Főbb előnyei:**
+
+| Tulajdonság | Leírás |
+|---|---|
+| Komponens-alapú felépítés | A felület kis, újrafelhasználható egységekre bontható, amelyek külön-külön fejleszthetők és tesztelhetők |
+| Virtuális DOM | Csak a ténylegesen megváltozott részeket frissíti a böngészőben, ami gyorsabb megjelenítést eredményez |
+| Egyirányú adatáramlás | Az adatok mindig szülőtől gyermek felé áramlanak, ami átláthatóbbá teszi a kódot |
+| Nagy ökoszisztéma | Rengeteg kész könyvtár és eszköz érhető el hozzá, amelyek gyorsítják a fejlesztést |
+| Aktív közösség | Széles körű dokumentáció és folyamatos fejlesztés áll mögötte |
+
+**Komponensek**
+A React alkalmazás kis, újrafelhasználható egységekre, úgynevezett komponensekre van bontva. Minden komponens a saját megjelenéséért és állapotáért felelős. A LakásLiget projektben például az `ApartCard`, a `Header` vagy az `ApForm` mind-mind egy-egy önálló komponens.
+
+**React Router**
+Az oldalak közötti navigációt a `react-router-dom` könyvtár biztosítja. Ez teszi lehetővé, hogy az alkalmazás különböző URL-ekhez különböző oldalakat rendeljen (pl. `/listings`, `/profile`, `/admin`) anélkül, hogy a böngésző ténylegesen új oldalt töltsön be.
+
+**Context API**
+A React beépített Context API-ja globális állapotkezelésre szolgál. Lehetővé teszi, hogy a bejelentkezett felhasználó adatai, az admin jogosultság és a különböző függvények (pl. bejelentkezés, kijelentkezés) globálisan elérhetők legyenek anélkül, hogy propsokon keresztül kellene őket mélyen továbbadni. Ez tisztább, átláthatóbb kódot eredményez, és megkönnyíti az állapot központi kezelését az alkalmazás teljes komponensfájában.
+
+---
+
+### Firebase
+
+A backend alapját a Google Firebase szolgáltatása adja. A Firebase adatbázis használata egy React projektben jelentősen leegyszerűsíti a valós idejű adatkezelést, mivel automatikusan szinkronizálja az adatokat a kliensek között. Nem szükséges külön backend szervert építeni, így gyorsabban lehet fejleszteni. Emellett a beépített autentikáció és skálázhatóság lehetővé teszi, hogy kis projektektől egészen nagy alkalmazásokig hatékonyan használható legyen.
+
+A projektben a Firebase két fő szolgáltatása kerül felhasználásra:
+
+| Szolgáltatás | Szerepe a projektben |
+|---|---|
+| **Firestore** | NoSQL adatbázis — hirdetések, felhasználói adatok és kedvencek tárolása |
+| **Authentication** | Regisztráció és bejelentkezés kezelése email-megerősítéssel |
+ 
+**Adatmodell:**
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -174,7 +209,30 @@ Az alkalmazás Firebase Firestore NoSQL adatbázist és Firebase Authentication-
   └──────────────┘
 ```
 
-**Képtárolás:** Profilképek a Cloudinary felhőszolgáltatásban tárolódnak. Hirdetésképek ImgBB segítségével kerülnek feltöltésre.
+---
+
+### Cloudinary
+
+A profilképek tárolása Cloudinary felhőszolgáltatáson keresztül történik. Beépített képoptimalizálási és átméretezési lehetőségei révén gyorsabb betöltést biztosít különböző eszközökön. Emellett egyszerű API-ja megkönnyíti a képek feltöltését és kezelését.
+
+---
+
+### ImgBB
+
+A hirdetések képeinek tárolása az ImgBB felhőszolgáltatáson keresztül történik. Ingyenes és egyszerűen integrálható képtároló megoldás, amely közvetlen elérési URL-t és törlési linket biztosít minden feltöltött képhez. Egyszerű REST API-ja révén a képfeltöltés és -kezelés gyorsan megvalósítható, a visszakapott URL-ek és törlési linkek pedig Firestore-ban tárolódnak a későbbi kezelhetőség érdekében.
+
+---
+
+### Node.js és Express.js
+
+Node.js alapú backend, amely Express.js keretrendszerrel lett megvalósítva, és a Cloudinary képkezelő műveleteit végzi. A szerver aszinkron működésű végpontokat biztosít a frontend számára, mivel a Cloudinary külső API-hívásokat igényel. Az alkalmazás a Vercel platformon fut, serverless környezetben.
+
+---
+
+### Vitest + Testing Library
+
+A Vitest egy modern, gyors tesztelő keretrendszer, amely kifejezetten a Vite-alapú projektekhez lett optimalizálva. Nagy előnye, hogy natívan támogatja az ES module-okat, villámgyors futást biztosít, és könnyen integrálható React alkalmazásokkal. A frontend komponensek tesztjei `@testing-library/react` segítségével, a backend logika pedig Supertest kombinációval van lefedve.
+
 
 ---
 
@@ -250,8 +308,6 @@ Toast értesítések megjelenítése.
 ### 2. Express + Cloudinary backend (`index.js`)
 
 ### Repo LINK: https://github.com/FMarcell06/lakasliget_backend
-
-Express alapú backend, amely a Cloudinary képkezelő műveleteit végzi el. Callback-alapú végpontokat biztosít a frontend számára, mivel a Cloudinary műveletek aszinkron, külső API-hívásokat igényelnek. A backend Vercelre van deployzolva, serverless környezetben fut.
 
 **Szerver:** `Express.js` | **Deployment:** Vercel | **Képtárolás:** Cloudinary
 
@@ -539,16 +595,19 @@ pnpm vitest
 
 
 ---
+## Csapatmunka 
 
-## g) Telepítés és futtatás
+A projekt csapatmunkában, három fővel készült. A fejlesztés menedzseléséhez **GitHub Projects**, **Issues** és **Pull Requestek** kombinációját használtuk.
 
-```bash
-# Függőségek telepítése
-pnpm install
+- **GitHub Projects** — Kanban táblán követtük nyomon a feladatok állapotát (teendő, folyamatban, kész), így mindig átlátható volt, ki min dolgozik éppen
+- **Issues** — Minden feladatot, hibát és fejlesztési ötletet külön issue-ként rögzítettünk, így semmi nem veszett el, és a felelősségek egyértelműek voltak
+- **Pull Requestek** — Mindenki külön branchen dolgozott, és a kész funkciók csak Pull Request és code review után kerültek be a `main` ágba, ezzel elkerültük az ütközéseket és a hibás kód bekerülését
 
-# Fejlesztői szerver indítása
-pnpm dev
 
-# Tesztek futtatása
-pnpm vitest
-```
+A fejlesztés korai szakaszában a GitHub Projects kanban táblánk:
+
+![GitHub-Projects screenshot](https://res.cloudinary.com/fmenv2025/image/upload/v1776703207/Screenshot_2026-02-22_at_11.11.16_a1sxlw.png)
+
+A branching és mergelési struktúra a fejlesztés során:
+
+![GitHub-branchek](https://res.cloudinary.com/fmenv2025/image/upload/v1776704296/Screenshot_2026-04-20_at_18.58.01_nognu2.png)
